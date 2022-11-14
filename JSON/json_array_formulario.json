@@ -1,0 +1,16 @@
+{
+	"DIGNO-LENOVO-A12":[
+		{
+			"frmventa_ven_aux":"SI",
+			"frmventa_zona_nro":"NO",
+			"frmventa_zona_nombre":"SI"
+		}
+	],
+	"94-C6-91-AA-DE-93":[
+		{
+			"frmventa_ven_aux":"SI",
+			"frmventa_zona_nro":"SI",
+			"frmventa_zona_nombre":"SI"
+		}
+	]
+}

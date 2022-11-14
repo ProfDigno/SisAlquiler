@@ -1,0 +1,32 @@
+{
+	"DIGNO-LENOVO-A12":[
+		{
+			"nombre":"MI-COMPU",
+			"localhost":"localhost",
+			"port":"5432",
+			"basedato":"bdalquiler_1",
+			"usuario":"postgres",
+			"password":"4650586"
+            "direc_dump":"C:\\Program Files\\PostgreSQL\\9.5\\bin\\pg_dump.exe",
+            "direc_backup":"backup\\",
+            "nombre_backup":"bdalquiler_",
+			"limite_dia_eliminar":"3",
+            "crear_backup":"NO"
+		}
+	],
+	"CAJA3":[
+		{
+			"nombre":"MOTEL PANKY",
+			"localhost":"localhost",
+			"port":"5432",
+			"basedato":"bddaomotel_1",
+			"usuario":"postgres",
+			"password":"MAJJJSMG"
+            "direc_dump":"C:\\Program Files (x86)\\PostgreSQL\\9.5\\bin\\pg_dump.exe",
+            "direc_backup":"backup\\",
+            "nombre_backup":"bdpankysm_",
+			"limite_dia_eliminar":"3",
+            "crear_backup":"SI"
+		}
+	]
+}
