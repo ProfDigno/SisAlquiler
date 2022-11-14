@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Title" fontName="Times New Roman" fontSize="50" isBold="true" pdfFontName="Times-Bold"/>
+	<style name="SubTitle" forecolor="#736343" fontName="Arial" fontSize="18"/>
+	<style name="Column header" forecolor="#666666" fontName="Arial" fontSize="12" isBold="true"/>
+	<style name="Detail" fontName="Arial" fontSize="12"/>
+	<style name="Row" mode="Transparent">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+			<style backcolor="#E6DAC3"/>
+		</conditionalStyle>
+	</style>
+	<queryString>
+		<![CDATA[select iva.cantidad_total as iv_cant,iva.descripcion as iv_concepto,
+iva.precio_alquiler as iv_unitario,
+(iva.cantidad_total*iva.precio_alquiler) as iv_subtotal,
+va.idventa_alquiler as idva,va.observacion as v_obs,
+to_char(va.fecha_creado,'yyyy-MM-dd HH24:MI') as v_fec_crea,
+to_char(va.fecha_devolusion_previsto ,'yyyy-MM-dd HH24:MI') as v_fec_evento,
+va.monto_total as v_alquiler,va.monto_descuento as v_descuento,
+(va.monto_total-va.monto_descuento) as v_pagar,va.monto_letra as v_mletra,
+va.monto_sena as v_msena,
+((100*va.monto_sena)/(va.monto_total-va.monto_descuento)) as v_psena,
+((va.monto_total-va.monto_descuento)-va.monto_sena) as v_msaldo,
+(100-((100*va.monto_sena)/(va.monto_total-va.monto_descuento))) as v_psaldo,
+c.nombre as cl_nombre,c.direccion as cl_direccion,
+te.nombre as te_evento,
+('telefono') as em_telefono,('email') as em_email,('direcion') as em_direccion,
+('recomendacion') as em_recomendacion,('saludo') as em_saludo,('propietaria') as em_propietaria
+from venta_alquiler va,item_venta_alquiler iva,cliente c,tipo_evento te  
+where va.idventa_alquiler=iva.fk_idventa_alquiler 
+and va.fk_idcliente=c.idcliente 
+and va.fk_idtipo_evento=te.idtipo_evento 
+and iva.precio_alquiler>0
+and va.idventa_alquiler=26
+order by iva.orden asc]]>
+	</queryString>
+	<field name="iv_cant" class="java.math.BigDecimal"/>
+	<field name="iv_concepto" class="java.lang.String"/>
+	<field name="iv_unitario" class="java.math.BigDecimal"/>
+	<field name="iv_subtotal" class="java.math.BigDecimal"/>
+	<field name="idva" class="java.lang.Integer"/>
+	<field name="v_obs" class="java.lang.String"/>
+	<field name="v_fec_crea" class="java.lang.String"/>
+	<field name="v_fec_evento" class="java.lang.String"/>
+	<field name="v_alquiler" class="java.math.BigDecimal"/>
+	<field name="v_descuento" class="java.math.BigDecimal"/>
+	<field name="v_pagar" class="java.math.BigDecimal"/>
+	<field name="v_mletra" class="java.lang.String"/>
+	<field name="v_msena" class="java.math.BigDecimal"/>
+	<field name="v_psena" class="java.math.BigDecimal"/>
+	<field name="v_msaldo" class="java.math.BigDecimal"/>
+	<field name="v_psaldo" class="java.math.BigDecimal"/>
+	<field name="cl_nombre" class="java.lang.String"/>
+	<field name="cl_direccion" class="java.lang.String"/>
+	<field name="te_evento" class="java.lang.String"/>
+	<field name="em_telefono" class="java.lang.String"/>
+	<field name="em_email" class="java.lang.String"/>
+	<field name="em_direccion" class="java.lang.String"/>
+	<field name="em_recomendacion" class="java.lang.String"/>
+	<field name="em_saludo" class="java.lang.String"/>
+	<field name="em_propietaria" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="178" splitType="Stretch">
+			<staticText>
+				<reportElement style="Title" x="0" y="74" width="555" height="30"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="18" isUnderline="true" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[ORDEN DE ENTREGA DE ALQUILERES]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="74" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="1" y="104" width="554" height="1"/>
+			</line>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" x="299" y="7" width="253" height="15"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{em_telefono}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" x="299" y="28" width="253" height="15" forecolor="#FF0000"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{em_email}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" x="299" y="49" width="253" height="15"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{em_direccion}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="1" y="105" width="80" height="15" forecolor="#736343"/>
+				<textElement>
+					<font isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[CLIENTE:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" x="81" y="105" width="302" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{cl_nombre}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="1" y="122" width="80" height="15" forecolor="#736343"/>
+				<textElement>
+					<font isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[DIRECCION:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" x="81" y="122" width="471" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{cl_direccion}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="1" y="139" width="91" height="15" forecolor="#736343"/>
+				<textElement>
+					<font isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[TIPO EVENTO:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" x="92" y="139" width="291" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{te_evento}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" x="1" y="75" width="91" height="29"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{idva}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="383" y="106" width="49" height="15" forecolor="#736343"/>
+				<textElement/>
+				<text><![CDATA[Creado:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" x="432" y="106" width="120" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{v_fec_crea}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="383" y="139" width="49" height="15" forecolor="#736343"/>
+				<textElement/>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" x="432" y="139" width="120" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{v_fec_evento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="35" y="158" width="517" height="16"/>
+				<textElement>
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{v_obs}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="1" y="158" width="34" height="16" forecolor="#736343"/>
+				<textElement>
+					<font isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[OBS:]]></text>
+			</staticText>
+			<image>
+				<reportElement x="1" y="0" width="223" height="74"/>
+				<imageExpression><![CDATA["C:\\Users\\Digno\\Documents\\NetBeansProjects\\SisAlquiler\\src\\REPORTE\\ALQUILER\\logo.png"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="16" splitType="Stretch">
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="15" width="555" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement style="Column header" x="0" y="0" width="35" height="15" forecolor="#736343"/>
+				<box>
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[CANT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="35" y="0" width="370" height="15" forecolor="#736343"/>
+				<box>
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[CONCEPTO/DETALLES/SERVICIOS, ALQUILERES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="405" y="0" width="65" height="15" forecolor="#736343"/>
+				<box>
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[UNITARIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="470" y="0" width="85" height="15" forecolor="#736343"/>
+				<box>
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[SUB TOTAL]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<frame>
+				<reportElement style="Row" mode="Opaque" x="0" y="0" width="555" height="15"/>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" x="0" y="0" width="35" height="15"/>
+					<box rightPadding="4">
+						<pen lineWidth="0.75"/>
+						<topPen lineWidth="0.75"/>
+						<leftPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+						<rightPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{iv_cant}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" x="35" y="0" width="370" height="15"/>
+					<box leftPadding="4" rightPadding="2">
+						<pen lineWidth="0.75"/>
+						<topPen lineWidth="0.75"/>
+						<leftPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+						<rightPen lineWidth="0.75"/>
+					</box>
+					<textElement verticalAlignment="Top">
+						<font size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{iv_concepto}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0">
+					<reportElement style="Detail" x="405" y="0" width="65" height="15"/>
+					<box rightPadding="2">
+						<pen lineWidth="0.75"/>
+						<topPen lineWidth="0.75"/>
+						<leftPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+						<rightPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{iv_unitario}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0">
+					<reportElement style="Detail" x="470" y="0" width="85" height="15"/>
+					<box rightPadding="2">
+						<pen lineWidth="0.75"/>
+						<topPen lineWidth="0.75"/>
+						<leftPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+						<rightPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{iv_subtotal}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="6" splitType="Stretch">
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="3" width="555" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="25" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="-21" y="1" width="597" height="24" forecolor="#D0B48E" backcolor="#F2EBDF"/>
+				<textField evaluationTime="Report">
+					<reportElement style="Column header" x="533" y="0" width="40" height="20" forecolor="#736343"/>
+					<textElement verticalAlignment="Middle">
+						<font size="10" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Column header" x="453" y="0" width="80" height="20" forecolor="#736343"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="10" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+				</textField>
+				<textField pattern="EEEEE dd MMMMM yyyy">
+					<reportElement style="Column header" x="22" y="1" width="197" height="20" forecolor="#736343"/>
+					<textElement verticalAlignment="Middle">
+						<font size="10" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="274" splitType="Stretch">
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement style="Detail" x="453" y="1" width="102" height="21"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{v_alquiler}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="1" y="1" width="452" height="21" forecolor="#000000"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isItalic="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL ALQUILERES]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement style="Detail" x="453" y="22" width="102" height="20" forecolor="#0099CC"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="14" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{v_descuento}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="1" y="22" width="452" height="20" forecolor="#0099CC"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isItalic="true"/>
+				</textElement>
+				<text><![CDATA[(menos) descuento para redondeo]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement style="Detail" x="453" y="42" width="102" height="22" forecolor="#FF0000"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{v_pagar}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="1" y="42" width="452" height="22" forecolor="#FF0000"/>
+				<box>
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[TOTAL ALQUILERES + ENTREGA]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" x="1" y="64" width="554" height="17"/>
+				<box>
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{v_mletra}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="1" y="89" width="298" height="72"/>
+			</rectangle>
+			<staticText>
+				<reportElement style="Column header" x="1" y="93" width="298" height="15" forecolor="#FF0000"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[FORMA DE PAGO (NEGOCIABLE)]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement style="Detail" x="207" y="108" width="92" height="15"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{v_msena}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00">
+				<reportElement style="Detail" x="170" y="108" width="37" height="15"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{v_psena}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="1" y="108" width="169" height="15" forecolor="#000000"/>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[Para señar la fecha]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement style="Detail" x="207" y="123" width="92" height="15"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{v_msaldo}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00">
+				<reportElement style="Detail" x="170" y="123" width="37" height="15"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{v_psaldo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="1" y="123" width="169" height="15" forecolor="#000000"/>
+				<box rightPadding="3"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[Saldo hasta el dia del evento]]></text>
+			</staticText>
+			<line>
+				<reportElement x="1" y="138" width="298" height="1"/>
+			</line>
+			<textField pattern="#,##0">
+				<reportElement x="207" y="139" width="91" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{v_pagar}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="1" y="139" width="169" height="18" forecolor="#000000"/>
+				<box rightPadding="3"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[SUMA SALDO]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" x="1" y="171" width="554" height="34"/>
+				<box>
+					<pen lineWidth="1.25"/>
+					<topPen lineWidth="1.25"/>
+					<leftPen lineWidth="1.25"/>
+					<bottomPen lineWidth="1.25"/>
+					<rightPen lineWidth="1.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{em_recomendacion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" x="1" y="210" width="554" height="15"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{em_saludo}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" x="1" y="230" width="183" height="34" forecolor="#CC0000"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{em_propietaria}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

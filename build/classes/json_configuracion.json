@@ -1,0 +1,10 @@
+{
+"nom_sistema":"ALQUILER LOREN",
+"tel_sistema":"0999555666",
+"dir_sistema":"BArrio San Jose",
+"fecha_sis":"22-10-2022",
+"version":"1.3",
+"user_admin":"5",
+"pass_admin":"3",
+"venta_negativo":false
+}
