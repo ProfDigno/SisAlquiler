@@ -85,7 +85,7 @@ public class BO_venta_alquiler {
                 if (conn.getAutoCommit()) {
                     conn.setAutoCommit(false);
                 }
-                DAOva.update_venta_alquiler_anular(conn, vealq);
+                DAOva.update_venta_alquiler_estado(conn, vealq);
                 DAOcc.update_credito_cliente_anular(conn, ccli);
                 DAOc.update_cliente_saldo_credito(conn, clie);
                 conn.commit();
@@ -161,7 +161,7 @@ public class BO_venta_alquiler {
             if (conn.getAutoCommit()) {
                 conn.setAutoCommit(false);
             }
-            DAOva.update_venta_alquiler_Finalizar(conn, vealq);
+            DAOva.update_venta_alquiler_estado(conn, vealq);
             int datocampoid = cdalq.getC20fk_idventa_alquiler();
             DAOcda.update_caja_detalle_alquilado_estado_todos(conn, cdalq, datocampoid, campoid);
             conn.commit();

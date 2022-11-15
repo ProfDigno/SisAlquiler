@@ -22,6 +22,8 @@ import FORMULARIO.ENTIDAD.*;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 /**
@@ -60,6 +62,10 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
     private transaccion_banco ENTtb = new transaccion_banco();
     private DAO_transaccion_banco DAOtb = new DAO_transaccion_banco();
     private BO_transaccion_banco BOtb = new BO_transaccion_banco();
+    private venta_alquiler ENTva=new venta_alquiler();
+    private DAO_venta_alquiler DAOva = new DAO_venta_alquiler();
+    private DAO_tipo_evento DAOte = new DAO_tipo_evento();
+    private tipo_evento ENTte = new tipo_evento();
     private EvenNumero_a_Letra nroletra = new EvenNumero_a_Letra();
     private EvenEstado eveest = new EvenEstado();
     private boolean hab_guardar;
@@ -83,15 +89,19 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
     private int fk_iddato_banco=0;
     private int fk_iddato_banco_cliente=0;
     private boolean hab_carga_dato_banco_cliente = false;
+    private int fk_idventa_alquiler;
+    private double monto_saldo_venta_alquiler;
 
     private void abrir_formulario() {
         this.setTitle("RECIBO PAGO CLIENTE");
         evetbl.centrar_formulario_internalframa(this);
         fk_idusuario = ENTusu.getGlobal_idusuario();
         fk_idcliente = ENTcli.getC1idcliente_global();
+        fk_idventa_alquiler=ENTva.getC1idventa_alquiler_global();
         cargar_cliente();
         cargar_dato_banco();
         cargar_dato_banco_cliente();
+        cargar_dato_venta_alquiler();
         reestableser();
         DAOrpc.actualizar_tabla_recibo_pago_cliente(conn, tblpro_categoria);
         color_formulario();
@@ -180,13 +190,20 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
             String monto_recibo = evejtf.getString_format_nro_entero(monto_recibo_pago);
             monto_letra = nroletra.Convertir(monto_recibo, true);
             txtrec_monto_letra.setText(monto_letra);
-            Lmonto_saldo_credito = ENTcli.getC13saldo_credito() + monto_recibo_pago;
+//            Lmonto_saldo_credito = ENTcli.getC13saldo_credito() + monto_recibo_pago;
+            Lmonto_saldo_credito =   monto_recibo_pago - monto_saldo_venta_alquiler;
             jFnuevo_saldo.setValue(Lmonto_saldo_credito);
             monto_saldo_credito = Math.abs(Lmonto_saldo_credito);
             if (Lmonto_saldo_credito >= 0) {
                 jFnuevo_saldo.setBackground(Color.yellow);
+                monto_recibo_pago=monto_saldo_venta_alquiler;
+//                String monto_recibo = evejtf.getString_format_nro_entero(monto_recibo_pago);
+                txtrec_monto_recibo_pago.setText(evejtf.getString_format_nro_decimal(monto_recibo_pago));
+                jFnuevo_saldo.setValue(0);
+                lblmensaje.setText("NO SE PUEDE SUPERAR EL SALDO DEL ALQUILER");
             } else {
                 jFnuevo_saldo.setBackground(Color.white);
+                lblmensaje.setText(".");
             }
         }
     }
@@ -202,7 +219,7 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
         ENTrpc.setC10monto_recibo_efectivo(monto_recibo_efectivo);
         ENTrpc.setC11monto_recibo_tarjeta(monto_recibo_tarjeta);
         ENTrpc.setC12monto_recibo_transferencia(monto_recibo_transferencia);
-
+        ENTrpc.setC13fk_idventa_alquiler(fk_idventa_alquiler);
     }
 
     private void cargar_credito_cliente_recibo() {
@@ -222,10 +239,11 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
     }
 
     private void cargar_credito_cliente_saldo() {
-        ENTcc2.setC3descripcion("SALDO DEL CIERRE ANTERIOR");
+        ENTcc2.setC3descripcion("SALDO DEL CIERRE ANTERIOR CC");
         ENTcc2.setC4estado(estado_EMITIDO);
         ENTcc2.setC5monto_contado(0);
-        ENTcc2.setC6monto_credito(monto_saldo_credito);
+        double nuevo_monto_credito=Math.abs(ENTcli.getC13saldo_credito()+monto_recibo_pago);
+        ENTcc2.setC6monto_credito(nuevo_monto_credito);
         ENTcc2.setC7tabla_origen(tabla_origen);
         ENTcc2.setC11fk_idventa_alquiler(0);
         ENTcc2.setC10fk_idrecibo_pago_cliente(0);
@@ -234,7 +252,7 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
     }
 
     private void cargar_saldo_credito_cliente() {
-        ENTscc.setC3descripcion("SALDO DEL CIERRE ANTERIOR");
+        ENTscc.setC3descripcion("SALDO DEL CIERRE ANTERIOR SCC");
         ENTscc.setC4monto_saldo_credito(monto_saldo_credito);
         String Smonto_saldo_credito = String.valueOf(monto_saldo_credito);
         ENTscc.setC5monto_letra(nroletra.Convertir(Smonto_saldo_credito, true));
@@ -272,6 +290,19 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
         cargar_dato_transccion_banco();
         BOtb.insertar_transaccion_banco(ENTtb);
     }
+    private void sumar_monto_credito_cliente() {
+        String titulo = "sumar_monto_credito_cliente";
+        String sql = "select sum(saldo_credito) as monto from cliente; ";
+        try {
+            ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
+            if (rs.next()) {
+                double monto = rs.getDouble("monto");
+                FrmCliente.jFsaldo_credito_total.setValue(monto);
+            }
+        } catch (SQLException e) {
+            evemen.Imprimir_serial_sql_error(e, sql, titulo);
+        }
+    }
     private void boton_guardar() {
         if (hab_guardar) {
             if (validar_guardar()) {
@@ -282,13 +313,17 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
                 cargar_dato_caja_alquilado();
                 cargar_dato_transccion_banco();
                 ENTcli.setC1idcliente(fk_idcliente);
-                if (BOcli.getBoolean_insertar_cliente_con_recibo_pago1(ENTcli, ENTcc1, ENTcc2, ENTgcc2, ENTrpc, ENTscc, ENTcda, ENTtb, tipo_pago)) {
+                ENTva.setC33monto_pagado(monto_recibo_pago);
+                ENTva.setC1idventa_alquiler(fk_idventa_alquiler);
+                if (BOcli.getBoolean_insertar_cliente_con_recibo_pago(ENTcli, ENTcc1, ENTcc2, ENTgcc2, ENTrpc, ENTscc, ENTcda, ENTtb, tipo_pago,ENTva)) {
                     reestableser();
                     DAOrpc.actualizar_tabla_recibo_pago_cliente(conn, tblpro_categoria);
                     DAOcli.actualizar_tabla_cliente2(conn, FrmCliente.tblcliente_credito_resumen);
                     DAOgcc.actualizar_tabla_grupo_credito_cliente_idc(conn, FrmCliente.tblgrupo_credito_cliente, fk_idcliente);
                     DAOgcc.cargar_grupo_credito_cliente_id(conn, ENTgcc, fk_idcliente);
                     DAOcc.actualizar_tabla_credito_cliente_por_grupo(conn, FrmCliente.tblcredito_cliente, ENTgcc.getC1idgrupo_credito_cliente());
+                    DAOva.actualizar_tabla_venta_alquiler_en_cliente(conn, FrmCliente.tblventa_alquiler, fk_idcliente);
+                    sumar_monto_credito_cliente();
                     if (evemen.MensajeGeneral_question("DESEA CERRAR EL RECIBO", "RECIBO", "CERRAR", "CANCELAR")) {
                         this.dispose();
                     }
@@ -336,7 +371,16 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
         DAOcli.cargar_cliente(conn, ENTcli, fk_idcliente);
         cargar_cliente_local(ENTcli);
     }
-
+    private void cargar_dato_venta_alquiler(){
+        DAOva.cargar_venta_alquiler(conn, ENTva,fk_idventa_alquiler);
+        txtva_idventa_alquiler.setText(String.valueOf(ENTva.getC1idventa_alquiler()));
+        DAOte.cargar_tipo_evento(conn, ENTte, ENTva.getC32fk_idtipo_evento());
+        txtva_tipo_evento.setText(ENTte.getC2nombre());
+        jFva_monto_total.setValue(ENTva.getC7monto_total()-ENTva.getC29monto_descuento());
+        jFva_monto_pagado.setValue(ENTva.getC33monto_pagado());
+        monto_saldo_venta_alquiler=(ENTva.getC7monto_total()-ENTva.getC29monto_descuento())-ENTva.getC33monto_pagado();
+        jFva_monto_saldo.setValue((ENTva.getC7monto_total()-ENTva.getC29monto_descuento())-ENTva.getC33monto_pagado());
+    }
     private void cargar_cliente_local(cliente cli) {
         fk_idcliente = cli.getC1idcliente();
         txtcli_nombre.setText(cli.getC3nombre());
@@ -354,7 +398,7 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
         monto_recibo_transferencia = 0;
         if (tipo == 1) {
             forma_pago = (eveest.getForm_pago_EFECTIVO());
-            monto_recibo_efectivo = (monto_recibo_pago);
+            monto_recibo_efectivo = monto_recibo_pago;
             btnpago_efectivo.setBackground(Color.yellow);
             btnpago_taarjeta.setBackground(Color.white);
             btnpago_banco.setBackground(Color.white);
@@ -363,7 +407,7 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
         }
         if (tipo == 2) {
             forma_pago = (eveest.getForm_pago_TARJETA());
-            monto_recibo_tarjeta = (monto_recibo_pago);
+            monto_recibo_tarjeta = monto_recibo_pago;
             btnpago_efectivo.setBackground(Color.white);
             btnpago_taarjeta.setBackground(Color.yellow);
             btnpago_banco.setBackground(Color.white);
@@ -372,7 +416,7 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
         }
         if (tipo == 3) {
             forma_pago = (eveest.getForm_pago_TRANSFERENCIA());
-            monto_recibo_transferencia = (monto_recibo_pago);
+            monto_recibo_transferencia = monto_recibo_pago;
             btnpago_efectivo.setBackground(Color.white);
             btnpago_taarjeta.setBackground(Color.white);
             btnpago_banco.setBackground(Color.yellow);
@@ -423,6 +467,14 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
         cmbdato_banco = new javax.swing.JComboBox<>();
         cmbdato_banco_cliente = new javax.swing.JComboBox<>();
         btnconfirmar_pago = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        txtva_idventa_alquiler = new javax.swing.JTextField();
+        txtva_tipo_evento = new javax.swing.JTextField();
+        jFva_monto_total = new javax.swing.JFormattedTextField();
+        jFva_monto_pagado = new javax.swing.JFormattedTextField();
+        jFva_monto_saldo = new javax.swing.JFormattedTextField();
+        btnimp_orden_entrega = new javax.swing.JButton();
+        lblmensaje = new javax.swing.JLabel();
         panel_tabla_categoria = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblpro_categoria = new javax.swing.JTable();
@@ -500,7 +552,7 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
 
         jFcli_saldo_credito.setEditable(false);
         jFcli_saldo_credito.setBackground(new java.awt.Color(204, 204, 204));
-        jFcli_saldo_credito.setBorder(javax.swing.BorderFactory.createTitledBorder("SALDO"));
+        jFcli_saldo_credito.setBorder(javax.swing.BorderFactory.createTitledBorder("SALDO TOTAL CLIENTE"));
         jFcli_saldo_credito.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jFcli_saldo_credito.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
 
@@ -523,13 +575,13 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtcli_telefono, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(panel_dato_clienteLayout.createSequentialGroup()
-                                .addComponent(jFcli_saldo_credito, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtcli_fec_limite, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(panel_dato_clienteLayout.createSequentialGroup()
                                 .addComponent(txtcli_nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtcli_ruc, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(txtcli_ruc, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(panel_dato_clienteLayout.createSequentialGroup()
+                                .addComponent(jFcli_saldo_credito, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtcli_fec_limite, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -634,7 +686,7 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(btnpago_efectivo, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(2, 2, 2)
                 .addComponent(btnpago_taarjeta)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnpago_banco)
@@ -642,12 +694,15 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(btnpago_efectivo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnpago_taarjeta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnpago_banco, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(btnpago_taarjeta)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnpago_efectivo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnpago_banco, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         jPanel_datobanco.setBorder(javax.swing.BorderFactory.createTitledBorder("DATOS DE BANCO"));
@@ -695,7 +750,7 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
                 .addComponent(cmbdato_banco, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cmbdato_banco_cliente, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 40, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         btnconfirmar_pago.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -706,62 +761,144 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
             }
         });
 
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("DATOS ALQUILER"));
+
+        txtva_idventa_alquiler.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        txtva_idventa_alquiler.setText("jTextField1");
+        txtva_idventa_alquiler.setBorder(javax.swing.BorderFactory.createTitledBorder("ID"));
+
+        txtva_tipo_evento.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        txtva_tipo_evento.setText("jTextField1");
+        txtva_tipo_evento.setBorder(javax.swing.BorderFactory.createTitledBorder("EVENTO"));
+
+        jFva_monto_total.setEditable(false);
+        jFva_monto_total.setBackground(new java.awt.Color(204, 204, 204));
+        jFva_monto_total.setBorder(javax.swing.BorderFactory.createTitledBorder("TOTAL A PAGAR"));
+        jFva_monto_total.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFva_monto_total.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+
+        jFva_monto_pagado.setEditable(false);
+        jFva_monto_pagado.setBackground(new java.awt.Color(204, 204, 204));
+        jFva_monto_pagado.setBorder(javax.swing.BorderFactory.createTitledBorder("PAGADO"));
+        jFva_monto_pagado.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFva_monto_pagado.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+
+        jFva_monto_saldo.setEditable(false);
+        jFva_monto_saldo.setBackground(new java.awt.Color(204, 204, 204));
+        jFva_monto_saldo.setBorder(javax.swing.BorderFactory.createTitledBorder("SALDO"));
+        jFva_monto_saldo.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFva_monto_saldo.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+
+        btnimp_orden_entrega.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/venta/ven_imprimir.png"))); // NOI18N
+        btnimp_orden_entrega.setText("ORDEN DE ENTREGA");
+        btnimp_orden_entrega.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnimp_orden_entregaActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addComponent(txtva_idventa_alquiler, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(txtva_tipo_evento))
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addComponent(jFva_monto_total, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jFva_monto_pagado, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jFva_monto_saldo, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(btnimp_orden_entrega, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtva_idventa_alquiler, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtva_tipo_evento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jFva_monto_total, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jFva_monto_pagado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jFva_monto_saldo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnimp_orden_entrega, javax.swing.GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE))
+        );
+
+        lblmensaje.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        lblmensaje.setForeground(new java.awt.Color(204, 0, 0));
+        lblmensaje.setText(".");
+
         javax.swing.GroupLayout panel_insertar_categoriaLayout = new javax.swing.GroupLayout(panel_insertar_categoria);
         panel_insertar_categoria.setLayout(panel_insertar_categoriaLayout);
         panel_insertar_categoriaLayout.setHorizontalGroup(
             panel_insertar_categoriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_insertar_categoriaLayout.createSequentialGroup()
-                .addGroup(panel_insertar_categoriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panel_insertar_categoriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(panel_insertar_categoriaLayout.createSequentialGroup()
-                            .addComponent(jLabel1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jLabel9)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(txtrec_fecha_emision, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(txtrec_descripcion, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
-                        .addComponent(panel_dato_cliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(panel_insertar_categoriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(panel_insertar_categoriaLayout.createSequentialGroup()
-                        .addComponent(txtrec_monto_recibo_pago, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jFnuevo_saldo, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(txtrec_monto_letra, javax.swing.GroupLayout.PREFERRED_SIZE, 600, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel9)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtrec_fecha_emision, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtrec_descripcion, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
+                    .addComponent(panel_dato_cliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtrec_monto_letra, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_insertar_categoriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnconfirmar_pago, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel_datobanco, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addGroup(panel_insertar_categoriaLayout.createSequentialGroup()
+                .addComponent(txtrec_monto_recibo_pago, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jFnuevo_saldo, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblmensaje, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panel_insertar_categoriaLayout.setVerticalGroup(
             panel_insertar_categoriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_insertar_categoriaLayout.createSequentialGroup()
-                .addGroup(panel_insertar_categoriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGap(12, 12, 12)
+                .addGroup(panel_insertar_categoriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9)
+                    .addComponent(txtrec_fecha_emision, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panel_insertar_categoriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel_insertar_categoriaLayout.createSequentialGroup()
-                        .addGroup(panel_insertar_categoriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel9)
-                            .addComponent(txtrec_fecha_emision, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(12, 12, 12)
-                        .addComponent(panel_dato_cliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(panel_dato_cliente, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtrec_descripcion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panel_insertar_categoriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtrec_monto_recibo_pago, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jFnuevo_saldo, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtrec_monto_letra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtrec_descripcion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panel_insertar_categoriaLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel_datobanco, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnconfirmar_pago, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(53, Short.MAX_VALUE))
+                .addGroup(panel_insertar_categoriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtrec_monto_recibo_pago, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jFnuevo_saldo, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblmensaje, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panel_insertar_categoriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnconfirmar_pago, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(panel_insertar_categoriaLayout.createSequentialGroup()
+                        .addGap(1, 1, 1)
+                        .addComponent(txtrec_monto_letra)))
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("CREAR RECIBO", panel_insertar_categoria);
@@ -810,7 +947,9 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 546, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
@@ -905,9 +1044,15 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
         select_dato_banco_cliente();
     }//GEN-LAST:event_cmbdato_banco_clienteItemStateChanged
 
+    private void btnimp_orden_entregaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnimp_orden_entregaActionPerformed
+        // TODO add your handling code here:
+        DAOva.imprimir_orden_entrega_alquiler(conn, fk_idventa_alquiler);
+    }//GEN-LAST:event_btnimp_orden_entregaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnconfirmar_pago;
+    private javax.swing.JButton btnimp_orden_entrega;
     private javax.swing.JButton btnpago_banco;
     private javax.swing.JButton btnpago_efectivo;
     private javax.swing.JButton btnpago_taarjeta;
@@ -915,13 +1060,18 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
     private javax.swing.JComboBox<String> cmbdato_banco_cliente;
     private javax.swing.JFormattedTextField jFcli_saldo_credito;
     private javax.swing.JFormattedTextField jFnuevo_saldo;
+    private javax.swing.JFormattedTextField jFva_monto_pagado;
+    private javax.swing.JFormattedTextField jFva_monto_saldo;
+    private javax.swing.JFormattedTextField jFva_monto_total;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel_datobanco;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JLabel lblmensaje;
     private javax.swing.JPanel panel_dato_cliente;
     private javax.swing.JPanel panel_insertar_categoria;
     private javax.swing.JPanel panel_tabla_categoria;
@@ -938,5 +1088,7 @@ public class FrmRecibo_pago_cliente extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtrec_fecha_emision;
     private javax.swing.JTextField txtrec_monto_letra;
     private javax.swing.JTextField txtrec_monto_recibo_pago;
+    private javax.swing.JTextField txtva_idventa_alquiler;
+    private javax.swing.JTextField txtva_tipo_evento;
     // End of variables declaration//GEN-END:variables
 }

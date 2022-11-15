@@ -22,8 +22,8 @@ public class DAO_recibo_pago_cliente {
     private String mensaje_update = "RECIBO_PAGO_CLIENTE MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO recibo_pago_cliente(idrecibo_pago_cliente,fecha_emision,descripcion,"
             + "monto_recibo_pago,monto_letra,estado,fk_idcliente,fk_idusuario,"
-            + "forma_pago,monto_recibo_efectivo,monto_recibo_tarjeta,monto_recibo_transferencia) "
-            + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?);";
+            + "forma_pago,monto_recibo_efectivo,monto_recibo_tarjeta,monto_recibo_transferencia,fk_idventa_alquiler) "
+            + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);";
     private String sql_update = "UPDATE recibo_pago_cliente SET fecha_emision=?,descripcion=?,monto_recibo_pago=?,monto_letra=?,estado=?,fk_idcliente=?,fk_idusuario=? WHERE idrecibo_pago_cliente=?;";
     private String sql_cargar = "SELECT idrecibo_pago_cliente,fecha_emision,descripcion,monto_recibo_pago,monto_letra,estado,fk_idcliente,fk_idusuario FROM recibo_pago_cliente WHERE idrecibo_pago_cliente=";
     private String sql_select = "SELECT re.idrecibo_pago_cliente as idrecibo,to_char(re.fecha_emision,'yyyy-MM-dd HH24:MI') as fec_emision,\n"
@@ -31,7 +31,7 @@ public class DAO_recibo_pago_cliente {
             + "FROM recibo_pago_cliente re,cliente fi \n"
             + "where re.fk_idcliente=fi.idcliente\n"
             + "order by 1 desc;";
-    public void insertar_recibo_pago_cliente(Connection conn, recibo_pago_cliente rbcl) {
+    public void insertar_recibo_pago_cliente1(Connection conn, recibo_pago_cliente rbcl) {
         rbcl.setC1idrecibo_pago_cliente(eveconn.getInt_ultimoID_mas_uno(conn, rbcl.getTb_recibo_pago_cliente(), rbcl.getId_idrecibo_pago_cliente()));
         String titulo = "insertar_recibo_pago_cliente";
         PreparedStatement pst = null;
@@ -49,6 +49,7 @@ public class DAO_recibo_pago_cliente {
             pst.setDouble(10, rbcl.getC10monto_recibo_efectivo());
             pst.setDouble(11, rbcl.getC11monto_recibo_tarjeta());
             pst.setDouble(12, rbcl.getC12monto_recibo_transferencia());
+            pst.setInt(13, rbcl.getC13fk_idventa_alquiler());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + rbcl.toString(), titulo);

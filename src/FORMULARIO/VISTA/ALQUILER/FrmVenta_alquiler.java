@@ -296,11 +296,7 @@ public class FrmVenta_alquiler extends javax.swing.JInternalFrame {
             String descripcion = ENTpro.getC3nombre();
             int Iprecio_mostrar = 0;
             int IOPrepos = 0;
-//            if (jCver_promocion.isSelected()) {
-//                Iprecio_mostrar = (int) prod.getC22precio_venta_promocion();
-//            } else {
             Iprecio_mostrar = (int) ENTpro.getC24precio_alquiler();
-//            }
             IOPrepos = (int) ENTpro.getC25precio_reposicion();
             String Scant = txtcantidad_total.getText();
             int Icant = Integer.parseInt(Scant);
@@ -342,7 +338,6 @@ public class FrmVenta_alquiler extends javax.swing.JInternalFrame {
     private void reestableser_item_venta() {
         txtprecio_venta.setText(null);
         txtsubtotal.setText(null);
-//        txtstock.setText(null);
         txtbuscar_producto.setText(null);
         txtcod_barra.setText(null);
         txtcantidad_total.setText(null);
@@ -356,7 +351,6 @@ public class FrmVenta_alquiler extends javax.swing.JInternalFrame {
         color_campo_item_venta(Color.white);
         esCargadoCodBarra = false;
         habilitar_editar_precio_venta = false;
-
         txtcod_barra.grabFocus();
     }
 
@@ -537,11 +531,7 @@ public class FrmVenta_alquiler extends javax.swing.JInternalFrame {
             }
         }
         String precio_mostrar = "error";
-//        if (jCver_promocion.isSelected()) {
-//            precio_mostrar = "TRIM(to_char(p.precio_venta_promocion,'999G999G999')) as pv_promo";
-//        } else {
         precio_mostrar = "TRIM(to_char(p.precio_alquiler,'999G999G999')) as p_alqui";
-//        }
         String sql = "select p.idproducto as idp,\n"
                 + "(p.nombre) as nombre,\n"
                 + "p.stock_fijo as sfijo,"
@@ -562,14 +552,8 @@ public class FrmVenta_alquiler extends javax.swing.JInternalFrame {
     private void pre_cargar_item_venta() {
         String Sprecio_venta = "0";
         int Iprecio_mino = 0;
-//        if (jCver_promocion.isSelected()) {
-//            Iprecio_mino = (int) prod.getC22precio_venta_promocion();
-//        } else {
         Iprecio_mino = (int) ENTpro.getC24precio_alquiler();
-//        }
-//        int Istock = (int) prod.getC8stock();
         Sprecio_venta = String.valueOf(Iprecio_mino);
-//        String Sstock = String.valueOf(Istock);
         txtbuscar_producto.setText(ENTpro.getC3nombre());
         txtcod_barra.setText(ENTpro.getC2cod_barra());
         if (ENTpro.getC8stock() <= ENTpro.getC9stock_min()) {
@@ -577,7 +561,6 @@ public class FrmVenta_alquiler extends javax.swing.JInternalFrame {
         } else {
             panel_insertar_pri_producto.setBackground(clacolor.getColor_insertar_primario());
         }
-//        txtstock.setText(Sstock);
         txtcantidad_total.setText(null);
         txtprecio_venta.setText(Sprecio_venta);
         txtsubtotal.setText(Sprecio_venta);
@@ -609,7 +592,6 @@ public class FrmVenta_alquiler extends javax.swing.JInternalFrame {
     }
 
     private void limpiar_cliente() {
-//        evejt.getBoolean_Eliminar_Fila_delivery(tblitem_producto, model_itemf);
         tipo_entrega = entrega_paqueta;
         lblidcliente.setText("id:0");
         fk_idcliente_local = 1;
@@ -618,7 +600,6 @@ public class FrmVenta_alquiler extends javax.swing.JInternalFrame {
         txtbucarCliente_ruc.setText(null);
         txtbucarCliente_direccion.setText(null);
         txtdireccion_alquiler.setText(null);
-//        txtmonto_descuento.setText(null);
         txtbucarCliente_telefono.grabFocus();
 
     }
@@ -636,7 +617,6 @@ public class FrmVenta_alquiler extends javax.swing.JInternalFrame {
         if (tipo == 4) {
             fk_idcliente_local = ENTva.getC19fk_idcliente();
         }
-//        evejt.getBoolean_Eliminar_Fila_delivery(tblitem_producto, model_itemf);
         tipo_entrega = entrega_paqueta;
         System.out.println("idclientelocal:" + fk_idcliente_local);
         lblidcliente.setText("id:" + fk_idcliente_local);
@@ -858,6 +838,7 @@ public class FrmVenta_alquiler extends javax.swing.JInternalFrame {
         ENTva.setC30monto_sena(monto_sena);
         ENTva.setC31monto_letra(monto_letra);
         ENTva.setC32fk_idtipo_evento(fk_idtipo_evento);
+        ENTva.setC33monto_pagado(0);
     }
 
     private String getDescripcion_item_venta() {
@@ -967,20 +948,6 @@ public class FrmVenta_alquiler extends javax.swing.JInternalFrame {
             cargar_dato_alquiler();
             cargar_credito_cliente();
             if (BOva.getBoolean_insertar_venta_alquiler1(ENTva, ENTcc, ENTcli, tblitem_producto)) {
-//                if (hab_venta_combinado) {
-//                if (jCimprimir_ticket.isSelected()) {
-////                        posv.boton_imprimir_pos_VENTA(connLocal, idventa_alquiler_ultimo);
-//                    DAOva.imprimir_orden_entrega_alquiler(connLocal, idventa_alquiler_ultimo);
-//                } else {
-//                    JOptionPane.showMessageDialog(null, "VENTA GUARDADO\nSIN TICKET");
-//                }
-//                } else {
-//                    if (jCimprimir_ticket.isSelected()) {
-//                        posv.boton_imprimir_pos_VENTA(connLocal, idventa_alquiler_ultimo);
-//                    } else {
-//                        JOptionPane.showMessageDialog(null, "VENTA GUARDADO\nSIN TICKET");
-//                    }
-//                }
                 int idventa_alquiler=idventa_alquiler_ultimo;
                 reestableser_venta();
                 limpiar_buscardor_cliente();
@@ -992,7 +959,7 @@ public class FrmVenta_alquiler extends javax.swing.JInternalFrame {
     private void boton_anular_venta_alquiler() {
         if (!evejt.getBoolean_validar_select(tblventa)) {
             int idventa_alquiler = evejt.getInt_select_id(tblventa);
-            int fk_idcliente = evejt.getInt_select(tblventa, 3);
+            int fk_idcliente = evejt.getInt_select(tblventa, 12);
             ENTva.setC18estado(estado_ANULADO);
             ENTva.setC1idventa_alquiler(idventa_alquiler);
             ENTcc.setC4estado(estado_ANULADO);

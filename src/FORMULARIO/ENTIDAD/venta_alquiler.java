@@ -189,6 +189,7 @@ private double C29monto_descuento;
 private double C30monto_sena;
 private String C31monto_letra;
 private int C32fk_idtipo_evento;
+private double C33monto_pagado;
 private static String nom_tabla;
 private static String nom_idtabla;
 private static String compotexte;
@@ -363,8 +364,18 @@ private static boolean Confirmado_carga_reserva;
     public void setC32fk_idtipo_evento(int C32fk_idtipo_evento) {
         this.C32fk_idtipo_evento = C32fk_idtipo_evento;
     }
+
+    public double getC33monto_pagado() {
+        return C33monto_pagado;
+    }
+
+    public void setC33monto_pagado(double C33monto_pagado) {
+        this.C33monto_pagado = C33monto_pagado;
+    }
         
-	public String toString() {
-		return "venta_alquiler(" + ",idventa_alquiler=" + C1idventa_alquiler + " ,fecha_creado=" + C2fecha_creado + " ,fecha_retirado_previsto=" + C3fecha_retirado_previsto + " ,fecha_retirado_real=" + C4fecha_retirado_real + " ,fecha_devolusion_previsto=" + C5fecha_devolusion_previsto + " ,fecha_devolusion_real=" + C6fecha_devolusion_real + " ,monto_total=" + C7monto_total + " ,monto_alquilado_efectivo=" + C8monto_alquilado_efectivo + " ,monto_alquilado_tarjeta=" + C9monto_alquilado_tarjeta + " ,monto_alquilado_transferencia=" + C10monto_alquilado_transferencia + " ,monto_delivery=" + C11monto_delivery + " ,forma_pago=" + C12forma_pago + " ,condicion=" + C13condicion + " ,alquiler_retirado=" + C14alquiler_retirado + " ,alquiler_devolusion=" + C15alquiler_devolusion + " ,direccion_alquiler=" + C16direccion_alquiler + " ,observacion=" + C17observacion + " ,estado=" + C18estado + " ,fk_idcliente=" + C19fk_idcliente + " ,fk_identregador=" + C20fk_identregador + " )";
-	}
+
+    @Override
+    public String toString() {
+        return "venta_alquiler{" + "C1idventa_alquiler=" + C1idventa_alquiler + ", C2fecha_creado=" + C2fecha_creado + ", C3fecha_retirado_previsto=" + C3fecha_retirado_previsto + ", C4fecha_retirado_real=" + C4fecha_retirado_real + ", C5fecha_devolusion_previsto=" + C5fecha_devolusion_previsto + ", C6fecha_devolusion_real=" + C6fecha_devolusion_real + ", C7monto_total=" + C7monto_total + ", C8monto_alquilado_efectivo=" + C8monto_alquilado_efectivo + ", C9monto_alquilado_tarjeta=" + C9monto_alquilado_tarjeta + ", C10monto_alquilado_transferencia=" + C10monto_alquilado_transferencia + ", C11monto_delivery=" + C11monto_delivery + ", C12forma_pago=" + C12forma_pago + ", C13condicion=" + C13condicion + ", C14alquiler_retirado=" + C14alquiler_retirado + ", C15alquiler_devolusion=" + C15alquiler_devolusion + ", C16direccion_alquiler=" + C16direccion_alquiler + ", C17observacion=" + C17observacion + ", C18estado=" + C18estado + ", C19fk_idcliente=" + C19fk_idcliente + ", C20fk_identregador=" + C20fk_identregador + ", C21monto_alquilado_credito=" + C21monto_alquilado_credito + ", C22fecha_retirado=" + C22fecha_retirado + ", C23hora_retirado=" + C23hora_retirado + ", C24min_retirado=" + C24min_retirado + ", C25fecha_devolusion=" + C25fecha_devolusion + ", C26hora_devolusion=" + C26hora_devolusion + ", C27min_devolusion=" + C27min_devolusion + ", C28monto_alquilado_reservado=" + C28monto_alquilado_reservado + ", C29monto_descuento=" + C29monto_descuento + ", C30monto_sena=" + C30monto_sena + ", C31monto_letra=" + C31monto_letra + ", C32fk_idtipo_evento=" + C32fk_idtipo_evento + ", C33monto_pagado=" + C33monto_pagado + '}';
+    }
 }

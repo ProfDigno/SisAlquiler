@@ -23,9 +23,9 @@ public class FrmTipo_evento extends javax.swing.JInternalFrame {
 
     private EvenJFRAME evetbl = new EvenJFRAME();
     private EvenJtable evejta = new EvenJtable();
-    private tipo_evento entre = new tipo_evento();
-    private BO_tipo_evento pcBO = new BO_tipo_evento();
-    private DAO_tipo_evento pcdao = new DAO_tipo_evento();
+    private tipo_evento ENTte = new tipo_evento();
+    private BO_tipo_evento BOte = new BO_tipo_evento();
+    private DAO_tipo_evento DAOte = new DAO_tipo_evento();
     private EvenJTextField evejtf = new EvenJTextField();
     Connection conn = ConnPostgres.getConnPosgres();
     cla_color_pelete clacolor= new cla_color_pelete();
@@ -36,7 +36,7 @@ public class FrmTipo_evento extends javax.swing.JInternalFrame {
         this.setTitle("TIPO EVENTO");
         evetbl.centrar_formulario_internalframa(this);        
         reestableser();
-        pcdao.actualizar_tabla_tipo_evento(conn, tbltipo_evento);
+        DAOte.actualizar_tabla_tipo_evento(conn, tbltipo_evento);
         color_formulario();
     }
     private void color_formulario(){
@@ -52,28 +52,28 @@ public class FrmTipo_evento extends javax.swing.JInternalFrame {
 
     private void boton_guardar() {
         if (validar_guardar()) {
-            entre.setC2nombre(txtnombre.getText());
-            entre.setC3activar(jCactivar.isSelected());
-            pcBO.insertar_tipo_evento(entre, tbltipo_evento);
+            ENTte.setC2nombre(txtnombre.getText());
+            ENTte.setC3activar(jCactivar.isSelected());
+            BOte.insertar_tipo_evento(ENTte, tbltipo_evento);
             reestableser();
         }
     }
 
     private void boton_editar() {
         if (validar_guardar()) {
-            entre.setC1idtipo_evento(Integer.parseInt(txtid.getText()));
-            entre.setC2nombre(txtnombre.getText());
-            entre.setC3activar(jCactivar.isSelected());
-            pcBO.update_tipo_evento(entre, tbltipo_evento);
+            ENTte.setC1idtipo_evento(Integer.parseInt(txtid.getText()));
+            ENTte.setC2nombre(txtnombre.getText());
+            ENTte.setC3activar(jCactivar.isSelected());
+            BOte.update_tipo_evento(ENTte, tbltipo_evento);
         }
     }
 
     private void seleccionar_tabla() {
         int idtipo_evento=evejta.getInt_select_id(tbltipo_evento);
-        pcdao.cargar_tipo_evento(conn, entre, idtipo_evento);
-        txtid.setText(String.valueOf(entre.getC1idtipo_evento()));
-        txtnombre.setText(entre.getC2nombre());
-        jCactivar.setSelected(entre.getC3activar());
+        DAOte.cargar_tipo_evento(conn, ENTte, idtipo_evento);
+        txtid.setText(String.valueOf(ENTte.getC1idtipo_evento()));
+        txtnombre.setText(ENTte.getC2nombre());
+        jCactivar.setSelected(ENTte.getC3activar());
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
     }
@@ -308,7 +308,7 @@ public class FrmTipo_evento extends javax.swing.JInternalFrame {
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
-        pcdao.ancho_tabla_tipo_evento(tbltipo_evento);
+        DAOte.ancho_tabla_tipo_evento(tbltipo_evento);
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void tbltipo_eventoMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbltipo_eventoMouseReleased

@@ -14,6 +14,7 @@ private String C9forma_pago;
 private double C10monto_recibo_efectivo;
 private double C11monto_recibo_tarjeta;
 private double C12monto_recibo_transferencia;
+private int C13fk_idventa_alquiler;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -115,7 +116,18 @@ private static String nom_idtabla;
 	public void setC8fk_idusuario(int C8fk_idusuario){
 		this.C8fk_idusuario = C8fk_idusuario;
 	}
-	public String toString() {
-		return "recibo_pago_cliente(" + ",idrecibo_pago_cliente=" + C1idrecibo_pago_cliente + " ,fecha_emision=" + C2fecha_emision + " ,descripcion=" + C3descripcion + " ,monto_recibo_pago=" + C4monto_recibo_pago + " ,monto_letra=" + C5monto_letra + " ,estado=" + C6estado + " ,fk_idcliente=" + C7fk_idcliente + " ,fk_idusuario=" + C8fk_idusuario + " )";
-	}
+
+    public int getC13fk_idventa_alquiler() {
+        return C13fk_idventa_alquiler;
+    }
+
+    public void setC13fk_idventa_alquiler(int C13fk_idventa_alquiler) {
+        this.C13fk_idventa_alquiler = C13fk_idventa_alquiler;
+    }
+
+    @Override
+    public String toString() {
+        return "recibo_pago_cliente{" + "C1idrecibo_pago_cliente=" + C1idrecibo_pago_cliente + ", C2fecha_emision=" + C2fecha_emision + ", C3descripcion=" + C3descripcion + ", C4monto_recibo_pago=" + C4monto_recibo_pago + ", C5monto_letra=" + C5monto_letra + ", C6estado=" + C6estado + ", C7fk_idcliente=" + C7fk_idcliente + ", C8fk_idusuario=" + C8fk_idusuario + ", C9forma_pago=" + C9forma_pago + ", C10monto_recibo_efectivo=" + C10monto_recibo_efectivo + ", C11monto_recibo_tarjeta=" + C11monto_recibo_tarjeta + ", C12monto_recibo_transferencia=" + C12monto_recibo_transferencia + ", C13fk_idventa_alquiler=" + C13fk_idventa_alquiler + '}';
+    }
+        
 }
