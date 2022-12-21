@@ -5,6 +5,7 @@
  */
 package FORMULARIO.VISTA;
 
+import FORMULARIO.VISTA.ALQUILER.FrmCliente;
 import BASEDATO.LOCAL.ConnPostgres;
 import BASEDATO.EvenConexion;
 import CONFIGURACION.EvenDatosPc;
@@ -243,7 +244,7 @@ public class FrmVale extends javax.swing.JInternalFrame {
         fk_idcliente = 0;
         jList_cliente.setVisible(false);
         txtfecha_desde.setText(evefec.getString_fecha_dia1());
-        txtfecha_hasta.setText(evefec.getString_formato_fecha());
+        txtfecha_hasta.setText(evefec.getString_formato_fecha_barra());
         txtfecha_emision.setText(evefec.getString_formato_fecha_hora());
         actualizar_vale(2);
         txtid.setText(null);

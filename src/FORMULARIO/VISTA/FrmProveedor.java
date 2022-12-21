@@ -51,7 +51,7 @@ public class FrmProveedor extends javax.swing.JInternalFrame {
         color_formulario();
         cdao.actualizar_tabla_proveedor(conn, tblproveedor);
         txtfecha_desde.setText(evefec.getString_fecha_dia1());
-        txtfecha_hasta.setText(evefec.getString_formato_fecha());
+        txtfecha_hasta.setText(evefec.getString_formato_fecha_barra());
     }
     void color_formulario(){
         panel_insert.setBackground(clacolor.getColor_insertar_primario());
@@ -61,7 +61,7 @@ public class FrmProveedor extends javax.swing.JInternalFrame {
         panel_buscar.setBackground(clacolor.getColor_insertar_primario());
     }
     private boolean validar_guardar_proveedor() {
-        txtfecha_inicio.setText(evefec.getString_formato_fecha());
+        txtfecha_inicio.setText(evefec.getString_formato_fecha_barra());
         if (evejtf.getBoo_JTextField_vacio(txtnombre, "DEBE CARGAR UN NOMBRE")) {
             return false;
         }

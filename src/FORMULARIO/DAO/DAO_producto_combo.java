@@ -6,6 +6,7 @@ import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import Evento.Fecha.EvenFecha;
+import Evento.Jtable.EvenRender;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,6 +19,7 @@ public class DAO_producto_combo {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
+    EvenRender everende = new EvenRender();
     private String mensaje_insert = "PRODUCTO_COMBO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "PRODUCTO_COMBO MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO producto_combo(idproducto_combo,nombre,descripcion,precio_alquiler,precio_reposicion,descuento,activo) VALUES (?,?,?,?,?,?,?);";
@@ -26,7 +28,8 @@ public class DAO_producto_combo {
             + "TRIM(to_char(pc.precio_alquiler,'999G999G999')) as alquiler,\n"
             + "TRIM(to_char(pc.descuento,'999G999G999')) as descuento,\n"
             + "TRIM(to_char((pc.precio_alquiler-pc.descuento),'999G999G999')) as combo,\n"
-            + "TRIM(to_char(pc.precio_reposicion,'999G999G999')) as reposicion,pc.activo as act\n"
+            + "TRIM(to_char(pc.precio_reposicion,'999G999G999')) as reposicion,"
+            + "pc.activo as act\n"
             + " from producto_combo pc order by pc.idproducto_combo desc; ";
     private String sql_cargar = "SELECT idproducto_combo,nombre,descripcion,precio_alquiler,precio_reposicion,descuento,activo FROM producto_combo WHERE idproducto_combo=";
 
@@ -95,6 +98,7 @@ public class DAO_producto_combo {
     public void actualizar_tabla_producto_combo(Connection conn, JTable tbltabla) {
         eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
         ancho_tabla_producto_combo(tbltabla);
+        everende.rendertabla_producto_combo(tbltabla, 7);
     }
 
     public void ancho_tabla_producto_combo(JTable tbltabla) {

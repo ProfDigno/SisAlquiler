@@ -15,6 +15,7 @@ private double C10monto_recibo_efectivo;
 private double C11monto_recibo_tarjeta;
 private double C12monto_recibo_transferencia;
 private int C13fk_idventa_alquiler;
+private String C14fecha_recibo;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -35,6 +36,14 @@ private static String nom_idtabla;
 		recibo_pago_cliente.nom_idtabla = nom_idtabla;
 	}
 //---------------GET-SET-CAMPOS---------------
+
+    public String getC14fecha_recibo() {
+        return C14fecha_recibo;
+    }
+
+    public void setC14fecha_recibo(String C14fecha_recibo) {
+        this.C14fecha_recibo = C14fecha_recibo;
+    }
 
     public String getC9forma_pago() {
         return C9forma_pago;
@@ -127,7 +136,8 @@ private static String nom_idtabla;
 
     @Override
     public String toString() {
-        return "recibo_pago_cliente{" + "C1idrecibo_pago_cliente=" + C1idrecibo_pago_cliente + ", C2fecha_emision=" + C2fecha_emision + ", C3descripcion=" + C3descripcion + ", C4monto_recibo_pago=" + C4monto_recibo_pago + ", C5monto_letra=" + C5monto_letra + ", C6estado=" + C6estado + ", C7fk_idcliente=" + C7fk_idcliente + ", C8fk_idusuario=" + C8fk_idusuario + ", C9forma_pago=" + C9forma_pago + ", C10monto_recibo_efectivo=" + C10monto_recibo_efectivo + ", C11monto_recibo_tarjeta=" + C11monto_recibo_tarjeta + ", C12monto_recibo_transferencia=" + C12monto_recibo_transferencia + ", C13fk_idventa_alquiler=" + C13fk_idventa_alquiler + '}';
+        return "recibo_pago_cliente{" + "C1idrecibo_pago_cliente=" + C1idrecibo_pago_cliente + ", C2fecha_emision=" + C2fecha_emision + ", C3descripcion=" + C3descripcion + ", C4monto_recibo_pago=" + C4monto_recibo_pago + ", C5monto_letra=" + C5monto_letra + ", C6estado=" + C6estado + ", C7fk_idcliente=" + C7fk_idcliente + ", C8fk_idusuario=" + C8fk_idusuario + ", C9forma_pago=" + C9forma_pago + ", C10monto_recibo_efectivo=" + C10monto_recibo_efectivo + ", C11monto_recibo_tarjeta=" + C11monto_recibo_tarjeta + ", C12monto_recibo_transferencia=" + C12monto_recibo_transferencia + ", C13fk_idventa_alquiler=" + C13fk_idventa_alquiler + ", C14fecha_recibo=" + C14fecha_recibo + '}';
     }
+
         
 }

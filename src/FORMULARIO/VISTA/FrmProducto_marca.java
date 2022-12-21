@@ -105,7 +105,7 @@ public class FrmProducto_marca extends javax.swing.JInternalFrame {
         jCactivar.setSelected(true);
         txtorden.setText("0");
         txtfecha_desde.setText(evefec.getString_fecha_dia1());
-        txtfecha_hasta.setText(evefec.getString_formato_fecha());
+        txtfecha_hasta.setText(evefec.getString_formato_fecha_barra());
         btnguardar.setEnabled(true);
         btneditar.setEnabled(false);
         btndeletar.setEnabled(false);

@@ -5,13 +5,16 @@
  */
 package FILTRO;
 
+import ESTADO.EvenEstado;
 import javax.swing.JCheckBox;
 
 /**
  *
  * @author Digno
  */
+
 public class ClaAuxFiltroVenta {
+    private EvenEstado eveest = new EvenEstado();
     public String filtro_estado(JCheckBox jCestado_emitido,JCheckBox jCestado_terminado,JCheckBox jCestado_anulado) {
         String estado = "";
         String sumaestado = "";
@@ -330,6 +333,60 @@ public class ClaAuxFiltroVenta {
                 condi = " or";
             }
             estado = condi + "  iv.tipo='D' ";
+            sumaestado = sumaestado + estado;
+        }
+        return sumaestado + fin;
+    }
+    public String filtro_estado_venta_alquiler(JCheckBox jCestado_emitido,JCheckBox jCestado_alquilado,
+            JCheckBox jCestado_devolucion,JCheckBox jCestado_anulado) {
+        String campo=" va.estado";
+        String estado = "";
+        String sumaestado = "";
+        int contestado = 0;
+        String condi = "";
+        String fin = "";
+        if (jCestado_emitido.isSelected()) {
+            contestado++;
+            if (contestado == 1) {
+                condi = " and(";
+                fin = ") ";
+            } else {
+                condi = " or";
+            }
+            estado = condi + campo+"='"+eveest.getEst_EMITIDO()+"' ";
+            sumaestado = sumaestado + estado;
+        }
+        if (jCestado_alquilado.isSelected()) {
+            contestado++;
+            if (contestado == 1) {
+                condi = " and(";
+                fin = ") ";
+            } else {
+                condi = " or";
+            }
+            estado = condi + campo+"='"+eveest.getEst_ALQUILADO()+"' ";
+            sumaestado = sumaestado + estado;
+        }
+        if (jCestado_devolucion.isSelected()) {
+            contestado++;
+            if (contestado == 1) {
+                condi = " and(";
+                fin = ") ";
+            } else {
+                condi = " or";
+            }
+            estado = condi + campo+"='"+eveest.getEst_DEVOLUCION()+"' ";
+            sumaestado = sumaestado + estado;
+        }
+        if (jCestado_anulado.isSelected()) {
+            contestado++;
+            if (contestado == 1) {
+                condi = " and(";
+                fin = ") ";
+            } else {
+                condi = " or";
+            }
+            estado = condi + campo+"='"+eveest.getEst_ANULADO()+"' ";
             sumaestado = sumaestado + estado;
         }
         return sumaestado + fin;

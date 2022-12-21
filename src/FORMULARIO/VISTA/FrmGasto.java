@@ -8,6 +8,7 @@ package FORMULARIO.VISTA;
 import BASEDATO.LOCAL.ConnPostgres;
 import BASEDATO.EvenConexion;
 import CONFIGURACION.EvenDatosPc;
+import ESTADO.EvenEstado;
 import Evento.Color.cla_color_pelete;
 import Evento.Fecha.EvenFecha;
 import Evento.JTextField.EvenJTextField;
@@ -45,17 +46,19 @@ public class FrmGasto extends javax.swing.JInternalFrame {
     PosImprimir_Gasto posgas = new PosImprimir_Gasto();
     Connection conn = ConnPostgres.getConnPosgres();
     cla_color_pelete clacolor= new cla_color_pelete();
+     private EvenEstado eveest = new EvenEstado();
     private int fk_idgasto_tipo;
     private int idgasto;
     private double monto_gasto;
     private String indice_gasto;
+    String tabla_gasto="GASTO";
 //    private String indice;
 
     /**
      * Creates new form FrmZonaDelivery
      */
     void abrir_formulario() {
-        this.setTitle("GASTO");
+        this.setTitle(tabla_gasto);
         evetbl.centrar_formulario_internalframa(this);
         reestableser();
         color_formulario();
@@ -70,13 +73,15 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         String fecha = "";
         String orden = " order by g.fecha_emision desc";
         if (jCocultar_anulado.isSelected()) {
-            ocultarAnulado = " and g.estado='EMITIDO' ";
+            ocultarAnulado = " and g.estado='"+eveest.getEst_EMITIDO()+"' ";
         }
         if ((txtfecha_desde.getText().trim().length() > 0) && (txtfecha_hasta.getText().trim().length() > 0)) {
-            String fecdesde = evefec.getString_validar_fecha(txtfecha_desde.getText());
-            String fechasta = evefec.getString_validar_fecha(txtfecha_hasta.getText());
-            txtfecha_desde.setText(fecdesde);
-            txtfecha_hasta.setText(fechasta);
+//            String fecdesde = evefec.getString_validar_fecha(txtfecha_desde.getText());
+//            String fechasta = evefec.getString_validar_fecha(txtfecha_hasta.getText());
+            String fecdesde = evefec.getString_cambiar_formato(txtfecha_desde.getText());
+            String fechasta = evefec.getString_cambiar_formato(txtfecha_hasta.getText());
+//            txtfecha_desde.setText(fecdesde);
+//            txtfecha_hasta.setText(fechasta);
             fecha = " and date(g.fecha_emision)>=date('" + fecdesde + "') and date(g.fecha_emision)<=date('" + fechasta + "')";
         }
         if (tipo == 2) {
@@ -135,17 +140,18 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         caja.setC10monto_caja(0);
         caja.setC11monto_cierre(0);
         caja.setC12id_origen(idgasto);
-        caja.setC13tabla_origen("GASTO");
-        caja.setC15estado("EMITIDO");
+        caja.setC13tabla_origen(tabla_gasto);
+        caja.setC15estado(eveest.getEst_EMITIDO());
         caja.setC16fk_idusuario(usu.getGlobal_idusuario());
         caja.setC17monto_recibo_pago(0);
         caja.setC18monto_compra_credito(0);
     }
 
     void cargar_datos_gasto() {
-        gas.setFecha_emision(txtfecha_emision.getText());
+        String fecha = evefec.getString_cambiar_formato_add_hora(txtfecha_emision.getText());
+        gas.setFecha_emision(fecha);
         gas.setDescripcion(txtdescripcion.getText());
-        gas.setEstado("EMITIDO");
+        gas.setEstado(eveest.getEst_EMITIDO());
         gas.setMonto_gasto(evejtf.getDouble_format_nro_entero(txtmonto_gasto));
         gas.setFk_idgasto_tipo(fk_idgasto_tipo);
         gas.setFk_idusuario(usu.getGlobal_idusuario());
@@ -172,8 +178,8 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         caja.setC8monto_compra(0);
         caja.setC9monto_vale(0);
         caja.setC12id_origen(idgasto);
-        caja.setC13tabla_origen("GASTO");
-        caja.setC15estado("EMITIDO");
+        caja.setC13tabla_origen(tabla_gasto);
+        caja.setC15estado(eveest.getEst_EMITIDO());
     }
 
     void cargar_datos_editar_gasto() {
@@ -198,11 +204,11 @@ public class FrmGasto extends javax.swing.JInternalFrame {
 
     void boton_anular() {
         if (!evejta.getBoolean_validar_select(tblgasto)) {
-            gas.setEstado("ANULADO");
+            gas.setEstado(eveest.getEst_ANULADO());
             gas.setIdgasto(idgasto);
             caja.setC12id_origen(idgasto);
-            caja.setC13tabla_origen("GASTO");
-            caja.setC15estado("ANULADO");
+            caja.setC13tabla_origen(tabla_gasto);
+            caja.setC15estado(eveest.getEst_ANULADO());
             pcBO.update_gasto_anular(gas, caja);
             reestableser();
         }
@@ -235,8 +241,8 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         fk_idgasto_tipo = 0;
         jList_gasto_tipo.setVisible(false);
         txtfecha_desde.setText(evefec.getString_fecha_dia1());
-        txtfecha_hasta.setText(evefec.getString_formato_fecha());
-        txtfecha_emision.setText(evefec.getString_formato_fecha_hora());
+        txtfecha_hasta.setText(evefec.getString_formato_fecha_barra());
+        txtfecha_emision.setText(evefec.getString_formato_fecha_barra());
         actualizar_gasto(2);
         txtid.setText(null);
         txtbuscar_gasto_tipo.setText(null);
@@ -282,15 +288,12 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         jList_gasto_tipo = new javax.swing.JList<>();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtdescripcion = new javax.swing.JTextArea();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         txtid = new javax.swing.JTextField();
         txtbuscar_gasto_tipo = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
         txtfecha_emision = new javax.swing.JTextField();
         btngasto_tipo = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
         txtmonto_gasto = new javax.swing.JTextField();
         panel_tabla_gasto = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -399,10 +402,11 @@ public class FrmGasto extends javax.swing.JInternalFrame {
                 jList_gasto_tipoKeyPressed(evt);
             }
         });
-        jLayeredPane1.add(jList_gasto_tipo, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 80, 250, 100));
+        jLayeredPane1.add(jList_gasto_tipo, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 70, 290, 100));
 
         txtdescripcion.setColumns(20);
         txtdescripcion.setRows(5);
+        txtdescripcion.setBorder(javax.swing.BorderFactory.createTitledBorder("DESCRIPCION"));
         txtdescripcion.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtdescripcionKeyPressed(evt);
@@ -410,14 +414,7 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         });
         jScrollPane2.setViewportView(txtdescripcion);
 
-        jLayeredPane1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, 310, -1));
-
-        jLabel3.setText("Descripcion:");
-        jLayeredPane1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, -1, -1));
-
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel2.setText("TIPO:");
-        jLayeredPane1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, -1, -1));
+        jLayeredPane1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, 320, -1));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel1.setText("ID:");
@@ -426,9 +423,10 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         txtid.setEditable(false);
         txtid.setBackground(new java.awt.Color(204, 204, 204));
         txtid.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLayeredPane1.add(txtid, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 10, 58, -1));
+        jLayeredPane1.add(txtid, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 58, -1));
 
         txtbuscar_gasto_tipo.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        txtbuscar_gasto_tipo.setBorder(javax.swing.BorderFactory.createTitledBorder("TIPO GASTO"));
         txtbuscar_gasto_tipo.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtbuscar_gasto_tipoKeyPressed(evt);
@@ -437,14 +435,14 @@ public class FrmGasto extends javax.swing.JInternalFrame {
                 txtbuscar_gasto_tipoKeyReleased(evt);
             }
         });
-        jLayeredPane1.add(txtbuscar_gasto_tipo, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 40, 210, -1));
+        jLayeredPane1.add(txtbuscar_gasto_tipo, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 270, 40));
 
         jLabel12.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel12.setText("FECHA:");
-        jLayeredPane1.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 10, -1, -1));
+        jLayeredPane1.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 10, -1, -1));
 
         txtfecha_emision.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLayeredPane1.add(txtfecha_emision, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 10, 130, 20));
+        jLayeredPane1.add(txtfecha_emision, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 10, 170, 20));
 
         btngasto_tipo.setText("+");
         btngasto_tipo.addActionListener(new java.awt.event.ActionListener() {
@@ -452,12 +450,10 @@ public class FrmGasto extends javax.swing.JInternalFrame {
                 btngasto_tipoActionPerformed(evt);
             }
         });
-        jLayeredPane1.add(btngasto_tipo, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 40, -1, -1));
-
-        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel4.setText("MONTO:");
+        jLayeredPane1.add(btngasto_tipo, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 40, -1, -1));
 
         txtmonto_gasto.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        txtmonto_gasto.setBorder(javax.swing.BorderFactory.createTitledBorder("MONTO GASTO"));
         txtmonto_gasto.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtmonto_gastoKeyPressed(evt);
@@ -477,32 +473,28 @@ public class FrmGasto extends javax.swing.JInternalFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_insertar_gastoLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panel_insertar_gastoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLayeredPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLayeredPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(panel_insertar_gastoLayout.createSequentialGroup()
                         .addComponent(btnnuevo, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnguardar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btneditar, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btneditar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnanular)))
-                .addGap(89, 89, 89))
+                .addGap(69, 69, 69))
             .addGroup(panel_insertar_gastoLayout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtmonto_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addComponent(txtmonto_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panel_insertar_gastoLayout.setVerticalGroup(
             panel_insertar_gastoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_insertar_gastoLayout.createSequentialGroup()
-                .addComponent(jLayeredPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(panel_insertar_gastoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(jLabel4)
-                    .addComponent(txtmonto_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(131, 131, 131)
+                .addComponent(jLayeredPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtmonto_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(119, 119, 119)
                 .addGroup(panel_insertar_gastoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnnuevo)
                     .addComponent(btnguardar)
@@ -640,7 +632,7 @@ public class FrmGasto extends javax.swing.JInternalFrame {
                             .addComponent(txtbuscar_descripcion)
                             .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(txtbuscar_tipo))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 92, Short.MAX_VALUE)
                         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panel_tabla_gastoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -656,7 +648,7 @@ public class FrmGasto extends javax.swing.JInternalFrame {
                                     .addComponent(jLabel10)
                                     .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jFsuma_cantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 24, Short.MAX_VALUE)))))
+                                .addGap(0, 86, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         panel_tabla_gastoLayout.setVerticalGroup(
@@ -710,9 +702,9 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(panel_insertar_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, 351, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(panel_insertar_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, 375, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panel_tabla_gasto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(panel_tabla_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -864,9 +856,6 @@ public class FrmGasto extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;

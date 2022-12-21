@@ -58,7 +58,7 @@ public class EvenRender {
         });
     }
     public void rendertabla_estados(JTable tbltabla,final int columna) {
-        System.out.println("-->rendertabla_venta");
+        System.out.println("-->rendertabla_estados");
         tbltabla.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table,
@@ -146,7 +146,7 @@ public class EvenRender {
         });
     }
     public void rendertabla_item_alquiler(JTable tblitem_producto) {
-        System.out.println("-->rendertabla_item_venta");
+        System.out.println("-->rendertabla_item_alquiler");
         tblitem_producto.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table,
@@ -185,7 +185,7 @@ public class EvenRender {
         });
     }
     public void rendertabla_estado_alquilado(JTable tbltabla,final int columna) {
-        System.out.println("-->rendertabla_venta");
+        System.out.println("-->rendertabla_estado_alquilado");
         tbltabla.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table,
@@ -229,7 +229,7 @@ public class EvenRender {
         });
     }
     public void rendertabla_venta_alquilado_cancelado(JTable tbltabla,final int columna) {
-        System.out.println("-->rendertabla_venta");
+        System.out.println("-->rendertabla_venta_alquilado_cancelado");
         tbltabla.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table,
@@ -249,6 +249,35 @@ public class EvenRender {
                 if (texto1 != null && es_abierto.equals(texto1.toString())) {
                     color_fondo = Color.yellow;
                     color_text = Color.BLUE;
+                }
+                label.setBackground(color_fondo);
+                table.setSelectionForeground(color_text);
+                
+                return label;
+            }
+        });
+    }
+    public void rendertabla_producto_combo(JTable tbltabla,final int columna) {
+        System.out.println("-->rendertabla_producto_combo");
+        tbltabla.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table,
+                    Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+                //************************************************************
+                int columnaRender=columna;
+                Color color_fondo = Color.WHITE;
+                Color color_text = Color.BLACK;
+                Object texto1 = table.getValueAt(row, columnaRender);
+                String es_true="true";
+                String es_false="false";
+                if (texto1 != null && es_true.equals(texto1.toString())) {
+                    color_fondo = Color.WHITE;
+                    color_text = Color.BLACK;
+                }
+                if (texto1 != null && es_false.equals(texto1.toString())) {
+                    color_fondo = Color.GRAY;
+                    color_text = Color.white;
                 }
                 label.setBackground(color_fondo);
                 table.setSelectionForeground(color_text);

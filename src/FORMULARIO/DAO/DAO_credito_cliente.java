@@ -18,6 +18,7 @@ public class DAO_credito_cliente {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
+    String for_fec_bar=evefec.getFor_fec_barra();
     private String mensaje_insert = "CREDITO_CLIENTE GUARDADO CORRECTAMENTE";
     private String mensaje_update = "CREDITO_CLIENTE MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO credito_cliente(idcredito_cliente,fecha_emision,descripcion,estado,"
@@ -27,8 +28,8 @@ public class DAO_credito_cliente {
     private String sql_select = "SELECT idcredito_cliente,fecha_emision,descripcion,estado,monto_contado,monto_credito,tabla_origen,fk_idgrupo_credito_cliente,fk_idsaldo_credito_cliente,fk_idrecibo_pago_cliente,fk_idventa_alquiler FROM credito_cliente order by 1 desc;";
     private String sql_cargar = "SELECT idcredito_cliente,fecha_emision,descripcion,estado,monto_contado,monto_credito,tabla_origen,fk_idgrupo_credito_cliente,fk_idsaldo_credito_cliente,fk_idrecibo_pago_cliente,fk_idventa_alquiler FROM credito_cliente WHERE idcredito_cliente=";
     private String sql_select_gcc = "select cc.idcredito_cliente as idc,\n"
-            + "to_char(cc.fecha_emision,'yyyy-MM-dd HH24:MI') as fecha,\n"
-            + "case when vence=true then to_char(cc.fecha_vence,'yyyy-MM-dd') else 'NO VENCE' end as vence,"
+            + "to_char(cc.fecha_emision,'"+for_fec_bar+" HH24:MI') as fecha,\n"
+            + "case when vence=true then to_char(cc.fecha_vence,'"+for_fec_bar+"') else 'NO VENCE' end as vence,"
             + "cc.descripcion,cc.estado,cc.tabla_origen,\n"
             + "TRIM(to_char(cc.monto_credito,'999G999G999')) as credito,\n"
             + "TRIM(to_char(cc.monto_contado,'999G999G999')) as contado\n"

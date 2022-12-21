@@ -123,7 +123,7 @@ public class FrmRepGananciaCompraVenta extends javax.swing.JInternalFrame {
 
     void reestableser() {
         txtfecha_desde.setText(evefec.getString_fecha_dia1());
-        txtfecha_hasta.setText(evefec.getString_formato_fecha());
+        txtfecha_hasta.setText(evefec.getString_formato_fecha_barra());
         txtbucar_categoria.setText(null);
         txtbucar_marca.setText(null);
         fk_idproducto_categoria_local = -1;

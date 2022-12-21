@@ -38,7 +38,7 @@ public class BO_producto_combo {
         }
     }
 
-    public void update_producto_combo(producto_combo prco, JTable tbltabla) {
+    public void update_producto_combo(producto_combo prco) {
         if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR PRODUCTO_COMBO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
             String titulo = "update_producto_combo";
             Connection conn = ConnPostgres.getConnPosgres();
@@ -47,7 +47,7 @@ public class BO_producto_combo {
                     conn.setAutoCommit(false);
                 }
                 DAOpc.update_producto_combo(conn, prco);
-                DAOpc.actualizar_tabla_producto_combo(conn, tbltabla);
+//                DAOpc.actualizar_tabla_producto_combo(conn, tbltabla);
                 conn.commit();
             } catch (SQLException e) {
                 evmen.mensaje_error(e, prco.toString(), titulo);

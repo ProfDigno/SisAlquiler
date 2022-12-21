@@ -81,7 +81,7 @@ public class FrmRepVentaDetalle extends javax.swing.JInternalFrame {
 
     void reestableser() {
         txtfecha_desde.setText(evefec.getString_fecha_dia1());
-        txtfecha_hasta.setText(evefec.getString_formato_fecha());
+        txtfecha_hasta.setText(evefec.getString_formato_fecha_barra());
         jCestado_emitido.setSelected(false);
         jCestado_terminado.setSelected(false);
         jCestado_anulado.setSelected(false);

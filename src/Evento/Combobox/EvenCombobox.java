@@ -66,4 +66,12 @@ public class EvenCombobox {
             }
         return getcampo;
     }
+    public boolean getBoo_validar_select(JComboBox cmbnom,String mensaje){
+        if(cmbnom.getSelectedIndex()==0){
+            JOptionPane.showMessageDialog(cmbnom,mensaje,"ERROR SELECT",JOptionPane.ERROR_MESSAGE);
+            return true;
+        }else{
+            return false;
+        }
+    }
 }

@@ -35,7 +35,7 @@ where va.idventa_alquiler=iva.fk_idventa_alquiler
 and va.fk_idcliente=c.idcliente 
 and va.fk_idtipo_evento=te.idtipo_evento 
 and iva.precio_alquiler>0
-and va.idventa_alquiler=26
+and va.idventa_alquiler=9
 order by iva.orden asc]]>
 	</queryString>
 	<field name="iv_cant" class="java.math.BigDecimal"/>
@@ -188,7 +188,7 @@ order by iva.orden asc]]>
 			</staticText>
 			<image>
 				<reportElement x="1" y="0" width="223" height="74"/>
-				<imageExpression><![CDATA["C:\\Users\\Digno\\Documents\\NetBeansProjects\\SisAlquiler\\src\\REPORTE\\ALQUILER\\logo.png"]]></imageExpression>
+				<imageExpression><![CDATA["src\\REPORTE\\ALQUILER\\logo.png"]]></imageExpression>
 			</image>
 		</band>
 	</title>

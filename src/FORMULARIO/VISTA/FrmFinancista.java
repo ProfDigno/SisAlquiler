@@ -66,7 +66,7 @@ public class FrmFinancista extends javax.swing.JInternalFrame {
             txtdireccion.setText("local");
             jCescredito.setSelected(false);
             txtsaldo_credito.setText("0");
-            txtfec_inicio_credito.setText(evefec.getString_formato_fecha());
+            txtfec_inicio_credito.setText(evefec.getString_formato_fecha_barra());
             txtdia_limite_credito.setText("0");
             boton_guardar();
             this.dispose();
@@ -209,7 +209,7 @@ public class FrmFinancista extends javax.swing.JInternalFrame {
         txtdireccion.setText(null);
         jCescredito.setSelected(false);
         txtsaldo_credito.setText("0");
-        txtfec_inicio_credito.setText(evefec.getString_formato_fecha());
+        txtfec_inicio_credito.setText(evefec.getString_formato_fecha_barra());
         txtdia_limite_credito.setText("0");
         btnguardar.setEnabled(true);
         hab_guardar = true;

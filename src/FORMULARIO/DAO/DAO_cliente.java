@@ -7,6 +7,7 @@ package FORMULARIO.DAO;
 
 import BASEDATO.LOCAL.ConnPostgres;
 import BASEDATO.EvenConexion;
+import Evento.Fecha.EvenFecha;
 import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
 import Evento.Mensaje.EvenMensajeJoptionpane;
@@ -30,29 +31,29 @@ public class DAO_cliente {
     EvenJtable evejt = new EvenJtable();
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
+    EvenFecha evefec = new EvenFecha();
+    String for_fec_bar=evefec.getFor_fec_barra();
     private String mensaje_insert = "CLIENTE GUARDADO CORRECTAMENTE";
     private String mensaje_update = "CLIENTE MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO public.cliente(\n"
             + "            idcliente, fecha_inicio, nombre, direccion, telefono, ruc, fecha_cumple, \n"
             + "            tipo, fk_idzona_delivery,escredito,saldo_credito,fecha_inicio_credito,dia_limite_credito)\n"
             + "    VALUES (?,?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?);";
-    private String sql_update = "UPDATE public.cliente\n"
-            + "   SET  fecha_inicio=?, nombre=?, direccion=?, telefono=?, \n"
-            + "       ruc=?, fecha_cumple=?, tipo=?, fk_idzona_delivery=?,\n"
-            + " escredito=?,saldo_credito=?,fecha_inicio_credito=?,dia_limite_credito=? "
-            + " WHERE idcliente=?;";
+    
     private String sql_select = "select idcliente,nombre,telefono,ruc from cliente order by 1 desc";
-    private String sql_cargar = "select c.idcliente, c.fecha_inicio, c.nombre, c.direccion, "
-            + "c.telefono, c.ruc, c.fecha_cumple,c.tipo, c.fk_idzona_delivery,z.nombre as zona,z.delivery,"
-            + "c.escredito,c.saldo_credito,c.fecha_inicio_credito,c.dia_limite_credito "
+    private String sql_cargar = "select c.idcliente, to_char(c.fecha_inicio,'"+for_fec_bar+"') as fecha_ini, c.nombre, c.direccion, "
+            + "c.telefono, c.ruc,to_char(c.fecha_cumple,'"+for_fec_bar+"') as fecha_cumple,c.tipo, c.fk_idzona_delivery,z.nombre as zona,z.delivery,"
+            + "c.escredito,c.saldo_credito,to_char(c.fecha_inicio_credito,'"+for_fec_bar+"') as fecha_inicio_credito,c.dia_limite_credito "
             + "from cliente c,zona_delivery z "
             + "where c.fk_idzona_delivery=z.idzona_delivery "
             + "and c.idcliente=";
-  private String sql_select2 = "SELECT idcliente as idc,fecha_inicio,nombre,ruc,telefono,\n"
+  private String sql_select2 = "SELECT idcliente as idc,"
+          + "to_char(fecha_inicio,'"+for_fec_bar+"') as fecha_ini,"
+          + "nombre,ruc,telefono,\n"
             + "direccion,"
             + "TRIM(to_char(saldo_credito,'999G999G999')) as saldo,\n"
             + "case \n"
-            + "when escredito=true then to_char(fecha_inicio_credito + dia_limite_credito,'yyyy-MM-dd') \n"
+            + "when escredito=true then to_char(fecha_inicio_credito + dia_limite_credito,'"+for_fec_bar+"') \n"
             + "when escredito=false then 'sin credito' \n"
             + "else 'error' end as fec_limite \n"
             + "FROM cliente order by 1 desc;";
@@ -98,7 +99,7 @@ public class DAO_cliente {
         String titulo = "insertar_cliente";
         PreparedStatement pst = null;
         java.sql.Date dateInicio = new java.sql.Date(new java.util.Date().getTime());
-        java.sql.Date dateCumple = java.sql.Date.valueOf(clie.getC7fecha_cumple());
+//        java.sql.Date dateCumple = java.sql.Date.valueOf(clie.getC7fecha_cumple());
         try {
             pst = conn.prepareStatement(sql_insert);
             pst.setInt(1, clie.getC1idcliente());
@@ -107,12 +108,12 @@ public class DAO_cliente {
             pst.setString(4, clie.getC4direccion());
             pst.setString(5, clie.getC5telefono());
             pst.setString(6, clie.getC6ruc());
-            pst.setDate(7, dateCumple);
+            pst.setDate(7, dateInicio);
             pst.setString(8, clie.getC8tipo());
             pst.setInt(9, clie.getC9fk_idzona_delivery());
             pst.setBoolean(10, clie.isC12escredito());
             pst.setDouble(11, clie.getC13saldo_credito());
-            pst.setDate(12, dateCumple);
+            pst.setDate(12, dateInicio);
             pst.setInt(13, clie.getC15dia_limite_credito());
             pst.execute();
             pst.close();
@@ -147,25 +148,25 @@ public class DAO_cliente {
         }
     }
     public void update_cliente(Connection conn, cliente clie) {
+         String sql_update = "UPDATE public.cliente\n"
+            + "   SET   nombre=?, direccion=?, telefono=?, \n"
+            + "       ruc=?, tipo=?, fk_idzona_delivery=?,\n"
+            + " escredito=?,saldo_credito=?,dia_limite_credito=? "
+            + " WHERE idcliente=?;";
         String titulo = "update_cliente";
         PreparedStatement pst = null;
-        java.sql.Date dateInicio = java.sql.Date.valueOf(clie.getC2fecha_inicio());
-        java.sql.Date dateCumple = java.sql.Date.valueOf(clie.getC7fecha_cumple());
         try {
             pst = conn.prepareStatement(sql_update);
-            pst.setDate(1, dateInicio);
-            pst.setString(2, clie.getC3nombre());
-            pst.setString(3, clie.getC4direccion());
-            pst.setString(4, clie.getC5telefono());
-            pst.setString(5, clie.getC6ruc());
-            pst.setDate(6, dateCumple);
-            pst.setString(7, clie.getC8tipo());
-            pst.setInt(8, clie.getC9fk_idzona_delivery());
-            pst.setBoolean(9, clie.isC12escredito());
-            pst.setDouble(10, clie.getC13saldo_credito());
-            pst.setDate(11, dateInicio);
-            pst.setInt(12, clie.getC15dia_limite_credito());
-            pst.setInt(13, clie.getC1idcliente());
+            pst.setString(1, clie.getC3nombre());
+            pst.setString(2, clie.getC4direccion());
+            pst.setString(3, clie.getC5telefono());
+            pst.setString(4, clie.getC6ruc());
+            pst.setString(5, clie.getC8tipo());
+            pst.setInt(6, clie.getC9fk_idzona_delivery());
+            pst.setBoolean(7, clie.isC12escredito());
+            pst.setDouble(8, clie.getC13saldo_credito());
+            pst.setInt(9, clie.getC15dia_limite_credito());
+            pst.setInt(10, clie.getC1idcliente());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + clie.toString(), titulo);

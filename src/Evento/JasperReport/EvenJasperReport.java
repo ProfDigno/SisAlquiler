@@ -47,4 +47,33 @@ public class EvenJasperReport {
         }
         
    } 
+    public void imprimirPDF(Connection conexion, String sql, String direccion, String rutatemp) {
+        String titulo = "imprimirPDF";
+        String carpeta="REPORTE_PDF/";
+        String formato=".pdf";
+        String ruta=carpeta+rutatemp+formato;
+        try {
+            JasperDesign jasperDesign = JRXmlLoader.load(direccion);
+            JRDesignQuery newQuery = new JRDesignQuery();
+            newQuery.setText(sql);
+            jasperDesign.setQuery(newQuery);
+            JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, conexion);
+            JasperExportManager.exportReportToPdfFile(jasperPrint,ruta);// exportacion PDF
+            abrirArchivo(ruta);
+            evemen.Imprimir_serial_sql(sql + "\n", titulo);
+        } catch (Exception e) {
+            evemen.Imprimir_serial_sql_error(e, sql, titulo);
+        }
+
+    }
+    private void abrirArchivo(String ruta) {
+        try {
+            File file = new File(ruta);
+            Desktop.getDesktop().open(file);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+    }
 }

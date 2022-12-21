@@ -22,8 +22,9 @@ import FORMULARIO.BO.BO_cliente;
 import FORMULARIO.BO.BO_venta;
 import FORMULARIO.DAO.*;
 import FORMULARIO.ENTIDAD.*;
-import static FORMULARIO.VISTA.FrmCliente.txtdelivery;
-import static FORMULARIO.VISTA.FrmCliente.txtzona;
+import FORMULARIO.VISTA.ALQUILER.FrmCliente;
+import static FORMULARIO.VISTA.ALQUILER.FrmCliente.txtdelivery;
+import static FORMULARIO.VISTA.ALQUILER.FrmCliente.txtzona;
 import IMPRESORA_POS.PosImprimir_Venta;
 import IMPRESORA_POS.PosImprimir_venta_mesa;
 import java.awt.Color;
@@ -725,7 +726,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         indice_venta = eveut.getString_crear_indice();
         color_boton_entrega(Color.white, Color.white);
         txtredondeo.setBackground(Color.green);
-        txtbuscar_fecha.setText(evefec.getString_formato_fecha());
+        txtbuscar_fecha.setText(evefec.getString_formato_fecha_barra());
         jCestado_emitido.setSelected(true);
         jCestado_terminado.setSelected(false);
         jCestado_anulado.setSelected(false);
@@ -963,7 +964,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     private boolean validar_guardar_cliente() {
-        txtcli_fecha_inicio.setText(evefec.getString_formato_fecha());
+        txtcli_fecha_inicio.setText(evefec.getString_formato_fecha_barra());
         if (evejtf.getBoo_JTextField_vacio(txtcli_nombre, "DEBE CARGAR UN NOMBRE")) {
             return false;
         }
@@ -980,8 +981,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             return false;
         }
         if (txtcli_fecha_nacimiento.getText().trim().length() == 0) {
-            txtcli_fecha_nacimiento.setText(evefec.getString_formato_fecha());
-            clie.setC7fecha_cumple(evefec.getString_formato_fecha());
+            txtcli_fecha_nacimiento.setText(evefec.getString_formato_fecha_barra());
+            clie.setC7fecha_cumple(evefec.getString_formato_fecha_barra());
         }
         return true;
     }
@@ -3090,7 +3091,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 
     private void btnnuevo_clienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnnuevo_clienteActionPerformed
         // TODO add your handling code here:
-        evejt.mostrar_JTabbedPane(jTabbedPane_VENTA, 2);
+        evetbl.abrir_TablaJinternal(new FrmCliente());
     }//GEN-LAST:event_btnnuevo_clienteActionPerformed
 
     private void tblbuscar_clienteMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblbuscar_clienteMousePressed

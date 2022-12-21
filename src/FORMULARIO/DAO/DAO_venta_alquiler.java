@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 
 public class DAO_venta_alquiler {
@@ -19,8 +20,9 @@ public class DAO_venta_alquiler {
     EvenJtable evejt = new EvenJtable();
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
-    EvenFecha evefec = new EvenFecha();
     private EvenRender everende = new EvenRender();
+    EvenFecha evefec = new EvenFecha();
+    String for_fec_bar = evefec.getFor_fec_barra();
     private String mensaje_insert = "VENTA_ALQUILER GUARDADO CORRECTAMENTE";
     private String mensaje_update = "VENTA_ALQUILER MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO venta_alquiler(idventa_alquiler,fecha_creado,"
@@ -35,10 +37,10 @@ public class DAO_venta_alquiler {
             + "monto_total,monto_alquilado_efectivo,monto_alquilado_tarjeta,monto_alquilado_transferencia,monto_delivery,"
             + "forma_pago,condicion,alquiler_retirado,alquiler_devolusion,direccion_alquiler,observacion,estado,"
             + "fk_idcliente,fk_identregador,monto_alquilado_credito,"
-            + "TRIM(to_char(fecha_retirado_real,'yyyy-MM-dd')) as fecha_retirado,"
+            + "TRIM(to_char(fecha_retirado_real,'" + for_fec_bar + "')) as fecha_retirado,"
             + "TRIM(to_char(fecha_retirado_real,'HH24')) as hora_retirado,"
             + "TRIM(to_char(fecha_retirado_real,'MI')) as min_retirado,"
-            + "TRIM(to_char(fecha_devolusion_real,'yyyy-MM-dd')) as fecha_devolusion,"
+            + "TRIM(to_char(fecha_devolusion_real,'" + for_fec_bar + "')) as fecha_devolusion,"
             + "TRIM(to_char(fecha_devolusion_real,'HH24')) as hora_devolusion,"
             + "TRIM(to_char(fecha_devolusion_real,'MI')) as min_devolusion,"
             + "monto_alquilado_reservado,monto_descuento,monto_sena,monto_letra,fk_idtipo_evento,monto_pagado "
@@ -46,7 +48,7 @@ public class DAO_venta_alquiler {
     private String sql_estado = "update venta_alquiler set estado=? where idventa_alquiler=?;";
     private String sql_alquilado = "update venta_alquiler set fecha_retirado_real=?,alquiler_retirado=?,estado=? where idventa_alquiler=?;";
     private String sql_devolusion_alq = "update venta_alquiler set fecha_devolusion_real=?,alquiler_devolusion=?,estado=? where idventa_alquiler=?;";
-    
+
     private String sql_pago = "update venta_alquiler set monto_pagado=(monto_pagado+?) where idventa_alquiler=?;";
 
     public void insertar_venta_alquiler(Connection conn, venta_alquiler vealq) {
@@ -185,6 +187,7 @@ public class DAO_venta_alquiler {
             evemen.mensaje_error(e, sql_estado + "\n" + vealq.toString(), titulo);
         }
     }
+
     public void update_venta_alquiler_monto_pago(Connection conn, venta_alquiler vealq) {
         String titulo = "update_venta_alquiler_monto_pago";
         PreparedStatement pst = null;
@@ -200,6 +203,7 @@ public class DAO_venta_alquiler {
             evemen.mensaje_error(e, sql_pago + "\n" + vealq.toString(), titulo);
         }
     }
+
     public void update_venta_alquiler_alquilado(Connection conn, venta_alquiler vealq) {
         String titulo = "update_venta_alquiler_alquilado";
         PreparedStatement pst = null;
@@ -251,11 +255,10 @@ public class DAO_venta_alquiler {
 //            evemen.mensaje_error(e, sql_finalizar_alq + "\n" + vealq.toString(), titulo);
 //        }
 //    }
-
     public void actualizar_tabla_venta_alquiler(Connection conn, JTable tbltabla, String filtro) {
         String sql_select = "select v.idventa_alquiler as idva,\n"
-                + "TRIM(to_char(v.fecha_retirado_real,'yyyy-MM-dd HH24:MI')) as retirado,\n"
-                + "TRIM(to_char(v.fecha_devolusion_real,'yyyy-MM-dd HH24:MI')) as devolusion,\n"
+                + "TRIM(to_char(v.fecha_retirado_real,'" + for_fec_bar + " HH24:MI')) as retirado,\n"
+                + "TRIM(to_char(v.fecha_devolusion_real,'" + for_fec_bar + " HH24:MI')) as devolusion,\n"
                 + "cl.nombre as cliente,v.direccion_alquiler as direccion, \n"
                 + "te.nombre as evento,"
                 + "TRIM(to_char((v.monto_total),'999G999G999')) as mon_total,\n"
@@ -273,9 +276,9 @@ public class DAO_venta_alquiler {
     }
 
     public void ancho_tabla_venta_alquiler(JTable tbltabla) {
-        int Ancho[] = {4, 9, 9, 15, 15, 11, 6, 6, 6, 6, 6, 9,1};
+        int Ancho[] = {4, 9, 9, 15, 15, 11, 6, 6, 6, 6, 6, 9, 1};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
-        evejt.ocultar_columna(tbltabla,12);
+        evejt.ocultar_columna(tbltabla, 12);
     }
 
     public double getDouble_suma_venta(Connection conn, String campo, String filtro) {
@@ -304,8 +307,8 @@ public class DAO_venta_alquiler {
 
     public void imprimir_rep_alquiler_todos(Connection conn, String filtro) {
         String sql = "select v.idventa_alquiler as idva,\n"
-                + "to_char(v.fecha_retirado_real,'yyyy-MM-dd HH24:MI') as retirado,\n"
-                + "to_char(v.fecha_devolusion_real,'yyyy-MM-dd HH24:MI') as devolucion,\n"
+                + "to_char(v.fecha_retirado_real,'" + for_fec_bar + " HH24:MI') as retirado,\n"
+                + "to_char(v.fecha_devolusion_real,'" + for_fec_bar + " HH24:MI') as devolucion,\n"
                 + "('('||c.idcliente||')'||c.nombre) as cliente,\n"
                 + "v.monto_alquilado_efectivo as efectivo,\n"
                 + "v.monto_alquilado_tarjeta as tarjeta,\n"
@@ -333,8 +336,8 @@ public class DAO_venta_alquiler {
                 + "iva.precio_alquiler as iv_unitario,\n"
                 + "(iva.cantidad_total*iva.precio_alquiler) as iv_subtotal,\n"
                 + "va.idventa_alquiler as idva,va.observacion as v_obs,\n"
-                + "to_char(va.fecha_creado,'yyyy-MM-dd HH24:MI') as v_fec_crea,\n"
-                + "to_char(va.fecha_devolusion_previsto ,'yyyy-MM-dd HH24:MI') as v_fec_evento,\n"
+                + "to_char(va.fecha_creado,'" + for_fec_bar + " HH24:MI') as v_fec_crea,\n"
+                + "to_char(va.fecha_devolusion_previsto ,'" + for_fec_bar + " HH24:MI') as v_fec_evento,\n"
                 + "va.monto_total as v_alquiler,va.monto_descuento as v_descuento,\n"
                 + "(va.monto_total-va.monto_descuento) as v_pagar,va.monto_letra as v_mletra,\n"
                 + "va.monto_sena as v_msena,\n"
@@ -357,32 +360,140 @@ public class DAO_venta_alquiler {
         rep.imprimirjasper(conn, sql, titulonota, direccion);
     }
 
+    public void imprimir_orden_entrega_detalle(Connection conn, int idventa_alquiler, String filtro) {
+        String sql = "select va.idventa_alquiler as idva,\n"
+                + "to_char(va.fecha_creado ,'" + for_fec_bar + "') as fec_creado, \n"
+                + "to_char(va.fecha_devolusion_previsto,'" + for_fec_bar + "') as fec_evento,\n"
+                + "va.monto_total as m_total,\n"
+                + "va.monto_descuento as m_descuento,"
+                + "(va.monto_total-va.monto_descuento) as m_pagar,\n"
+                + "va.monto_letra as m_letra,\n"
+                + "va.observacion as obs,\n"
+                + "te.nombre as evento,\n"
+                + "cl.nombre as cliente,cl.direccion as direccion,cl.telefono as telefono,\n"
+                + "iva.orden as ord,iva.descripcion as descripcion,iva.precio_alquiler as preciouni,\n"
+                + "iva.cantidad_total as cant,(iva.precio_alquiler*iva.cantidad_total) as subtotal\n"
+                + "from venta_alquiler va,tipo_evento te,cliente cl,item_venta_alquiler iva  \n"
+                + "where va.fk_idtipo_evento=te.idtipo_evento \n"
+                + "and va.fk_idcliente=cl.idcliente \n"
+                + "and va.idventa_alquiler=iva.fk_idventa_alquiler \n"
+                + filtro
+                +" and va.idventa_alquiler=" + idventa_alquiler
+                + " order by iva.orden asc;";
+        String titulonota = "ORDEN ENTREGA DETALLE";
+        String direccion = "src/REPORTE/ALQUILER/repOrdenEntregaDetalleTriple.jrxml";
+        String rutatemp="ordentriple_"+idventa_alquiler;
+        rep.imprimirjasper(conn, sql, titulonota, direccion);
+//        rep.imprimirPDF(conn, sql, direccion, rutatemp);
+    }
+
     public void actualizar_tabla_venta_alquiler_en_cliente(Connection conn, JTable tbltabla, int idcliente) {
         String sql_select = "select v.idventa_alquiler as idva,\n"
-                + "TRIM(to_char(v.fecha_retirado_real,'yyyy-MM-dd HH24:MI')) as retirado,\n"
-                + "TRIM(to_char(v.fecha_devolusion_real,'yyyy-MM-dd HH24:MI')) as devolusion,\n"
+                + "TRIM(to_char(v.fecha_retirado_real,'" + for_fec_bar + " HH24:MI')) as retirado,\n"
+                + "TRIM(to_char(v.fecha_devolusion_real,'" + for_fec_bar + " HH24:MI')) as devolusion,\n"
                 + "te.nombre as evento,\n"
                 + "TRIM(to_char((v.monto_total-v.monto_descuento),'999G999G999')) as mon_pagar,\n"
                 + "TRIM(to_char((v.monto_sena),'999G999G999')) as sena,\n"
                 + "TRIM(to_char((v.monto_pagado),'999G999G999')) as pagado,\n"
+                + "TRIM(to_char(v.monto_pagado-(v.monto_total-v.monto_descuento),'999G999G999')) as saldo,\n"
                 + "v.estado,\n"
                 + "case "
                 + "when v.estado!='ANULADO' and ((v.monto_total-v.monto_descuento) = v.monto_pagado) then 'SI' "
                 + "when v.estado!='ANULADO' and ((v.monto_total-v.monto_descuento) > v.monto_pagado) then 'NO' "
                 + "when v.estado='ANULADO' then 'SI' "
-                + " else 'error' end as cancelado "
+                + " else 'error' end as canc "
                 + "from venta_alquiler v,cliente cl,tipo_evento te \n"
                 + "where v.fk_idcliente=cl.idcliente\n"
                 + "and v.fk_idtipo_evento=te.idtipo_evento \n"
-                + "and cl.idcliente="+idcliente
+                + "and cl.idcliente=" + idcliente
                 + " order by 1 desc;";
         eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
         ancho_tabla_venta_alquiler_en_cliente(tbltabla);
-        everende.rendertabla_venta_alquilado_cancelado(tbltabla, 8);
+        everende.rendertabla_venta_alquilado_cancelado(tbltabla, 9);
     }
 
     public void ancho_tabla_venta_alquiler_en_cliente(JTable tbltabla) {
-        int Ancho[] = {5,12,12, 20, 10, 10, 10, 12,9};
+        int Ancho[] = {5, 12, 12, 24, 8, 8, 8, 8, 10, 5};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+    }
+
+    public void actualizar_tabla_venta_alquiler_rep_1(Connection conn, JTable tbltabla, String filtro) {
+        String sql = "select va.idventa_alquiler as idva,\n"
+                + "TRIM(to_char(va.fecha_retirado_real,'" + for_fec_bar + " HH24:MI')) as fec_alquiler,\n"
+                + "TRIM(to_char(va.fecha_devolusion_previsto,'" + for_fec_bar + " HH24:MI')) as fec_evento,\n"
+                + "cl.nombre as cliente,\n"
+                + "cl.direccion as direccion,\n"
+                + "te.nombre as evento,\n"
+                + "TRIM(to_char((va.monto_total-va.monto_descuento),'999G999G999')) as total ,\n"
+                + "TRIM(to_char(va.monto_pagado,'999G999G999')) as pagado,\n"
+                + "TRIM(to_char((va.monto_pagado-(va.monto_total-va.monto_descuento)),'999G999G999')) as saldo,\n"
+                + "va.estado,\n"
+                + "(va.monto_total-va.monto_descuento) as ototal,\n"
+                + "va.monto_pagado as opagado,\n"
+                + "(va.monto_pagado-(va.monto_total-va.monto_descuento)) as osaldo\n"
+                + "from venta_alquiler va,tipo_evento te,cliente cl  \n"
+                + "where va.fk_idtipo_evento=te.idtipo_evento \n"
+                + "and va.fk_idcliente=cl.idcliente \n" + filtro
+                + " order by va.idventa_alquiler desc;";
+        eveconn.Select_cargar_jtable(conn, sql, tbltabla);
+        ancho_tabla_venta_alquiler_rep_1(tbltabla);
+        everende.rendertabla_estado_alquilado(tbltabla, 9);
+    }
+
+    public void ancho_tabla_venta_alquiler_rep_1(JTable tbltabla) {
+        int Ancho[] = {5, 9, 9, 10, 25, 12, 8, 8, 8, 10, 1, 1, 1};
+        evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+        evejt.alinear_derecha_columna(tbltabla, 6);
+        evejt.alinear_derecha_columna(tbltabla, 7);
+        evejt.alinear_derecha_columna(tbltabla, 8);
+        evejt.ocultar_columna(tbltabla, 10);
+        evejt.ocultar_columna(tbltabla, 11);
+        evejt.ocultar_columna(tbltabla, 12);
+    }
+
+    public void seleccionar_imprimir_venta_alquiler(Connection conn, int idventa_alquiler) {
+        seleccion_venta_alquiler(conn,idventa_alquiler);
+    }
+    public void seleccionar_imprimir_venta_alquiler_tabla(Connection conn, JTable tabla) {
+        if (!evejt.getBoolean_validar_select(tabla)) {
+            int idventa_alquiler = evejt.getInt_select_id(tabla);
+            seleccion_venta_alquiler(conn, idventa_alquiler);
+        }
+    }
+    private void seleccion_venta_alquiler(Connection conn, int idventa_alquiler){
+        Object[] botones = {"ORDEN ENTREGA", "ORDEN ENTREGA CON DETALLE", "ORDEN ENTREGA CLIENTE", "CANCELAR"};
+        int eleccion_comando = JOptionPane.showOptionDialog(null, "SELECCIONA UNA PARA IMPRIMIR ",
+                "ORDEN DE ENTREGA",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE, null, botones, "TICKET DETALLE");
+        if (eleccion_comando == 0) {
+            imprimir_orden_entrega_detalle(conn, idventa_alquiler, "and iva.precio_alquiler>0");
+        }
+        if (eleccion_comando == 1) {
+            imprimir_orden_entrega_detalle(conn, idventa_alquiler, "");
+        }
+        if (eleccion_comando == 2) {
+            imprimir_orden_entrega_alquiler(conn, idventa_alquiler);
+        }
+    }
+    
+
+    public void imprimir_filtro_venta_alquiler_simple(Connection conn, String filtro) {
+        String sql = "select va.idventa_alquiler as idva,\n"
+                + "date(va.fecha_retirado_real) as fec_alquiler,\n"
+                + "date(va.fecha_devolusion_previsto) as fec_evento,\n"
+                + "cl.nombre as cliente,\n"
+                + "te.nombre as evento,\n"
+                + "(va.monto_total-va.monto_descuento) as total ,\n"
+                + "va.monto_pagado as pagado,\n"
+                + "(va.monto_pagado-(va.monto_total-va.monto_descuento)) as saldo,\n"
+                + "va.estado as estado\n"
+                + "from venta_alquiler va,tipo_evento te,cliente cl  \n"
+                + "where  va.fk_idtipo_evento=te.idtipo_evento \n"
+                + "and va.fk_idcliente=cl.idcliente \n" + filtro
+                + " order by va.idventa_alquiler desc";
+        String titulonota = "FILTRO VENTA ALQUILER SIMPLE";
+        String direccion = "src/REPORTE/ALQUILER/repFiltroVentaAlquiler.jrxml";
+        rep.imprimirjasper(conn, sql, titulonota, direccion);
     }
 }

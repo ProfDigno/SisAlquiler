@@ -63,6 +63,9 @@ public class FrmDato_Banco extends javax.swing.JInternalFrame {
         if (evejtf.getBoo_JTextField_vacio(txtnrocuenta, "DEBE CARGAR UN NRO CUENTA")) {
             return false;
         }
+        if(evecmb.getBoo_validar_select(cmbbanco, "DEBE SELECCIONAR UN BANCO")){
+            return false;
+        }
         return true;
     }
 

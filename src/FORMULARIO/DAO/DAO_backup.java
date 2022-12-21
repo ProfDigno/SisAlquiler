@@ -171,7 +171,7 @@ public class DAO_backup {
 
     public boolean getBoolean_backup_creado_hoy(Connection conn) {
         String titulo = "getBoolean_backup_creado_hoy";
-        String hoy = evefec.getString_formato_fecha();
+        String hoy = evefec.getString_formato_fecha_barra();
         String sql = "SELECT (date(fecha)<date('" + hoy + "')) as fecha FROM BACKUP where idbackup=1 ";
         boolean fecha = false;
         try {

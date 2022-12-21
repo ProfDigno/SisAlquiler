@@ -104,7 +104,7 @@ public class FrmCrearBackupJson extends javax.swing.JInternalFrame {
         this.setTitle("BACKUP");
 //        VariablesBD var = new VariablesBD();
         evetbl.centrar_formulario_internalframa(this);
-        fecha = evefec.getString_formato_fecha();
+        fecha = evefec.getString_formato_fecha_DATE();
         nombre_backup=jscon.getNombre_backup();
         nombre_backup = nombre_backup + fecha;
         nombre_backup = nombre_backup + ".backup";

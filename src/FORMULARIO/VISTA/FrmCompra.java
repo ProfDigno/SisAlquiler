@@ -24,8 +24,8 @@ import FORMULARIO.BO.BO_compra;
 import FORMULARIO.BO.BO_venta;
 import FORMULARIO.DAO.*;
 import FORMULARIO.ENTIDAD.*;
-import static FORMULARIO.VISTA.FrmCliente.txtdelivery;
-import static FORMULARIO.VISTA.FrmCliente.txtzona;
+import static FORMULARIO.VISTA.ALQUILER.FrmCliente.txtdelivery;
+import static FORMULARIO.VISTA.ALQUILER.FrmCliente.txtzona;
 import IMPRESORA_POS.PosImprimir_Compra;
 import IMPRESORA_POS.PosImprimir_Compra_insumo;
 import IMPRESORA_POS.PosImprimir_Venta;
@@ -185,7 +185,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
     private void reestableser_compra() {
         idcompra_ultimo = (eveconn.getInt_ultimoID_mas_uno(conn, compi.getTb_compra(), compi.getId_idcompra()));
         txtidcompra.setText(String.valueOf(idcompra_ultimo));
-        txtbuscar_fecha.setText(evefec.getString_formato_fecha());
+        txtbuscar_fecha.setText(evefec.getString_formato_fecha_barra());
         txtnro_nota.setText(null);
         jRcond_contado.setSelected(true);
         jList_producto.setVisible(false);

@@ -28,8 +28,8 @@ import FORMULARIO.ENTIDAD.*;
 import FORMULARIO.VISTA.FrmFactura;
 import FORMULARIO.VISTA.FrmVuelto;
 import FORMULARIO.VISTA.JDpago_combinado;
-import static FORMULARIO.VISTA.FrmCliente.txtdelivery;
-import static FORMULARIO.VISTA.FrmCliente.txtzona;
+import static FORMULARIO.VISTA.ALQUILER.FrmCliente.txtdelivery;
+import static FORMULARIO.VISTA.ALQUILER.FrmCliente.txtzona;
 import IMPRESORA_POS.PosImprimir_Venta;
 import IMPRESORA_POS.PosImprimir_venta_alquiler;
 import IMPRESORA_POS.PosImprimir_venta_mesa;
@@ -487,6 +487,34 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
     private void select_producto_combo(){
         int idproducto_combo=evejt.getInt_select_id(tblproducto_combo);
         DAOipc.actualizar_tabla_item_producto_combo(connLocal, tblitem_producto_combo, idproducto_combo);
+        DAOpc.cargar_producto_combo(connLocal, ENTpc, idproducto_combo);
+        txtnombre_editar.setText(ENTpc.getC2nombre());
+        jFtotal_pagado_editar.setValue(ENTpc.getC4precio_alquiler());
+        txtdescuento_editar.setText(evejtf.getString_format_nro_decimal(ENTpc.getC6descuento()));
+        jFtotal_combo_editar.setValue(ENTpc.getC4precio_alquiler()-ENTpc.getC6descuento());
+        jCactivar_editar.setSelected(ENTpc.getC7activo());
+    }
+    boolean validar_producto_combo_editar() {
+        if (evejtf.getBoo_JTextField_vacio(txtnombre_editar, "CARGAR UN NOMBRE")) {
+            return false;
+        }
+        if (evejtf.getBoo_JTextField_vacio(txtdescuento_editar, "CARGAR UN DESCUENTO O CERO")) {
+            return false;
+        }
+        return true;
+    }
+    private void cargar_dato_producto_combo_editar() {
+        double descuento = evejtf.getDouble_format_nro_entero(txtdescuento_editar);
+        ENTpc.setC2nombre(txtnombre_editar.getText());
+        ENTpc.setC6descuento(descuento);
+        ENTpc.setC7activo(jCactivar_editar.isSelected());
+    }
+    private void boton_editar_producto_combo() {
+        if (validar_producto_combo_editar()) {
+            cargar_dato_producto_combo_editar();
+            BOpc.update_producto_combo(ENTpc);
+            DAOpc.actualizar_tabla_producto_combo(connLocal, tblproducto_combo);
+        }
     }
     public FrmProducto_combo_alquiler() {
         initComponents();
@@ -541,6 +569,13 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
         panel_tabla_venta = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         tblproducto_combo = new javax.swing.JTable();
+        jPanel2 = new javax.swing.JPanel();
+        txtnombre_editar = new javax.swing.JTextField();
+        jFtotal_pagado_editar = new javax.swing.JFormattedTextField();
+        txtdescuento_editar = new javax.swing.JTextField();
+        jFtotal_combo_editar = new javax.swing.JFormattedTextField();
+        jCactivar_editar = new javax.swing.JCheckBox();
+        btneditar = new javax.swing.JButton();
         panel_tabla_item = new javax.swing.JPanel();
         jScrollPane8 = new javax.swing.JScrollPane();
         tblitem_producto_combo = new javax.swing.JTable();
@@ -945,20 +980,101 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
         });
         jScrollPane4.setViewportView(tblproducto_combo);
 
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("EDITAR COMBO"));
+
+        txtnombre_editar.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        txtnombre_editar.setBorder(javax.swing.BorderFactory.createTitledBorder("NOMBRE COMBO"));
+
+        jFtotal_pagado_editar.setEditable(false);
+        jFtotal_pagado_editar.setBackground(new java.awt.Color(204, 204, 255));
+        jFtotal_pagado_editar.setBorder(javax.swing.BorderFactory.createTitledBorder("TOTAL ALQUILER"));
+        jFtotal_pagado_editar.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0 Gs"))));
+        jFtotal_pagado_editar.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFtotal_pagado_editar.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+
+        txtdescuento_editar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txtdescuento_editar.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtdescuento_editar.setBorder(javax.swing.BorderFactory.createTitledBorder("DESCUENTO"));
+        txtdescuento_editar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtdescuento_editarKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtdescuento_editarKeyTyped(evt);
+            }
+        });
+
+        jFtotal_combo_editar.setEditable(false);
+        jFtotal_combo_editar.setBackground(new java.awt.Color(204, 204, 255));
+        jFtotal_combo_editar.setBorder(javax.swing.BorderFactory.createTitledBorder("TOTAL COMBO"));
+        jFtotal_combo_editar.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0 Gs"))));
+        jFtotal_combo_editar.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFtotal_combo_editar.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+
+        jCactivar_editar.setText("ACTIVAR/OCULTAR");
+
+        btneditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/ABM/modificar.png"))); // NOI18N
+        btneditar.setText("EDITAR");
+        btneditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btneditarActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(txtnombre_editar, javax.swing.GroupLayout.DEFAULT_SIZE, 667, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(btneditar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jFtotal_pagado_editar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtdescuento_editar, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jFtotal_combo_editar, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jCactivar_editar)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(txtnombre_editar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(jFtotal_pagado_editar)
+                            .addComponent(txtdescuento_editar)
+                            .addComponent(jFtotal_combo_editar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btneditar)
+                        .addGap(16, 16, 16))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jCactivar_editar)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+        );
+
         javax.swing.GroupLayout panel_tabla_ventaLayout = new javax.swing.GroupLayout(panel_tabla_venta);
         panel_tabla_venta.setLayout(panel_tabla_ventaLayout);
         panel_tabla_ventaLayout.setHorizontalGroup(
             panel_tabla_ventaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_tabla_ventaLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 679, Short.MAX_VALUE)
+                .addGroup(panel_tabla_ventaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 679, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         panel_tabla_ventaLayout.setVerticalGroup(
             panel_tabla_ventaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_tabla_ventaLayout.createSequentialGroup()
+            .addGroup(panel_tabla_ventaLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane4)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 373, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 199, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1003,7 +1119,7 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
             .addComponent(panel_tabla_venta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(panel_referencia_ventaLayout.createSequentialGroup()
                 .addComponent(panel_tabla_item, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 149, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jTabbedPane_VENTA.addTab("FILTRO COMBO", panel_referencia_venta);
@@ -1090,12 +1206,6 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             buscar_cod_barra_producto();
         }
-//        if (evt.getKeyCode() == KeyEvent.VK_F1) {
-//            boton_venta_efectivo();
-//        }
-//        if (evt.getKeyCode() == KeyEvent.VK_F2) {
-//            boton_venta_tarjeta();
-//        }
     }//GEN-LAST:event_txtcod_barraKeyPressed
 
     private void txtcantidad_totalKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtcantidad_totalKeyPressed
@@ -1150,21 +1260,39 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_txtdescuentoKeyReleased
 
+    private void txtdescuento_editarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtdescuento_editarKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtdescuento_editarKeyReleased
+
+    private void txtdescuento_editarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtdescuento_editarKeyTyped
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtdescuento_editarKeyTyped
+
+    private void btneditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneditarActionPerformed
+        // TODO add your handling code here:
+        boton_editar_producto_combo();
+    }//GEN-LAST:event_btneditarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnagregar_cantidad;
+    private javax.swing.JButton btneditar;
     private javax.swing.JButton btneliminar_item;
     private javax.swing.JButton btnguardar;
     private javax.swing.ButtonGroup gru_campo;
     private javax.swing.ButtonGroup gru_condi;
     private javax.swing.ButtonGroup gru_tipocli;
     private javax.swing.JButton jButton1;
+    private javax.swing.JCheckBox jCactivar_editar;
     public static javax.swing.JFormattedTextField jFtotal_combo;
+    public static javax.swing.JFormattedTextField jFtotal_combo_editar;
     public static javax.swing.JFormattedTextField jFtotal_pagado;
+    public static javax.swing.JFormattedTextField jFtotal_pagado_editar;
     private javax.swing.JFormattedTextField jFtotal_reposicion;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -1189,8 +1317,10 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtcod_barra;
     private javax.swing.JTextArea txtdescripcion;
     private javax.swing.JTextField txtdescuento;
+    private javax.swing.JTextField txtdescuento_editar;
     private javax.swing.JTextField txtidproducto_combo;
     private javax.swing.JTextField txtnombre;
+    private javax.swing.JTextField txtnombre_editar;
     private javax.swing.JTextField txtprecio_venta;
     private javax.swing.JTextField txtstock;
     private javax.swing.JTextField txtsubtotal;

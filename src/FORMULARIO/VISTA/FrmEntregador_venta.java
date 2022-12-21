@@ -46,8 +46,8 @@ public class FrmEntregador_venta extends javax.swing.JInternalFrame {
         this.setTitle("ENTREGADOR");
         evetbl.centrar_formulario_internalframa(this);
         pcdao.actualizar_tabla_entregador(conn, tblentregador);
-        txtfecha_desde.setText(evefec.getString_formato_fecha());
-        txtfecha_hasta.setText(evefec.getString_formato_fecha());
+        txtfecha_desde.setText(evefec.getString_formato_fecha_barra());
+        txtfecha_hasta.setText(evefec.getString_formato_fecha_barra());
         color_formulario();
     }
     void color_formulario(){
@@ -65,14 +65,14 @@ public class FrmEntregador_venta extends javax.swing.JInternalFrame {
     }
 
     void boton_hoy() {
-        txtfecha_desde.setText(evefec.getString_formato_fecha());
-        txtfecha_hasta.setText(evefec.getString_formato_fecha());
+        txtfecha_desde.setText(evefec.getString_formato_fecha_barra());
+        txtfecha_hasta.setText(evefec.getString_formato_fecha_barra());
         boton_buscar();
     }
 
     void boton_mes() {
         txtfecha_desde.setText(evefec.getString_fecha_dia1());
-        txtfecha_hasta.setText(evefec.getString_formato_fecha());
+        txtfecha_hasta.setText(evefec.getString_formato_fecha_barra());
         boton_buscar();
     }
 

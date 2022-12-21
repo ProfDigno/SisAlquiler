@@ -27,6 +27,7 @@ public class DAO_gasto {
     EvenJtable evejt = new EvenJtable();
     EvenRender everende = new EvenRender();
     EvenFecha evefec = new EvenFecha();
+    String for_fec_bar=evefec.getFor_fec_barra();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     private String mensaje_insert = "GASTO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "GASTO MODIFICADO CORECTAMENTE";
@@ -41,13 +42,16 @@ public class DAO_gasto {
     private String sql_anular = "UPDATE public.gasto\n"
             + "   SET estado=?\n"
             + " WHERE idgasto=?;";
-    private String sql_select = "select g.idgasto,to_char(g.fecha_emision,'yyyy-MM-dd HH24:MI') as fecha,\n"
+    private String sql_select = "select g.idgasto,to_char(g.fecha_emision,'"+for_fec_bar+" HH24:MI') as fecha,\n"
             + "g.descripcion,gt.nombre as tipo,\n"
-            + "TRIM(to_char(g.monto_gasto,'999G999G999')) AS monto,\n"
+            + "TRIM(to_char(g.monto_gasto,'999G999G999')) as monto,\n"
             + "g.estado\n"
             + " from gasto g,gasto_tipo gt\n"
             + "where g.fk_idgasto_tipo=gt.idgasto_tipo\n";
-    private String sql_cargar = "select g.*,to_char(g.fecha_emision,'yyyy-MM-dd HH24:MI') as fecha,gt.nombre as tipo,g.indice "
+    private String sql_cargar = "select g.descripcion,g.monto_gasto,"
+            + "to_char(g.fecha_emision,'"+for_fec_bar+" HH24:MI') as fecha,"
+            + "g.estado,"
+            + "gt.nombre as tipo,g.fk_idgasto_tipo,g.fk_idusuario "
             + " from gasto g,gasto_tipo gt\n"
             + "where g.fk_idgasto_tipo=gt.idgasto_tipo\n"
             + "and g.idgasto=";
@@ -87,7 +91,7 @@ public class DAO_gasto {
         try {
             pst = conn.prepareStatement(sql_insert);
             pst.setInt(1, gas.getIdgasto());
-            pst.setTimestamp(2, evefec.getTimestamp_fecha_cargado(gas.getFecha_emision()));
+            pst.setTimestamp(2, evefec.getTimestamp_fecha_for_date(gas.getFecha_emision()));
             pst.setString(3, gas.getDescripcion());
             pst.setDouble(4, gas.getMonto_gasto());
             pst.setString(5, gas.getEstado());

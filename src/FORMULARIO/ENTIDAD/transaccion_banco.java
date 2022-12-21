@@ -9,8 +9,8 @@ private double C4monto;
 private String C5observacion;
 private String C6concepto;
 private int C7fk_iddato_banco2;
-private int C8fk_iddato_banco_cliente2;
-private int C9fk_idrecibo_pago_cliente2;
+private int C8fk_idrecibo_pago_cliente2;
+private String C9fecha_transaccion;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -76,23 +76,27 @@ private static String nom_idtabla;
         this.C7fk_iddato_banco2 = C7fk_iddato_banco2;
     }
 
-    public int getC8fk_iddato_banco_cliente2() {
-        return C8fk_iddato_banco_cliente2;
+
+    public int getC8fk_idrecibo_pago_cliente2() {
+        return C8fk_idrecibo_pago_cliente2;
     }
 
-    public void setC8fk_iddato_banco_cliente2(int C8fk_iddato_banco_cliente2) {
-        this.C8fk_iddato_banco_cliente2 = C8fk_iddato_banco_cliente2;
+    public void setC8fk_idrecibo_pago_cliente2(int C9fk_idrecibo_pago_cliente2) {
+        this.C8fk_idrecibo_pago_cliente2 = C9fk_idrecibo_pago_cliente2;
     }
 
-    public int getC9fk_idrecibo_pago_cliente2() {
-        return C9fk_idrecibo_pago_cliente2;
+    public String getC9fecha_transaccion() {
+        return C9fecha_transaccion;
     }
 
-    public void setC9fk_idrecibo_pago_cliente2(int C9fk_idrecibo_pago_cliente2) {
-        this.C9fk_idrecibo_pago_cliente2 = C9fk_idrecibo_pago_cliente2;
+    public void setC9fecha_transaccion(String C9fecha_transaccion) {
+        this.C9fecha_transaccion = C9fecha_transaccion;
+    }
+
+    @Override
+    public String toString() {
+        return "transaccion_banco{" + "C1idtransaccion_banco=" + C1idtransaccion_banco + ", C2fecha_creado=" + C2fecha_creado + ", C3nro_transaccion=" + C3nro_transaccion + ", C4monto=" + C4monto + ", C5observacion=" + C5observacion + ", C6concepto=" + C6concepto + ", C7fk_iddato_banco2=" + C7fk_iddato_banco2 + ", C8fk_idrecibo_pago_cliente2=" + C8fk_idrecibo_pago_cliente2 + ", C9fecha_transaccion=" + C9fecha_transaccion + '}';
     }
 	
-	public String toString() {
-		return "transaccion_banco(" + ",idtransaccion_banco=" + C1idtransaccion_banco + " ,fecha_creado=" + C2fecha_creado + " ,nro_transaccion=" + C3nro_transaccion + " ,monto=" + C4monto + " ,observacion=" + C5observacion + " ,concepto=" + C6concepto + " ,fk_iddato_banco=" + C7fk_iddato_banco2 + " ,fk_iddato_banco_cliente=" + C8fk_iddato_banco_cliente2 + " ,fk_idrecibo_pago_cliente=" + C9fk_idrecibo_pago_cliente2 + " )";
-	}
+
 }

@@ -81,30 +81,30 @@ public class JDiaLogin extends javax.swing.JDialog {
     }
 
     private void habilitar_menu(boolean blo, boolean blo2) {
-        FrmMenuAlquiler.btncaja_detalle.setEnabled(blo);
+//        FrmMenuAlquiler.btncaja_detalle.setEnabled(blo);
         FrmMenuAlquiler.btncliente.setEnabled(blo2);
         FrmMenuAlquiler.btngasto.setEnabled(blo2);
         FrmMenuAlquiler.btnproducto.setEnabled(blo);
-        FrmMenuAlquiler.btnvale.setEnabled(blo2);
-        FrmMenuAlquiler.btnventa.setEnabled(blo2);
-        FrmMenuAlquiler.btncategoria.setEnabled(blo);
+//        FrmMenuAlquiler.btnvale.setEnabled(blo2);
+//        FrmMenuAlquiler.btnventa.setEnabled(blo2);
+        FrmMenuAlquiler.btncombo.setEnabled(blo);
         FrmMenuAlquiler.btnshopp.setEnabled(blo);
         FrmMenuAlquiler.btncambiar_usuario.setEnabled(blo2);
-        FrmMenuAlquiler.btncomprainsumo.setEnabled(blo2);
+//        FrmMenuAlquiler.btncomprainsumo.setEnabled(blo2);
         FrmMenuAlquiler.btncotizacion.setEnabled(blo2);
-        FrmMenuAlquiler.jMenu_caja.setEnabled(blo);
+//        FrmMenuAlquiler.jMenu_caja.setEnabled(blo);
         FrmMenuAlquiler.jMenu_cliente.setEnabled(blo);
         FrmMenuAlquiler.jMenu_config.setEnabled(blo);
         FrmMenuAlquiler.jMenu_delivery.setEnabled(blo);
         FrmMenuAlquiler.jMenu_gasto.setEnabled(blo);
         FrmMenuAlquiler.jMenu_producto.setEnabled(blo);
-        FrmMenuAlquiler.jMenu_venta.setEnabled(blo);
-        FrmMenuAlquiler.jMenu_fatura.setEnabled(blo);
-        FrmMenuAlquiler.jMenu_compra.setEnabled(blo);
-        FrmMenuAlquiler.jMenu_inventario.setEnabled(blo);
-        FrmMenuAlquiler.btninventario.setEnabled(blo);
-        FrmMenuAlquiler.btndelivery_venta.setEnabled(blo);
-        FrmMenuAlquiler.btncaja_cierre.setEnabled(blo);
+//        FrmMenuAlquiler.jMenu_venta.setEnabled(blo);
+//        FrmMenuAlquiler.jMenu_fatura.setEnabled(blo);
+//        FrmMenuAlquiler.jMenu_compra.setEnabled(blo);
+//        FrmMenuAlquiler.jMenu_inventario.setEnabled(blo);
+//        FrmMenuAlquiler.btninventario.setEnabled(blo);
+//        FrmMenuAlquiler.btndelivery_venta.setEnabled(blo);
+//        FrmMenuAlquiler.btncaja_cierre.setEnabled(blo);
 //        FrmMenuAlquiler.btncajacerrar.setEnabled(blo2);
     }
 

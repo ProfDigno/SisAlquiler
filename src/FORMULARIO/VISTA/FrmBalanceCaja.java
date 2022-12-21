@@ -54,7 +54,7 @@ public class FrmBalanceCaja extends javax.swing.JInternalFrame {
         this.setTitle("BALANCE");
         evetbl.centrar_formulario_internalframa(this);
         txtfecha_desde.setText(evefec.getString_fecha_dia1());
-        txtfecha_hasta.setText(evefec.getString_formato_fecha());
+        txtfecha_hasta.setText(evefec.getString_formato_fecha_barra());
         color_formulario();
     }
     void color_formulario(){

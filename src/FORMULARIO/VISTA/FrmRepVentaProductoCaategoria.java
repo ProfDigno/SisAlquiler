@@ -62,7 +62,7 @@ public class FrmRepVentaProductoCaategoria extends javax.swing.JInternalFrame {
 
     void reestableser() {
         txtfecha_desde.setText(evefec.getString_fecha_dia1());
-        txtfecha_hasta.setText(evefec.getString_formato_fecha());
+        txtfecha_hasta.setText(evefec.getString_formato_fecha_barra());
         txtbucarCliente_nombre.setText(null);
         fk_idproducto_categoria_local = -1;
     }

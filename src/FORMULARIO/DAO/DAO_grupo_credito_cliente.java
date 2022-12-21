@@ -18,6 +18,7 @@ public class DAO_grupo_credito_cliente {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
+    String for_fec_bar=evefec.getFor_fec_barra();
     private String mensaje_insert = "GRUPO_CREDITO_CLIENTE GUARDADO CORRECTAMENTE";
     private String mensaje_update = "GRUPO_CREDITO_CLIENTE MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO grupo_credito_cliente(idgrupo_credito_cliente,fecha_inicio,fecha_fin,estado,fk_idcliente) VALUES (?,?,?,?,?);";
@@ -25,8 +26,8 @@ public class DAO_grupo_credito_cliente {
     private String sql_select = "SELECT idgrupo_credito_cliente,fecha_inicio,fecha_fin,estado,fk_idcliente FROM grupo_credito_cliente order by 1 desc;";
     private String sql_cargar = "SELECT idgrupo_credito_cliente,fecha_inicio,fecha_fin,estado,fk_idcliente FROM grupo_credito_cliente WHERE idgrupo_credito_cliente=";
     private String sql_select_idc = "select gcc.idgrupo_credito_cliente as idgcc,\n"
-            + "to_char(gcc.fecha_inicio,'yyyy-MM-dd HH24:MI') as inicio,\n"
-            + "to_char(gcc.fecha_fin,'yyyy-MM-dd HH24:MI') as fin,\n"
+            + "to_char(gcc.fecha_inicio,'"+for_fec_bar+" HH24:MI') as inicio,\n"
+            + "to_char(gcc.fecha_fin,'"+for_fec_bar+" HH24:MI') as fin,\n"
             + "gcc.estado,cl.nombre,\n"
             + "(select TRIM(to_char(coalesce(sum(cc.monto_contado),0),'999G999G999')) \n"
             + "from credito_cliente cc \n"
