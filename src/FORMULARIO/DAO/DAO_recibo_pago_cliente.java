@@ -33,7 +33,10 @@ public class DAO_recibo_pago_cliente {
             + "FROM recibo_pago_cliente re,cliente fi \n"
             + "where re.fk_idcliente=fi.idcliente\n"
             + "order by 1 desc;";
-
+    private String sql_anular_venta = "UPDATE recibo_pago_cliente SET estado=?,"
+            + "monto_recibo_pago=?,monto_recibo_efectivo=?,"
+            + "monto_recibo_tarjeta=?,monto_recibo_transferencia=? "
+            + "WHERE fk_idventa_alquiler=?;";
     public void insertar_recibo_pago_cliente1(Connection conn, recibo_pago_cliente rbcl) {
         rbcl.setC1idrecibo_pago_cliente(eveconn.getInt_ultimoID_mas_uno(conn, rbcl.getTb_recibo_pago_cliente(), rbcl.getId_idrecibo_pago_cliente()));
         String titulo = "insertar_recibo_pago_cliente";
@@ -122,16 +125,16 @@ public class DAO_recibo_pago_cliente {
                 + "te.nombre as evento,\n"
                 + "case \n"
                 + "when rc.forma_pago='TRANSFERENCIA' \n"
-                + "then (select b.nombre  from transaccion_banco tb,dato_banco db,banco b  \n"
+                + "then (select b.nombre from transaccion_banco tb,dato_banco db,banco b  \n"//b.nombre
                 + "where tb.fk_iddato_banco=db.iddato_banco and db.fk_idbanco=b.idbanco  \n"
-                + "and tb.fk_idrecibo_pago_cliente=rc.idrecibo_pago_cliente)\n"
-                + "else '-------' end as banco,\n"
+                + "and tb.fk_idrecibo_pago_cliente=rc.idrecibo_pago_cliente limit 1)\n"
+                + "else '------' end as banco,\n"
                 + "case \n"
                 + "when rc.forma_pago='TRANSFERENCIA' \n"
-                + "then (select tb.nro_transaccion  from transaccion_banco tb,dato_banco db,banco b  \n"
+                + "then (select tb.nro_transaccion  from transaccion_banco tb,dato_banco db,banco b  \n" //tb.nro_transaccion
                 + "where tb.fk_iddato_banco=db.iddato_banco and db.fk_idbanco=b.idbanco  \n"
-                + "and tb.fk_idrecibo_pago_cliente=rc.idrecibo_pago_cliente)\n"
-                + "else '-------' end as referencia,\n"
+                + "and tb.fk_idrecibo_pago_cliente=rc.idrecibo_pago_cliente limit 1)\n"
+                + "else '------' end as referencia,\n"
                 + "TRIM(to_char(rc.monto_recibo_efectivo,'999G999G999')) as efectivo,\n"
                 + "TRIM(to_char(rc.monto_recibo_tarjeta,'999G999G999')) as tarjeta,\n"
                 + "TRIM(to_char(rc.monto_recibo_transferencia,'999G999G999')) as transfer,\n"
@@ -166,16 +169,16 @@ public class DAO_recibo_pago_cliente {
                 + "te.nombre as evento,\n"
                 + "case \n"
                 + "when rc.forma_pago='TRANSFERENCIA' \n"
-                + "then (select b.nombre  from transaccion_banco tb,dato_banco db,banco b  \n"
+                + "then (select b.nombre  from transaccion_banco tb,dato_banco db,banco b  \n" //b.nombre
                 + "where tb.fk_iddato_banco=db.iddato_banco and db.fk_idbanco=b.idbanco  \n"
-                + "and tb.fk_idrecibo_pago_cliente=rc.idrecibo_pago_cliente)\n"
-                + "else '-------' end as banco,\n"
+                + "and tb.fk_idrecibo_pago_cliente=rc.idrecibo_pago_cliente limit 1)\n"
+                + "else '------' end as banco,\n"
                 + "case \n"
                 + "when rc.forma_pago='TRANSFERENCIA' \n"
-                + "then (select tb.nro_transaccion  from transaccion_banco tb,dato_banco db,banco b  \n"
+                + "then (select tb.nro_transaccion  from transaccion_banco tb,dato_banco db,banco b  \n"//tb.nro_transaccion
                 + "where tb.fk_iddato_banco=db.iddato_banco and db.fk_idbanco=b.idbanco  \n"
-                + "and tb.fk_idrecibo_pago_cliente=rc.idrecibo_pago_cliente)\n"
-                + "else '-------' end as referencia,\n"
+                + "and tb.fk_idrecibo_pago_cliente=rc.idrecibo_pago_cliente limit 1)\n"
+                + "else '------' end as referencia,\n"
                 + "rc.monto_recibo_efectivo as efectivo,\n"
                 + "rc.monto_recibo_tarjeta as tarjeta,\n"
                 + "rc.monto_recibo_transferencia as transfer,\n"
@@ -188,5 +191,24 @@ public class DAO_recibo_pago_cliente {
         String titulonota = "FILTRO RECIBO CLIENTE";
         String direccion = "src/REPORTE/RECIBO/repFiltroReciboCliente.jrxml";
         rep.imprimirjasper(conn, sql, titulonota, direccion);
+    }
+    public void update_recibo_pago_cliente_anular_venta(Connection conn, recibo_pago_cliente rbcl) {
+        String titulo = "update_recibo_pago_cliente_anular_venta";
+        PreparedStatement pst = null;
+        try {
+            pst = conn.prepareStatement(sql_anular_venta);
+            pst.setString(1, rbcl.getC6estado());
+            pst.setDouble(2, rbcl.getC4monto_recibo_pago());
+            pst.setDouble(3, rbcl.getC10monto_recibo_efectivo());
+            pst.setDouble(4, rbcl.getC11monto_recibo_tarjeta());
+            pst.setDouble(5, rbcl.getC12monto_recibo_transferencia());
+            pst.setInt(6, rbcl.getC13fk_idventa_alquiler());
+            pst.execute();
+            pst.close();
+            evemen.Imprimir_serial_sql(sql_anular_venta + "\n" + rbcl.toString(), titulo);
+            evemen.modificado_correcto(mensaje_update, true);
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql_anular_venta + "\n" + rbcl.toString(), titulo);
+        }
     }
 }

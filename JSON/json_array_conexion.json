@@ -4,7 +4,7 @@
 			"nombre":"MI-COMPU",
 			"localhost":"localhost",
 			"port":"5432",
-			"basedato":"bdalquiler_1",
+			"basedato":"bdalquiler_7",
 			"usuario":"postgres",
 			"password":"4650586"
             "direc_dump":"C:\\Program Files\\PostgreSQL\\9.5\\bin\\pg_dump.exe",

@@ -34,8 +34,10 @@ public class DAO_credito_cliente {
             + "TRIM(to_char(cc.monto_credito,'999G999G999')) as credito,\n"
             + "TRIM(to_char(cc.monto_contado,'999G999G999')) as contado\n"
             + " from credito_cliente cc\n"
-            + " where  cc.estado!='ANULADO' and cc.fk_idgrupo_credito_cliente=";
-        private String sql_anular = "UPDATE credito_cliente SET estado=? WHERE fk_idventa_alquiler=?;";
+            + " where  "
+            //+ "cc.estado!='ANULADO' and "
+            + "cc.fk_idgrupo_credito_cliente=";
+        private String sql_anular = "UPDATE credito_cliente SET estado=?,monto_contado=?,monto_credito=? WHERE fk_idventa_alquiler=?;";
  
     public void insertar_credito_cliente1(Connection conn, credito_cliente crcl) {
         crcl.setC1idcredito_cliente(eveconn.getInt_ultimoID_mas_uno(conn, crcl.getTb_credito_cliente(), crcl.getId_idcredito_cliente()));
@@ -133,12 +135,14 @@ public class DAO_credito_cliente {
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
     public void update_credito_cliente_anular(Connection conn, credito_cliente crcl) {
-        String titulo = "update_credito_cliente";
+        String titulo = "update_credito_cliente_anular";
         PreparedStatement pst = null;
         try {
             pst = conn.prepareStatement(sql_anular);
             pst.setString(1, crcl.getC4estado());
-            pst.setInt(2, crcl.getC11fk_idventa_alquiler());
+            pst.setDouble(2, crcl.getC5monto_contado());
+            pst.setDouble(3, crcl.getC6monto_credito());
+            pst.setInt(4, crcl.getC11fk_idventa_alquiler());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_anular + "\n" + crcl.toString(), titulo);

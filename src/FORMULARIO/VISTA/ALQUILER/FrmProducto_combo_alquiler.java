@@ -408,17 +408,30 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
         }
     }
 
+    private String filtro_combo() {
+        String filtro = "";
+        String filtro_activo = "where pc.activo=" + jCver_oculto.isSelected();
+        return filtro + filtro_activo;
+    }
+    private void buscar_nombre_combo(){
+        if(txtbuscar_nombre_combo.getText().trim().length()>0){
+            String nombre = txtbuscar_nombre_combo.getText();
+            String filtro="where pc.nombre ilike '%"+nombre+"%' and pc.activo=" + jCver_oculto.isSelected();
+            DAOpc.actualizar_tabla_producto_combo(connLocal, tblproducto_combo, filtro);
+        }
+    }
     private void reestableser_venta() {
         color_formulario(clacolor.getColor_insertar_primario());
         idproducto_combo = (eveconn.getInt_ultimoID_mas_uno(connLocal, ENTpc.getTb_producto_combo(), ENTpc.getId_idproducto_combo()));
 //        vdao.actualizar_tabla_venta_alquiler(connLocal, tblventa, "");
-        DAOpc.actualizar_tabla_producto_combo(connLocal, tblproducto_combo);
+        jCver_oculto.setSelected(true);
+        DAOpc.actualizar_tabla_producto_combo(connLocal, tblproducto_combo, filtro_combo());
         txtidproducto_combo.setText(String.valueOf(idproducto_combo));
         actualizar_tabla_producto(1);
         monto_total = 0;
         txtcantidad_total.setText(null);
         txtdescuento.setText("0");
-        txtnombre.setText(null);
+        txtanombre.setText(null);
         txtdescripcion.setText(null);
         jFtotal_pagado.setValue(monto_total);
         jFtotal_reposicion.setValue(monto_total);
@@ -454,7 +467,7 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
     }
 
     boolean validar_producto_combo() {
-        if (evejtf.getBoo_JTextField_vacio(txtnombre, "CARGAR UN NOMBRE")) {
+        if (evejtf.getBoo_JTextarea_vacio(txtanombre, "CARGAR UN NOMBRE")) {
             return false;
         }
         if (evejtf.getBoo_JTextField_vacio(txtdescuento, "CARGAR UN DESCUENTO O CERO")) {
@@ -468,7 +481,7 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
 
     private void cargar_dato_producto_combo() {
         double descuento = evejtf.getDouble_format_nro_entero(txtdescuento);
-        ENTpc.setC2nombre(txtnombre.getText());
+        ENTpc.setC2nombre(txtanombre.getText());
         ENTpc.setC3descripcion(txtdescripcion.getText());
         ENTpc.setC4precio_alquiler(precio_alquiler);
         ENTpc.setC5precio_reposicion(precio_reposicion);
@@ -484,16 +497,29 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
             }
         }
     }
-    private void select_producto_combo(){
-        int idproducto_combo=evejt.getInt_select_id(tblproducto_combo);
+
+    private void select_producto_combo() {
+        int idproducto_combo = evejt.getInt_select_id(tblproducto_combo);
         DAOipc.actualizar_tabla_item_producto_combo(connLocal, tblitem_producto_combo, idproducto_combo);
         DAOpc.cargar_producto_combo(connLocal, ENTpc, idproducto_combo);
         txtnombre_editar.setText(ENTpc.getC2nombre());
         jFtotal_pagado_editar.setValue(ENTpc.getC4precio_alquiler());
         txtdescuento_editar.setText(evejtf.getString_format_nro_decimal(ENTpc.getC6descuento()));
-        jFtotal_combo_editar.setValue(ENTpc.getC4precio_alquiler()-ENTpc.getC6descuento());
-        jCactivar_editar.setSelected(ENTpc.getC7activo());
+        jFtotal_combo_editar.setValue(ENTpc.getC4precio_alquiler() - ENTpc.getC6descuento());
+        String estado=evejt.getString_select(tblproducto_combo,6);
+        if(estado.equals("true")){
+            btneditar.setEnabled(true);
+            btnrecargar.setEnabled(false);
+            btnocultar.setEnabled(true);
+        }
+        if(estado.equals("false")){
+            btneditar.setEnabled(false);
+            btnrecargar.setEnabled(true);
+            btnocultar.setEnabled(false);
+        }
+//        jCver_oculto.setSelected(ENTpc.getC7activo());
     }
+
     boolean validar_producto_combo_editar() {
         if (evejtf.getBoo_JTextField_vacio(txtnombre_editar, "CARGAR UN NOMBRE")) {
             return false;
@@ -503,19 +529,81 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
         }
         return true;
     }
+
     private void cargar_dato_producto_combo_editar() {
         double descuento = evejtf.getDouble_format_nro_entero(txtdescuento_editar);
         ENTpc.setC2nombre(txtnombre_editar.getText());
         ENTpc.setC6descuento(descuento);
-        ENTpc.setC7activo(jCactivar_editar.isSelected());
+//        ENTpc.setC7activo(jCver_oculto.isSelected());
     }
+
     private void boton_editar_producto_combo() {
-        if (validar_producto_combo_editar()) {
-            cargar_dato_producto_combo_editar();
-            BOpc.update_producto_combo(ENTpc);
-            DAOpc.actualizar_tabla_producto_combo(connLocal, tblproducto_combo);
+        if (evejt.getBoolean_validar_select_mensaje(tblproducto_combo, "DEBE SELECCIONAR UN COMBO")) {
+            if (validar_producto_combo_editar()) {
+                cargar_dato_producto_combo_editar();
+                BOpc.update_producto_combo(ENTpc);
+                DAOpc.actualizar_tabla_producto_combo(connLocal, tblproducto_combo, filtro_combo());
+            }
         }
     }
+
+    private void boton_ocultar_producto_combo() {
+        if (evejt.getBoolean_validar_select_mensaje(tblproducto_combo, "DEBE SELECCIONAR UN COMBO")) {
+            ENTpc.setC7activo(false);
+            BOpc.update_producto_combo(ENTpc);
+            DAOpc.actualizar_tabla_producto_combo(connLocal, tblproducto_combo, filtro_combo());
+        }
+    }
+
+    private void boton_recargar_item_producto_combo() {
+        if (evejt.getBoolean_validar_select_mensaje(tblproducto_combo, "DEBE SELECCIONAR UN COMBO")) {
+            int idproducto_combo = evejt.getInt_select_id(tblproducto_combo);
+            DAOpc.cargar_producto_combo(connLocal, ENTpc, idproducto_combo);
+            cargar_item_producto_combo(idproducto_combo);
+            txtdescripcion.setText(getDescripcion_item_venta());
+            txtanombre.setText(ENTpc.getC2nombre());
+            txtdescuento.setText(evejtf.getString_format_nro_decimal(ENTpc.getC6descuento()));
+            reestableser_item_venta();
+            sumar_item_venta();
+            evejt.mostrar_JTabbedPane(jTabbedPane_COMBO, 0);
+        }
+    }
+
+    private void cargar_item_producto_combo(int fk_idproducto_combo) {
+        evejt.limpiar_tabla_datos(model_itemf);
+        String titulo = "cargar_item_producto_combo";
+        String sql = "select pc.fk_idproducto as id,pc.descripcion,\n"
+                + "TRIM(to_char(pc.precio_alquiler,'999G999G999')) as punit,\n"
+                + "pc.cantidad as cant,\n"
+                + "TRIM(to_char((pc.precio_alquiler*pc.cantidad),'999G999G999')) as talquilado,\n"
+                + "pc.precio_alquiler as opunit,\n"
+                + "pc.precio_reposicion as oprepos,\n"
+                + "(pc.precio_alquiler*pc.cantidad) as otalquilado,\n"
+                + "(pc.precio_reposicion*pc.cantidad) as otreposicion,\n"
+                + "pc.fk_idproducto_combo \n"
+                + "from item_producto_combo pc\n"
+                + "where pc.fk_idproducto_combo=" + fk_idproducto_combo;
+        try {
+            ResultSet rs = eveconn.getResulsetSQL(connLocal, sql, titulo);
+            while (rs.next()) {
+                String idproducto = rs.getString("id");
+                String descripcion = rs.getString("descripcion");
+                String P_unit = rs.getString("punit");
+                String Scant = rs.getString("cant");
+                String T_alquilado = rs.getString("talquilado");
+                String OPunit = rs.getString("opunit");
+                String OPrepos = rs.getString("oprepos");
+                String SOTalquilado = rs.getString("otalquilado");
+                String OTreposicion = rs.getString("otreposicion");
+                String Sfk_idproducto_combo = rs.getString("fk_idproducto_combo");
+                String dato[] = {idproducto, descripcion, P_unit, Scant, T_alquilado, OPunit, OPrepos, SOTalquilado, OTreposicion, Sfk_idproducto_combo};
+                evejt.cargar_tabla_datos(tblitem_producto, model_itemf, dato);
+            }
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql, titulo);
+        }
+    }
+
     public FrmProducto_combo_alquiler() {
         initComponents();
         abrir_formulario();
@@ -533,7 +621,7 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
         gru_campo = new javax.swing.ButtonGroup();
         gru_tipocli = new javax.swing.ButtonGroup();
         gru_condi = new javax.swing.ButtonGroup();
-        jTabbedPane_VENTA = new javax.swing.JTabbedPane();
+        jTabbedPane_COMBO = new javax.swing.JTabbedPane();
         panel_base_1 = new javax.swing.JPanel();
         jTab_producto_ingrediente = new javax.swing.JTabbedPane();
         panel_insertar_pri_producto = new javax.swing.JPanel();
@@ -555,12 +643,13 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
         jFtotal_reposicion = new javax.swing.JFormattedTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblitem_producto = new javax.swing.JTable();
-        txtnombre = new javax.swing.JTextField();
         jScrollPane5 = new javax.swing.JScrollPane();
         txtdescripcion = new javax.swing.JTextArea();
         txtdescuento = new javax.swing.JTextField();
         btnguardar = new javax.swing.JButton();
         jFtotal_combo = new javax.swing.JFormattedTextField();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        txtanombre = new javax.swing.JTextArea();
         jLabel12 = new javax.swing.JLabel();
         txtidproducto_combo = new javax.swing.JTextField();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -574,8 +663,11 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
         jFtotal_pagado_editar = new javax.swing.JFormattedTextField();
         txtdescuento_editar = new javax.swing.JTextField();
         jFtotal_combo_editar = new javax.swing.JFormattedTextField();
-        jCactivar_editar = new javax.swing.JCheckBox();
+        jCver_oculto = new javax.swing.JCheckBox();
         btneditar = new javax.swing.JButton();
+        btnrecargar = new javax.swing.JButton();
+        btnocultar = new javax.swing.JButton();
+        txtbuscar_nombre_combo = new javax.swing.JTextField();
         panel_tabla_item = new javax.swing.JPanel();
         jScrollPane8 = new javax.swing.JScrollPane();
         tblitem_producto_combo = new javax.swing.JTable();
@@ -625,7 +717,7 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        tblproducto.setRowHeight(25);
+        tblproducto.setRowHeight(20);
         tblproducto.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 tblproductoMouseReleased(evt);
@@ -764,8 +856,8 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(72, 72, 72)
                         .addComponent(btnagregar_cantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 441, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(21, 21, 21))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 451, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         jTab_producto_ingrediente.addTab("PRODUCTOS", panel_insertar_pri_producto);
@@ -815,15 +907,13 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        tblitem_producto.setRowHeight(25);
+        tblitem_producto.setRowHeight(20);
         tblitem_producto.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 tblitem_productoMouseReleased(evt);
             }
         });
         jScrollPane2.setViewportView(tblitem_producto);
-
-        txtnombre.setBorder(javax.swing.BorderFactory.createTitledBorder("NOMBRE COMBO"));
 
         txtdescripcion.setColumns(20);
         txtdescripcion.setRows(5);
@@ -856,43 +946,48 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
         jFtotal_combo.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jFtotal_combo.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
 
+        txtanombre.setColumns(20);
+        txtanombre.setRows(5);
+        txtanombre.setBorder(javax.swing.BorderFactory.createTitledBorder("NOMBRE"));
+        jScrollPane6.setViewportView(txtanombre);
+
         javax.swing.GroupLayout panel_insertar_pri_itemLayout = new javax.swing.GroupLayout(panel_insertar_pri_item);
         panel_insertar_pri_item.setLayout(panel_insertar_pri_itemLayout);
         panel_insertar_pri_itemLayout.setHorizontalGroup(
             panel_insertar_pri_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_insertar_pri_itemLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panel_insertar_pri_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panel_insertar_pri_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 445, Short.MAX_VALUE)
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(txtnombre, javax.swing.GroupLayout.Alignment.LEADING))
-                    .addGroup(panel_insertar_pri_itemLayout.createSequentialGroup()
-                        .addGroup(panel_insertar_pri_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jFtotal_reposicion, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)
-                            .addComponent(jFtotal_pagado))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panel_insertar_pri_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(panel_insertar_pri_itemLayout.createSequentialGroup()
-                                .addComponent(btneliminar_item, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton1))
-                            .addComponent(txtdescuento))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panel_insertar_pri_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnguardar, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
-                            .addComponent(jFtotal_combo))))
+                .addGroup(panel_insertar_pri_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jScrollPane6)
+                    .addGroup(panel_insertar_pri_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(panel_insertar_pri_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 445, Short.MAX_VALUE)
+                            .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.LEADING))
+                        .addGroup(panel_insertar_pri_itemLayout.createSequentialGroup()
+                            .addGroup(panel_insertar_pri_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jFtotal_reposicion, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)
+                                .addComponent(jFtotal_pagado))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(panel_insertar_pri_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(panel_insertar_pri_itemLayout.createSequentialGroup()
+                                    .addComponent(btneliminar_item, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jButton1))
+                                .addComponent(txtdescuento))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(panel_insertar_pri_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(btnguardar, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
+                                .addComponent(jFtotal_combo)))))
                 .addContainerGap(25, Short.MAX_VALUE))
         );
         panel_insertar_pri_itemLayout.setVerticalGroup(
             panel_insertar_pri_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_insertar_pri_itemLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(txtnombre)
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_insertar_pri_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(jFtotal_pagado)
@@ -956,7 +1051,7 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
                 .addContainerGap())
         );
 
-        jTabbedPane_VENTA.addTab("CREAR COMBO", panel_base_1);
+        jTabbedPane_COMBO.addTab("CREAR COMBO", panel_base_1);
 
         panel_tabla_venta.setBackground(new java.awt.Color(153, 153, 255));
         panel_tabla_venta.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -972,7 +1067,7 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        tblproducto_combo.setRowHeight(25);
+        tblproducto_combo.setRowHeight(20);
         tblproducto_combo.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 tblproducto_comboMouseReleased(evt);
@@ -1011,13 +1106,34 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
         jFtotal_combo_editar.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jFtotal_combo_editar.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
 
-        jCactivar_editar.setText("ACTIVAR/OCULTAR");
+        jCver_oculto.setText("VER OCULTO");
+        jCver_oculto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCver_ocultoActionPerformed(evt);
+            }
+        });
 
         btneditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/ABM/modificar.png"))); // NOI18N
         btneditar.setText("EDITAR");
         btneditar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btneditarActionPerformed(evt);
+            }
+        });
+
+        btnrecargar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/venta/ven_terminar.png"))); // NOI18N
+        btnrecargar.setText("RECARGAR");
+        btnrecargar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnrecargarActionPerformed(evt);
+            }
+        });
+
+        btnocultar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/venta/anular.png"))); // NOI18N
+        btnocultar.setText("OCULTAR");
+        btnocultar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnocultarActionPerformed(evt);
             }
         });
 
@@ -1031,12 +1147,16 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
                     .addComponent(btneditar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jFtotal_pagado_editar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtdescuento_editar, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtdescuento_editar, javax.swing.GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE)
+                    .addComponent(btnrecargar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jFtotal_combo_editar, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jFtotal_combo_editar, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)
+                    .addComponent(btnocultar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jCactivar_editar)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jCver_oculto)
+                .addContainerGap(76, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1050,12 +1170,22 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
                             .addComponent(txtdescuento_editar)
                             .addComponent(jFtotal_combo_editar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btneditar)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btneditar)
+                            .addComponent(btnrecargar, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnocultar, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(16, 16, 16))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jCactivar_editar)
+                        .addComponent(jCver_oculto)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
+
+        txtbuscar_nombre_combo.setBorder(javax.swing.BorderFactory.createTitledBorder("BUSCAR COMBO:"));
+        txtbuscar_nombre_combo.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtbuscar_nombre_comboKeyReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout panel_tabla_ventaLayout = new javax.swing.GroupLayout(panel_tabla_venta);
         panel_tabla_venta.setLayout(panel_tabla_ventaLayout);
@@ -1065,14 +1195,19 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(panel_tabla_ventaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 679, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(panel_tabla_ventaLayout.createSequentialGroup()
+                        .addComponent(txtbuscar_nombre_combo, javax.swing.GroupLayout.PREFERRED_SIZE, 321, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panel_tabla_ventaLayout.setVerticalGroup(
             panel_tabla_ventaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_tabla_ventaLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 373, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtbuscar_nombre_combo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 328, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 199, Short.MAX_VALUE)
                 .addContainerGap())
@@ -1122,17 +1257,17 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        jTabbedPane_VENTA.addTab("FILTRO COMBO", panel_referencia_venta);
+        jTabbedPane_COMBO.addTab("FILTRO COMBO", panel_referencia_venta);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane_VENTA, javax.swing.GroupLayout.PREFERRED_SIZE, 1263, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jTabbedPane_COMBO, javax.swing.GroupLayout.PREFERRED_SIZE, 1263, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane_VENTA, javax.swing.GroupLayout.PREFERRED_SIZE, 632, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jTabbedPane_COMBO, javax.swing.GroupLayout.PREFERRED_SIZE, 632, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -1273,17 +1408,39 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
         boton_editar_producto_combo();
     }//GEN-LAST:event_btneditarActionPerformed
 
+    private void btnrecargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnrecargarActionPerformed
+        // TODO add your handling code here:
+        boton_recargar_item_producto_combo();
+    }//GEN-LAST:event_btnrecargarActionPerformed
+
+    private void btnocultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnocultarActionPerformed
+        // TODO add your handling code here:
+        boton_ocultar_producto_combo();
+    }//GEN-LAST:event_btnocultarActionPerformed
+
+    private void jCver_ocultoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCver_ocultoActionPerformed
+        // TODO add your handling code here:
+        DAOpc.actualizar_tabla_producto_combo(connLocal, tblproducto_combo, filtro_combo());
+    }//GEN-LAST:event_jCver_ocultoActionPerformed
+
+    private void txtbuscar_nombre_comboKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscar_nombre_comboKeyReleased
+        // TODO add your handling code here:
+        buscar_nombre_combo();
+    }//GEN-LAST:event_txtbuscar_nombre_comboKeyReleased
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnagregar_cantidad;
     private javax.swing.JButton btneditar;
     private javax.swing.JButton btneliminar_item;
     private javax.swing.JButton btnguardar;
+    private javax.swing.JButton btnocultar;
+    private javax.swing.JButton btnrecargar;
     private javax.swing.ButtonGroup gru_campo;
     private javax.swing.ButtonGroup gru_condi;
     private javax.swing.ButtonGroup gru_tipocli;
     private javax.swing.JButton jButton1;
-    private javax.swing.JCheckBox jCactivar_editar;
+    private javax.swing.JCheckBox jCver_oculto;
     public static javax.swing.JFormattedTextField jFtotal_combo;
     public static javax.swing.JFormattedTextField jFtotal_combo_editar;
     public static javax.swing.JFormattedTextField jFtotal_pagado;
@@ -1298,9 +1455,10 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JTabbedPane jTab_producto_ingrediente;
-    private javax.swing.JTabbedPane jTabbedPane_VENTA;
+    private javax.swing.JTabbedPane jTabbedPane_COMBO;
     private javax.swing.JPanel panel_base_1;
     private javax.swing.JPanel panel_insertar_pri_item;
     private javax.swing.JPanel panel_insertar_pri_producto;
@@ -1312,6 +1470,8 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
     private javax.swing.JTable tblitem_producto_combo;
     private javax.swing.JTable tblproducto;
     private javax.swing.JTable tblproducto_combo;
+    private javax.swing.JTextArea txtanombre;
+    private javax.swing.JTextField txtbuscar_nombre_combo;
     private javax.swing.JTextField txtbuscar_producto;
     private javax.swing.JTextField txtcantidad_total;
     private javax.swing.JTextField txtcod_barra;
@@ -1319,7 +1479,6 @@ public class FrmProducto_combo_alquiler extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtdescuento;
     private javax.swing.JTextField txtdescuento_editar;
     private javax.swing.JTextField txtidproducto_combo;
-    private javax.swing.JTextField txtnombre;
     private javax.swing.JTextField txtnombre_editar;
     private javax.swing.JTextField txtprecio_venta;
     private javax.swing.JTextField txtstock;

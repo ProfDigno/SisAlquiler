@@ -1,0 +1,196 @@
+"iditem_producto_combo"|"descripcion"|"cantidad"|"precio_alquiler"|"precio_reposicion"|"fk_idproducto"|"fk_idproducto_combo"
+1|"Sofá Blanco 2L"|2|40000|0|2|1
+2|"Puf Blanco x lugar"|6|10000|0|3|1
+3|"Mesa simple Blanca"|1|20000|0|4|1
+4|"Puff BLANCO Doble "|2|20000|0|4|2
+5|"Puff BLANCO individual"|6|10000|0|3|2
+6|"Mesa/puff LED inalámbica"|1|50000|0|12|2
+7|"Puff NEGRO Doble "|2|20000|0|8|3
+8|"Puff NEGRO individual"|6|10000|0|7|3
+9|"Mesa/puff LED inalámbica"|1|50000|0|12|3
+10|"Puff BLANCO Doble "|2|20000|0|4|4
+11|"Puff BLANCO individual"|6|10000|0|3|4
+12|"Mesa BLANCA simple"|1|20000|0|5|4
+13|"Champañera LED inalámbica"|1|50000|0|10|4
+14|"Puff NEGRO Doble "|2|20000|0|8|5
+15|"Puff NEGRO individual"|6|10000|0|7|5
+16|"Mesa NEGRA simple"|1|20000|0|9|5
+17|"Champañera LED inalámbica"|1|50000|0|10|5
+18|"Sofá BLANCO con respaldero 2L"|2|40000|0|2|6
+19|"Puff BLANCO Doble "|1|20000|0|4|6
+20|"Puff BLANCO individual"|4|10000|0|3|6
+21|"Mesa BLANCA simple"|1|20000|0|5|6
+22|"Champañera LED inalámbica"|1|50000|0|10|6
+23|"Sofá NEGRO con respaldero 2L"|2|40000|0|6|7
+24|"Puff NEGRO Doble "|1|20000|0|8|7
+25|"Puff NEGRO individual"|4|10000|0|7|7
+26|"Mesa NEGRA simple"|1|20000|0|9|7
+27|"Champañera LED inalámbica"|1|50000|0|10|7
+28|"Sofá NEGRO con respaldero 2L"|2|40000|0|6|8
+29|"Puff NEGRO Doble "|1|20000|0|8|8
+30|"Puff NEGRO individual"|4|10000|0|7|8
+31|"Mesa NEGRA simple"|1|20000|0|9|8
+32|"Sofá BLANCO con respaldero 2L"|2|40000|0|2|9
+33|"Puff BLANCO Doble "|1|20000|0|4|9
+34|"Puff BLANCO individual"|4|10000|0|3|9
+35|"Mesa/puff LED inalámbica"|1|50000|0|12|9
+36|"Champañera LED inalámbica"|1|50000|0|10|9
+37|"Sofá NEGRO con respaldero 2L"|2|40000|0|6|10
+38|"Puff NEGRO Doble "|1|20000|0|8|10
+39|"Puff NEGRO individual"|4|10000|0|7|10
+40|"Mesa/puff LED inalámbica"|1|50000|0|12|10
+41|"Champañera LED inalámbica"|1|50000|0|10|10
+42|"Sofá BLANCO con respaldero 2L"|4|40000|0|2|11
+43|"Puff BLANCO individual"|2|10000|0|3|11
+44|"Mesa BLANCA simple"|1|20000|0|5|11
+45|"Champañera LED inalámbica"|1|50000|0|10|11
+46|"Sofá NEGRO con respaldero 2L"|4|40000|0|6|12
+47|"Puff NEGRO individual"|2|10000|0|7|12
+48|"Mesa NEGRA simple"|1|20000|0|9|12
+49|"Champañera LED inalámbica"|1|50000|0|10|12
+50|"Sofá BLANCO con respaldero 2L"|4|40000|0|2|13
+51|"Puff BLANCO individual"|2|10000|0|3|13
+52|"Mesa BLANCA simple"|1|20000|0|5|13
+53|"Champañera LED inalámbica"|2|50000|0|10|13
+54|"Sofá NEGRO con respaldero 2L"|4|40000|0|6|14
+55|"Puff NEGRO individual"|2|10000|0|7|14
+56|"Mesa NEGRA simple"|1|20000|0|9|14
+57|"Champañera LED inalámbica"|2|50000|0|10|14
+58|"Mesa Alta BISTRÓ p/BLANCO"|1|30000|0|18|15
+59|"Silla Alta BISTRÓ BLANCA"|4|30000|0|20|15
+60|"Mesa Alta BISTRÓ p/NEGRO"|1|30000|0|19|16
+61|"Silla Alta BISTRÓ NEGRA"|4|30000|0|21|16
+62|"Sofá BLANCO con respaldero 2L"|2|40000|0|2|17
+63|"Puff BLANCO individual"|6|10000|0|3|17
+64|"Mesa BLANCA simple"|1|20000|0|5|17
+65|"Mesa/puff LED inalámbica"|1|50000|0|12|17
+66|"Sofá BLANCO con respaldero 2L"|2|40000|0|2|18
+67|"Puff BLANCO Doble "|1|20000|0|4|18
+68|"Puff BLANCO individual"|4|10000|0|3|18
+69|"Mesa BLANCA simple"|1|20000|0|5|18
+70|"Mesa/puff LED inalámbica"|1|50000|0|12|18
+71|"Sofá BLANCO con respaldero 2L"|2|40000|0|2|19
+72|"Puff BLANCO Doble "|1|20000|0|4|19
+73|"Puff BLANCO individual"|4|10000|0|3|19
+74|"Mesa BLANCA simple"|1|20000|0|5|19
+75|"Champañera LED inalámbica"|1|50000|0|10|19
+76|"Cama Elástica M (4,5mts)"|1|350000|0|64|20
+77|"Globo Loco Castillo P"|1|300000|0|65|20
+78|"Mesa Alta Bistró Negra - Combo"|1|0|0|77|21
+79|"Silla Alta BISTRÓ NEGRA"|4|30000|0|21|21
+80|"Mesa redonda p/8P"|1|10000|0|79|22
+81|"Mantel brocato (color s/pedido)"|1|25000|100000|72|22
+82|"Plato normal"|8|2000|15000|29|22
+83|"Cuchillo p/Asado"|8|1000|5000|33|22
+84|"Tenedor p/Asado"|8|1000|5000|34|22
+85|"Copas Barrocas s/pedido"|8|5000|0|81|22
+86|"Sillas Tiffany - Blancas"|8|12000|0|25|22
+87|"Servilletas de tela (color s/pedido)"|8|2500|10000|75|22
+88|"Champañeras Inox Grandes"|1|7500|95000|50|22
+89|"Mesa redonda p/8P"|1|10000|0|79|23
+90|"Mantel brocato (color s/pedido)"|1|25000|100000|72|23
+91|"Sillas Plásticas - Blancas"|8|5000|0|26|23
+92|"Plato normal"|8|2000|15000|29|23
+93|"Vasos de Vidrio "|8|1500|5000|39|23
+94|"Cuchillo p/Asado"|8|1000|5000|33|23
+95|"Tenedor p/Asado"|8|1000|5000|34|23
+96|"Champañeras Inox Grandes"|1|7500|95000|50|23
+97|"Mesa Alta Bistró Blanca - Combo"|1|0|0|78|24
+98|"Silla Alta BISTRÓ BLANCA"|4|30000|0|20|24
+99|"Mesa larga/tablón p/10P"|1|20000|0|80|25
+100|"Mantel brocato (color s/pedido)"|1|25000|100000|72|25
+101|"Sillas Tiffany - Blancas"|10|12000|0|25|25
+102|"Posa plato "|10|5000|40000|82|25
+103|"Plato normal"|10|2000|15000|29|25
+104|"Copas Barrocas s/pedido"|10|5000|0|81|25
+105|"Cuchillo p/Asado"|10|1000|5000|33|25
+106|"Tenedor p/Asado"|10|1000|5000|34|25
+107|"Copas Auxiliares - Alto"|5|2500|10000|40|25
+108|"Servilletas de tela (color s/pedido)"|10|2500|10000|75|25
+109|"Champañeras Inox Grandes"|1|7500|95000|50|25
+110|"Mesa redonda p/8P"|1|10000|0|79|26
+111|"Mantel brocato (color s/pedido)"|1|25000|100000|72|26
+112|"Sillas Plásticas - Blancas"|8|5000|0|26|26
+113|"Mesa larga/tablón p/10P"|1|20000|0|80|27
+114|"Mantel brocato (color s/pedido)"|1|25000|100000|72|27
+115|"Plato normal"|10|2000|15000|29|27
+116|"Sillas Plásticas - Blancas"|10|5000|0|26|27
+117|"Vasos de Vidrio "|10|1500|5000|39|27
+118|"Tenedor p/Asado"|10|1000|5000|34|27
+119|"Tenedor p/Asado"|10|1000|5000|34|27
+120|"Champañeras Inox Grandes"|1|7500|95000|50|27
+121|"Mesa redonda p/8P"|1|10000|0|79|28
+122|"Mantel brocato (color s/pedido)"|1|25000|100000|72|28
+123|"Sillas Tiffany - Blancas"|8|12000|0|25|28
+124|"Posa plato "|8|5000|40000|82|28
+125|"Plato normal"|8|2000|15000|29|28
+126|"Servilletas de tela (color s/pedido)"|8|2500|10000|75|28
+127|"Copas Barrocas s/pedido"|8|5000|0|81|28
+128|"Copas Auxiliares - Alto"|4|2500|10000|40|28
+129|"Cuchillo p/Asado"|8|1000|5000|33|28
+130|"Tenedor p/Asado"|8|1000|5000|34|28
+131|"Champañeras Inox Grandes"|1|7500|95000|50|28
+132|"Mesa larga/tablón p/10P"|1|20000|0|80|29
+133|"Mantel brocato (color s/pedido)"|1|25000|100000|72|29
+134|"Sillas Tiffany - Blancas"|10|12000|0|25|29
+135|"Posa plato "|10|5000|40000|82|29
+136|"Plato normal"|10|2000|15000|29|29
+137|"Copas Barrocas s/pedido"|10|5000|0|81|29
+138|"Copas Auxiliares - Alto"|5|2500|10000|40|29
+139|"Servilletas de tela (color s/pedido)"|10|2500|10000|75|29
+140|"Cuchillo p/Bufett"|10|1000|10000|35|29
+141|"Tenedor p/Bufett"|10|1000|10000|36|29
+142|"Champañeras Inox Grandes"|1|7500|95000|50|29
+143|"Sofá NEGRO con respaldero 2L"|4|40000|0|6|30
+144|"Puff BLANCO individual"|2|10000|0|3|30
+145|"Mesa NEGRA simple"|1|20000|0|9|30
+146|"Champañera LED inalámbica"|1|50000|0|10|30
+147|"Mesa/puff LED inalámbica"|1|50000|0|12|30
+148|"Sofá BLANCO con respaldero 2L"|4|40000|0|2|31
+149|"Puff BLANCO individual"|2|10000|0|3|31
+150|"Mesa BLANCA simple"|1|20000|0|5|31
+151|"Champañera LED inalámbica"|1|50000|0|10|31
+152|"Mesa/puff LED inalámbica"|1|50000|0|12|31
+153|"Sofá NEGRO con respaldero 2L"|4|40000|0|6|32
+154|"Puff NEGRO individual"|2|10000|0|7|32
+155|"Mesa NEGRA simple"|1|20000|0|9|32
+156|"Champañera LED inalámbica"|1|50000|0|10|32
+157|"Mesa/puff LED inalámbica"|1|50000|0|12|32
+158|"Mesa redonda p/8P"|1|10000|0|79|33
+159|"Mantel brocato (color s/ped)"|1|25000|100000|72|33
+160|"Sillas Tiffany - Blancas"|8|12000|0|25|33
+161|"Bandeja M lisa p/Entrada o Ens."|1|5000|35000|56|34
+162|"Bandeja M c/Divisorias (p/picadas)"|1|5000|35000|55|34
+163|"Bandeja Peq. para entradas"|1|2500|25000|57|34
+164|"Porta Salsas Inox"|1|2500|25000|58|34
+165|"Sofá NEGRO con respaldero 2L"|2|40000|0|6|35
+166|"Puff NEGRO Doble "|1|20000|0|8|35
+167|"Puff NEGRO individual"|4|10000|0|7|35
+168|"Mesa NEGRA simple"|1|20000|0|9|35
+169|"Mesa/puff LED inalámbica"|1|50000|0|12|35
+170|"Mesa larga/tablón p/10P"|1|20000|0|80|36
+171|"Mantel brocato (color s/ped)"|1|25000|100000|72|36
+172|"Cuchillo p/Asado"|10|1000|5000|33|36
+173|"Tenedor p/Asado"|10|1000|5000|34|36
+174|"Plato normal"|10|2000|15000|29|36
+175|"Servilletas de tela (color s/ped)"|10|2500|10000|75|36
+176|"Sillas Tiffany - Blancas"|10|12000|0|25|36
+177|"Copas Barrocas s/pedido"|10|5000|0|81|36
+178|"Champañeras Inox Grandes"|1|7500|95000|50|36
+179|"Mesa redonda p/8P"|1|10000|0|79|37
+180|"Mantel brocato (color s/ped)"|1|25000|100000|72|37
+181|"Sillas Tiffany - Blancas"|8|12000|0|25|37
+182|"Cuchillo p/Bufett"|8|1000|10000|35|37
+183|"Tenedor p/Bufett"|8|1000|10000|36|37
+184|"Posa plato "|8|5000|40000|82|37
+185|"Plato normal"|8|2000|15000|29|37
+186|"Servilletas de tela (color s/ped)"|8|2500|10000|75|37
+187|"Copas Barrocas s/pedido"|8|5000|0|81|37
+188|"Copas Auxiliares - Bajo"|4|2500|10000|41|37
+189|"Champañeras Inox Grandes"|1|7500|95000|50|37
+190|"Mesa larga/tablón p/10P"|1|20000|0|80|38
+191|"Mantel brocato (color s/ped)"|1|25000|100000|72|38
+192|"Sillas Plásticas - Blancas"|10|5000|0|26|38
+193|"Mesa larga/tablón p/10P"|1|20000|0|80|39
+194|"Mantel brocato (color s/ped)"|1|25000|100000|72|39
+195|"Sillas Tiffany - Blancas"|10|12000|0|25|39

@@ -33,7 +33,7 @@ public class BO_vale {
                 conn.setAutoCommit(false);
             }
             vdao.insertar_vale(conn, vale);
-            cdao.insertar_caja_detalle1(conn, caja);
+//            cdao.insertar_caja_detalle1(conn, caja);
             conn.commit();
             return true;
         } catch (SQLException e) {
@@ -56,7 +56,7 @@ public class BO_vale {
                     conn.setAutoCommit(false);
                 }
                 vdao.update_vale(conn, vale);
-                cdao.update_caja_detalle(conn, caja);
+//                cdao.update_caja_detalle(conn, caja);
                 conn.commit();
             } catch (SQLException e) {
                 evmen.mensaje_error(e, vale.toString(), titulo);

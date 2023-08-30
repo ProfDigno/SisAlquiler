@@ -23,11 +23,13 @@ public class EvenFecha {
     private static String for_fec_DATE = "yyyy-MM-dd";
     //    private static String formato_fechaHora = "yyyy-MM-dd HH:mm";
         private static String formato_fechaHoraZona = "yyyy-MM-dd HH:mm:ss.00";
+        private static String formato_fechaHora = "yyyy-MM-dd HH:mm:ss";
     private static String for_fec_barra = "dd/MM/yyyy";
     private static String fecha_dia1 = "01/MM/yyyy";
     private static String for_fecHs_barra = "dd/MM/yyyy HH:mm:ss";
     private static String for_fecZona_barra = "dd/MM/yyyy HH:mm:ss.00";
     private static String formato_hora = "HH:mm:ss";
+    private static String formato_fec_hs_seg="yyyy-MM-dd_HH-mm-ss";
 
     public static String getFor_fec_barra() {
         return for_fec_barra;
@@ -38,13 +40,14 @@ public class EvenFecha {
     }
 
     public String getString_validar_fecha(String fechaStr) {
+        String titulo="TITULO: getString_validar_fecha\n";
         String Sfecha = "";
         try {
             SimpleDateFormat formato = new SimpleDateFormat(for_fec_barra);
             java.util.Date fechaDate = formato.parse(fechaStr);
             Sfecha = String.valueOf(formato.format(fechaDate));
         } catch (Exception e) {
-            String mensaje = "EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: dd/MM/yyyy\n" + e;
+            String mensaje = titulo+"EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: for_fec_barra: "+for_fec_barra+"\n" + e;
             JOptionPane.showMessageDialog(null, mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
             Sfecha = getString_formato_fecha_barra();
         }
@@ -52,6 +55,7 @@ public class EvenFecha {
     }
 
     public String getString_cambiar_formato(String oldDateString) {
+        String titulo="TITULO: getString_cambiar_formato\n";
         String newDateString = "";
         try {
             final String OLD_FORMAT = "dd/MM/yyyy";
@@ -61,13 +65,14 @@ public class EvenFecha {
             sdf.applyPattern(NEW_FORMAT);
             newDateString = sdf.format(d);
         } catch (Exception e) {
-            String mensaje = "EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: " + for_fec_DATE + "\n" + e;
+            String mensaje = titulo+"EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: " + for_fec_DATE + "\n" + e;
             JOptionPane.showMessageDialog(null, mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
             newDateString = getString_formato_fecha_barra();
         }
         return newDateString;
     }
     public String getString_cambiar_formato_add_hora(String oldDateString) {
+        String titulo="TITULO: getString_cambiar_formato_add_hora\n";
         String newDateString = "";
         String hora=" 12:00:00.00";
         try {
@@ -78,7 +83,7 @@ public class EvenFecha {
             sdf.applyPattern(NEW_FORMAT);
             newDateString = sdf.format(d);
         } catch (Exception e) {
-            String mensaje = "EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: " + for_fec_DATE + "\n" + e;
+            String mensaje = titulo+"EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: for_fec_DATE:" + for_fec_DATE + "\n" + e;
             JOptionPane.showMessageDialog(null, mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
             newDateString = getString_formato_fecha_barra();
         }
@@ -86,13 +91,14 @@ public class EvenFecha {
     }
 //" 12:00:00.00"
     public String getString_validar_fecha_hora(String fechaStr) {
+        String titulo="TITULO: getString_validar_fecha_hora\n";
         String Sfecha = "";
         try {
             SimpleDateFormat formato = new SimpleDateFormat(for_fecHs_barra);
             java.util.Date fechaDate = formato.parse(fechaStr);
             Sfecha = String.valueOf(formato.format(fechaDate));
         } catch (Exception e) {
-            String mensaje = "EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: dd/MM/yyyy HORA:MINUTO\n" + e;
+            String mensaje = titulo+"EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: for_fecHs_barra:"+for_fecHs_barra +"\n"+ e;
             JOptionPane.showMessageDialog(null, mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
             Sfecha = getString_formato_fecha_hora();
         }
@@ -100,6 +106,7 @@ public class EvenFecha {
     }
 
     public java.sql.Date getDate_fecha_hora_cargado(String fechaStr) {
+        String titulo="TITULO: getDate_fecha_hora_cargado\n";
         java.sql.Date dateSql = null;
         java.util.Date dateUtil = new java.util.Date();
         try {
@@ -107,7 +114,7 @@ public class EvenFecha {
             dateUtil = formato.parse(fechaStr);
             dateSql = new java.sql.Date(dateUtil.getTime());
         } catch (Exception e) {
-            String mensaje = "EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: dd/MM/yyyy HORA:MINUTO\n" + e;
+            String mensaje = titulo+"EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: for_fecHs_barra: "+for_fecHs_barra+"\n" + e;
             JOptionPane.showMessageDialog(null, mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
 
         }
@@ -115,6 +122,7 @@ public class EvenFecha {
     }
 
     public java.sql.Date getDate_fecha_cargado(String fechaStr) {
+        String titulo="TITULO: getDate_fecha_cargado\n";
         java.sql.Date dateSql = null;
         java.util.Date dateUtil = new java.util.Date();
         try {
@@ -122,15 +130,29 @@ public class EvenFecha {
             dateUtil = formato.parse(fechaStr);
             dateSql = new java.sql.Date(dateUtil.getTime());
         } catch (Exception e) {
-            String mensaje = "EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: dd/MM/yyyy\n" + e;
+            String mensaje = titulo+"EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: for_fec_barra: "+for_fec_barra+"\n" + e;
             JOptionPane.showMessageDialog(null, mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
 
         }
         return dateSql;
     }
+    public java.sql.Date getDate_fecha_cargado_DATE(String fechaStr) {
+        String titulo="TITULO: getDate_fecha_cargado_DATE\n";
+        java.sql.Date dateSql = null;
+        java.util.Date dateUtil = new java.util.Date();
+        try {
+            SimpleDateFormat formato = new SimpleDateFormat(for_fec_DATE);
+            dateUtil = formato.parse(fechaStr);
+            dateSql = new java.sql.Date(dateUtil.getTime());
+        } catch (Exception e) {
+            String mensaje = titulo+"EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: for_fec_DATE:"+for_fec_DATE + "\n"+e;
+            JOptionPane.showMessageDialog(null, mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
 
+        }
+        return dateSql;
+    }
     public java.sql.Timestamp getTimestamp_fecha_cargado(String fechaStr) {
-        String titulo="getTimestamp_fecha_cargado:";
+        String titulo="TITULO: getTimestamp_fecha_cargado:";
         java.sql.Timestamp dateSql = null;
         java.util.Date dateUtil = new java.util.Date();
         try {
@@ -139,21 +161,22 @@ public class EvenFecha {
             dateSql = new java.sql.Timestamp(dateUtil.getTime());
             System.out.println(titulo+fechaStr);
         } catch (Exception e) {
-            String mensaje = "EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: dd/MM/yyyy HORA:MINUTO\n" + e+"\nCARGADO:"+fechaStr;
+            String mensaje = titulo+"EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: for_fecZona_barra: "+for_fecZona_barra+"\n" + e+"\nCARGADO:"+fechaStr;
             JOptionPane.showMessageDialog(null, mensaje, "ERROR:"+titulo, JOptionPane.ERROR_MESSAGE);
             dateSql = getTimestamp_sistema();
         }
         return dateSql;
     }
     public java.sql.Timestamp getTimestamp_fecha_for_date(String fechaStr) {
+        String titulo="TITULO: getTimestamp_fecha_for_date\n";
         java.sql.Timestamp dateSql = null;
         java.util.Date dateUtil = new java.util.Date();
         try {
-            SimpleDateFormat formato = new SimpleDateFormat(formato_fechaHoraZona);
+            SimpleDateFormat formato = new SimpleDateFormat(formato_fechaHora);
             dateUtil = formato.parse(fechaStr);
             dateSql = new java.sql.Timestamp(dateUtil.getTime());
         } catch (Exception e) {
-            String mensaje = "EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: yyyy-MM-dd HORA:MINUTO\n" + e;
+            String mensaje = titulo+"EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: formato_fechaHora: "+formato_fechaHora+"\n" + e;
             JOptionPane.showMessageDialog(null, mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
             dateSql = getTimestamp_sistema();
         }
@@ -318,5 +341,12 @@ public class EvenFecha {
             fecha = "\n and date_part('year'," + campofecha + ")=date_part('year',current_date)";
         }
         return fecha;
+    }
+    public String getS_fec_hs_seg_archivo() {
+        String Sfecha;
+        java.util.Date date = new java.util.Date();
+        SimpleDateFormat sdf = new SimpleDateFormat(formato_fec_hs_seg);
+        Sfecha = String.valueOf(sdf.format(date));
+        return Sfecha;
     }
 }

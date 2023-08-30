@@ -28,7 +28,16 @@ public class EvenJtable {
 
     EvenMensajeJoptionpane evmen = new EvenMensajeJoptionpane();
     EvenEstado eveest=new EvenEstado();
+    private static int row_fila_add;
 
+    public static int getRow_fila_add() {
+        return row_fila_add++;
+    }
+
+    public static void setRow_fila_add(int row_fila_add) {
+        EvenJtable.row_fila_add = row_fila_add;
+    }
+    
     /**
      * Da el ancho de las columnas de una tabla se calcula si la tabla y el
      * vector tienen el mismo tamanho la sumatoria del vector debe dar 100 y la
@@ -281,7 +290,21 @@ public class EvenJtable {
         }
 
     }
+    public void cargar_tabla_dato_bajolinea_alquiler(JTable tabla, DefaultTableModel Detabla, String dato[]) {
+        String titulo = "cargar_tabla_dato_bajolinea_alquiler";
+        try {
+            int row = getRow_fila_add();
+            Detabla.insertRow(row, dato);
+            tabla.setModel(Detabla);
+            for (int c = 0; c < dato.length; c++) {
+                System.out.print(dato[c] + "\t");
+            }
+            System.out.println();
+        } catch (Exception e) {
+            evmen.mensaje_error(e, titulo);
+        }
 
+    }
     public void crear_tabla_datos(JTable tabla, DefaultTableModel Detabla, String titulos[]) {
         String tutulo = "TablaLOCALCrear";
         try {

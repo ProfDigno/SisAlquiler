@@ -62,7 +62,7 @@ public class FrmRepVenta_alquiler extends javax.swing.JInternalFrame {
             String fechasta = evefec.getString_validar_fecha(txtfecha_hasta.getText());
             txtfecha_desde.setText(fecdesde);
             txtfecha_hasta.setText(fechasta);
-            String filtro_estado = auxvent.filtro_estado_alquiler(jCestado_emitido, jCestado_finalizado, jCestado_usoreserva, jCestado_alquilado, jCestado_devolucion, jCestado_anulado);
+            String filtro_estado = auxvent.filtro_estado_alquiler(jCestado_emitido, jCestado_finalizado, jCestado_alquilado, jCestado_devolucion, jCestado_anulado);
             String filtro_formapago=auxvent.forma_pago_alquilado(jCpago_efectivo, jCpago_tarjeta, jCpago_transferencia, jCpago_credito, jCpago_combinado);
             String filtro_fecha = " and date(v.fecha_creado) >= '" + fecdesde + "' and date(v.fecha_creado) <= '" + fechasta + "' \n";
             String filtro_cliente = "";

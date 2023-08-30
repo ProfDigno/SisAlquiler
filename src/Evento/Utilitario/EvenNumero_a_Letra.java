@@ -124,7 +124,13 @@ public class EvenNumero_a_Letra {
         if(millon.length()>1){
             n = getCentenas(millon) + "millones ";
         }else{
-            n = getUnidades(millon) + "millon ";
+            int Imillon=Integer.parseInt(millon);
+            if(Imillon>1){
+                n = getUnidades(millon) + "millones ";
+            }else{
+                n = getUnidades(millon) + "millon ";
+            }
+            
         }
         return n + getMiles(miles);        
     }

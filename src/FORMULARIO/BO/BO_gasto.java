@@ -56,7 +56,7 @@ public class BO_gasto {
                     conn.setAutoCommit(false);
                 }
                 gdao.update_gasto(conn, gas);
-                cdao.update_caja_detalle(conn, caja);
+                cdao.update_caja_detalle_gasto(conn, caja);
                 conn.commit();
             } catch (SQLException e) {
                 evmen.mensaje_error(e, gas.toString(), titulo);

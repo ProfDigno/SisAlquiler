@@ -5,6 +5,7 @@
  */
 package FORMULARIO.BO;
 
+import AppSheet.DAO_reporte_appsheet;
 import BASEDATO.EvenConexion;
 import BASEDATO.LOCAL.ConnPostgres;
 import Evento.Mensaje.EvenMensajeJoptionpane;
@@ -30,20 +31,22 @@ public class BO_cliente {
     private DAO_caja_detalle_alquilado DAOcda = new DAO_caja_detalle_alquilado();
     private DAO_transaccion_banco DAOtb = new DAO_transaccion_banco();
     private DAO_venta_alquiler DAOva = new DAO_venta_alquiler();
+    private DAO_reporte_appsheet DAOapp = new DAO_reporte_appsheet();
     EvenMensajeJoptionpane evmen = new EvenMensajeJoptionpane();
     private String estado_EMITIDO = "EMITIDO";
     private String estado_ABIERTO = "ABIERTO";
     private String estado_CERRADO = "CERRADO";
     EvenConexion eveconn = new EvenConexion();
 
-    public void insertar_cliente(Connection conn, cliente ingre, JTable tbltabla) {
+    public void insertar_cliente(Connection conn, cliente ingre,boolean autoincremental, JTable tbltabla) {
         String titulo = "insertar_cliente";
         try {
             if (conn.getAutoCommit()) {
                 conn.setAutoCommit(false);
             }
-            DAOcl.insertar_cliente(conn, ingre);
+            DAOcl.insertar_cliente(conn, ingre,autoincremental);
             DAOcl.actualizar_tabla_cliente(conn, tbltabla);
+//            DAOapp.exportar_excel_lista_cliente(conn);
             conn.commit();
         } catch (SQLException e) {
             evmen.mensaje_error(e, ingre.toString(), titulo);
@@ -64,6 +67,7 @@ public class BO_cliente {
                     conn.setAutoCommit(false);
                 }
                 DAOcl.update_cliente(conn, ingre);
+//                DAOapp.exportar_excel_lista_cliente(conn);
                 conn.commit();
             } catch (SQLException e) {
                 evmen.mensaje_error(e, ingre.toString(), titulo);
@@ -76,7 +80,7 @@ public class BO_cliente {
         }
     }
 
-    public boolean getBoolean_insertar_cliente_con_credito_inicio1(cliente cli, saldo_credito_cliente sccli, credito_cliente ccli, grupo_credito_cliente gcc) {
+    public boolean getBoolean_insertar_cliente_con_credito_inicio1(cliente cli,boolean autoincremental, saldo_credito_cliente sccli, credito_cliente ccli, grupo_credito_cliente gcc) {
         String titulo = "insertar_cliente_con_credito_inicio";
         Connection conn = ConnPostgres.getConnPosgres();
         boolean insert = false;
@@ -84,10 +88,11 @@ public class BO_cliente {
             if (conn.getAutoCommit()) {
                 conn.setAutoCommit(false);
             }
-            DAOcl.insertar_cliente(conn, cli);
+            DAOcl.insertar_cliente(conn, cli,autoincremental);
             DAOscc.insertar_saldo_credito_cliente(conn, sccli);
             DAOgcc.insertar_grupo_credito_cliente(conn, gcc);
             DAOcc.insertar_credito_cliente1(conn, ccli);
+//            DAOapp.exportar_excel_lista_cliente(conn);
             conn.commit();
             insert = true;
         } catch (SQLException e) {
@@ -150,9 +155,10 @@ public class BO_cliente {
             ccli2.setC8fk_idgrupo_credito_cliente(ENTgcc3.getC1idgrupo_credito_cliente());
             ccli2.setC9fk_idsaldo_credito_cliente(idsaldo_credito_cliente);
             DAOcc.insertar_credito_cliente1(conn, ccli2);
-            DAOcl.update_cliente_saldo_credito(conn, cli);
+//            DAOcl.update_cliente_saldo_credito(conn, cli);
             DAOcda.insertar_caja_detalle_alquilado(conn, caja);
             DAOva.update_venta_alquiler_monto_pago(conn, vealq);
+            DAOcl.update_cliente_saldo_credito(conn, cli);
             if (tipo_pago == 3) {
                 DAOtb.insertar_transaccion_banco(conn, ENTtb);
             }

@@ -24,13 +24,13 @@ public class DAO_producto_combo {
     private String mensaje_update = "PRODUCTO_COMBO MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO producto_combo(idproducto_combo,nombre,descripcion,precio_alquiler,precio_reposicion,descuento,activo) VALUES (?,?,?,?,?,?,?);";
     private String sql_update = "UPDATE producto_combo SET nombre=?,descripcion=?,precio_alquiler=?,precio_reposicion=?,descuento=?,activo=? WHERE idproducto_combo=?;";
-    private String sql_select = "select pc.idproducto_combo as id,pc.nombre ,pc.descripcion,\n"
-            + "TRIM(to_char(pc.precio_alquiler,'999G999G999')) as alquiler,\n"
-            + "TRIM(to_char(pc.descuento,'999G999G999')) as descuento,\n"
-            + "TRIM(to_char((pc.precio_alquiler-pc.descuento),'999G999G999')) as combo,\n"
-            + "TRIM(to_char(pc.precio_reposicion,'999G999G999')) as reposicion,"
-            + "pc.activo as act\n"
-            + " from producto_combo pc order by pc.idproducto_combo desc; ";
+//    private String sql_select = "select pc.idproducto_combo as id,pc.nombre ,pc.descripcion,\n"
+//            + "TRIM(to_char(pc.precio_alquiler,'999G999G999')) as alquiler,\n"
+//            + "TRIM(to_char(pc.descuento,'999G999G999')) as descuento,\n"
+//            + "TRIM(to_char((pc.precio_alquiler-pc.descuento),'999G999G999')) as combo,\n"
+//            + "TRIM(to_char(pc.precio_reposicion,'999G999G999')) as reposicion,"
+//            + "pc.activo as act\n"
+//            + " from producto_combo pc order by pc.idproducto_combo desc; ";
     private String sql_cargar = "SELECT idproducto_combo,nombre,descripcion,precio_alquiler,precio_reposicion,descuento,activo FROM producto_combo WHERE idproducto_combo=";
 
     public void insertar_producto_combo(Connection conn, producto_combo prco) {
@@ -95,15 +95,29 @@ public class DAO_producto_combo {
         }
     }
 
-    public void actualizar_tabla_producto_combo(Connection conn, JTable tbltabla) {
+    public void actualizar_tabla_producto_combo(Connection conn, JTable tbltabla,String filtro) {
+        String sql_select = "select pc.idproducto_combo as id,pc.nombre ,\n"
+            + "TRIM(to_char(pc.precio_alquiler,'999G999G999')) as alquiler,\n"
+            + "TRIM(to_char(pc.descuento,'999G999G999')) as descuento,\n"
+            + "TRIM(to_char((pc.precio_alquiler-pc.descuento),'999G999G999')) as combo,\n"
+            + "TRIM(to_char(pc.precio_reposicion,'999G999G999')) as reposicion,"
+            + "pc.activo as act\n"
+            + " from producto_combo pc "
+                + " "+filtro
+                + " order by pc.idproducto_combo desc; ";
         eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
         ancho_tabla_producto_combo(tbltabla);
-        everende.rendertabla_producto_combo(tbltabla, 7);
+        everende.rendertabla_producto_combo(tbltabla, 6);
     }
 
     public void ancho_tabla_producto_combo(JTable tbltabla) {
-        int Ancho[] = {5, 20, 30, 10, 10, 10, 10, 5};
+        int Ancho[] = {5, 55, 10, 10, 10, 10, 1};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+        evejt.alinear_derecha_columna(tbltabla, 2);
+        evejt.alinear_derecha_columna(tbltabla, 3);
+        evejt.alinear_derecha_columna(tbltabla, 4);
+        evejt.alinear_derecha_columna(tbltabla, 5);
+        evejt.ocultar_columna(tbltabla, 6);
     }
 
     /**
@@ -126,7 +140,10 @@ public class DAO_producto_combo {
     }
 
     public void ancho_tabla_producto_combo_alquiler(JTable tbltabla) {
-        int Ancho[] = {5, 50, 15, 15, 15};
+        int Ancho[] = {5, 60, 12, 11, 12};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+        evejt.alinear_derecha_columna(tbltabla, 2);
+        evejt.alinear_derecha_columna(tbltabla, 3);
+        evejt.alinear_derecha_columna(tbltabla, 4);
     }
 }

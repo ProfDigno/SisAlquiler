@@ -130,7 +130,6 @@ public class DAO_item_venta_alquiler {
 
     public void insertar_item_venta_alquiler_de_tabla(Connection conn, JTable tblitem_producto, venta_alquiler ven) {
         String titulo="insertar_item_venta_alquiler_de_tabla";
-        //String dato[] = {"id", "descripcion", "P.Unit", "Cant", "T.alquilado", "OPunit","OPrepos","OTalquilado","OTreposicion","fk_idproducto_combo"};
         for (int row = 0; row < tblitem_producto.getRowCount(); row++) {
             String idproducto = ((tblitem_producto.getModel().getValueAt(row, 0).toString()));
             String descripcion = ((tblitem_producto.getModel().getValueAt(row, 1).toString()));
@@ -139,7 +138,6 @@ public class DAO_item_venta_alquiler {
             String precio_reposicion = ((tblitem_producto.getModel().getValueAt(row, 6).toString()));
             String fk_idproducto_combo = ((tblitem_producto.getModel().getValueAt(row, 9).toString()));
             String Sorden = ((tblitem_producto.getModel().getValueAt(row, 10).toString()));
-//            String cantidad_reservado = "0";
             double Dcant_pagado = Double.parseDouble(cantidad_pagado);
             double Dprecio_venta= 0;
             double Dprecio_compra=0;
@@ -156,11 +154,8 @@ public class DAO_item_venta_alquiler {
             if(Ifk_idproducto_combo>0){
                 Bes_combo=true;
             }
-//            double Dcant_reservado = Double.parseDouble(cantidad_reservado);
             try {
-//                producto prod = new producto();
                 item_venta_alquiler item = new item_venta_alquiler();
-//                pdao.cargar_producto_por_idproducto(conn, prod, Integer.parseInt(idproducto));
                 item.setC2descripcion(descripcion);
                 item.setC3precio_venta(Dprecio_venta);
                 item.setC4precio_compra(Dprecio_compra);
@@ -217,7 +212,7 @@ public class DAO_item_venta_alquiler {
         ancho_tabla_item_venta_alquiler_cant_reser(tbltabla);
     }
     public void ancho_tabla_item_venta_alquiler_cant_reser(JTable tbltabla) {
-        int Ancho[] = {10,50,15,10,15};
+        int Ancho[] = {5,70,10,5,10};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_derecha_columna(tbltabla, 2);
         evejt.alinear_derecha_columna(tbltabla, 3);

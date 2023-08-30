@@ -50,7 +50,7 @@ public class FrmRepVentaAlquiler extends javax.swing.JInternalFrame {
         esfiltro_por_fecha = false;
     }
     private String filtro_venta(){
-        String campo_fecha="va.fecha_retirado_real";
+        String campo_fecha="va.fecha_devolusion_real";
         String filtro_suma = "";
         String filtro_fecha = "";
         String filtro_fecha_direc = "";

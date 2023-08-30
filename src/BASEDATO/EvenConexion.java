@@ -44,6 +44,23 @@ public class EvenConexion {
         }
         return getid;
     }
+    public int getInt_ultimoID_mas_uno(Connection conn,String tabla,String id,String where){
+        String titulo="getInt_ultimoID";
+        int getid=1;
+        String sql="select max("+id+"+1) as getid from "+tabla+" "+where;
+        try {
+            ResultSet rs=getResulsetSQL(conn, sql, titulo);
+            if(rs.next()){
+                getid=rs.getInt("getid");
+                if(getid==0){
+                    getid=1;
+                }
+            }
+        } catch (Exception e) {
+            evmen.mensaje_error(e, sql, titulo);
+        }
+        return getid;
+    }
     public int getInt_ultimoID_max(Connection conn,String tabla,String id){
         String titulo="getInt_ultimoID";
         int getid=0;

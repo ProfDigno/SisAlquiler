@@ -80,10 +80,6 @@ public class FrmRepTransaccionBanco extends javax.swing.JInternalFrame {
         }
         if (esfiltro_por_fecha) {
             if ((txtfecha_desde.getText().trim().length() > 0) && (txtfecha_hasta.getText().trim().length() > 0)) {
-//                String fecdesde = evefec.getString_validar_fecha(txtfecha_desde.getText());
-//                String fechasta = evefec.getString_validar_fecha(txtfecha_hasta.getText());
-//                txtfecha_desde.setText(fecdesde);
-//                txtfecha_hasta.setText(fechasta);
                 String fecdesde = evefec.getString_cambiar_formato(txtfecha_desde.getText());
                 String fechasta = evefec.getString_cambiar_formato(txtfecha_hasta.getText());
                 filtro_fecha = " and date("+campo_fecha+") >= '" + fecdesde + "' and date("+campo_fecha+") <= '" + fechasta + "' \n";
@@ -97,7 +93,7 @@ public class FrmRepTransaccionBanco extends javax.swing.JInternalFrame {
     }
     private void actualizar_tabla() {
         DAOtb.actualizar_tabla_transaccion_banco_filtro(conn, tblfiltro_transaccion, filtro_venta());
-        double monto_total = evejt.getDouble_sumar_tabla(tblfiltro_transaccion, 9);
+        double monto_total = evejt.getDouble_sumar_tabla(tblfiltro_transaccion,10);
         jFmonto_total.setValue(monto_total);
     }
 

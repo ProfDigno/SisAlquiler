@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="935" pageHeight="612" orientation="Landscape" columnWidth="877" leftMargin="58" rightMargin="0" topMargin="36" bottomMargin="85">
-	<property name="ireport.zoom" value="1.0"/>
-	<property name="ireport.x" value="0"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="935" pageHeight="612" orientation="Landscape" columnWidth="895" leftMargin="40" rightMargin="0" topMargin="36" bottomMargin="85">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="140"/>
 	<property name="ireport.y" value="0"/>
 	<style name="Title" fontName="Times New Roman" fontSize="50" isBold="true" pdfFontName="Times-Bold"/>
 	<style name="SubTitle" forecolor="#736343" fontName="Arial" fontSize="18"/>
@@ -16,10 +16,20 @@
 	<queryString>
 		<![CDATA[select va.idventa_alquiler as idva,
 to_char(va.fecha_creado ,'yyyy-MM-dd') as fec_creado, 
+case 
+when date_part('isodow', va.fecha_devolusion_previsto)=0 then 'DOMiNGO' 
+when date_part('isodow', va.fecha_devolusion_previsto)=1 then 'LUNES'
+when date_part('isodow', va.fecha_devolusion_previsto)=2 then 'MARTES'
+when date_part('isodow', va.fecha_devolusion_previsto)=3 then 'MIERCOLES'
+when date_part('isodow', va.fecha_devolusion_previsto)=4 then 'JUEVES'
+when date_part('isodow', va.fecha_devolusion_previsto)=5 then 'VIERNES'
+when date_part('isodow', va.fecha_devolusion_previsto)=6 then 'SABADO'
+else 'otro' end as dia_semana,
 to_char(va.fecha_devolusion_previsto,'yyyy-MM-dd') as fec_evento,
 va.monto_total as m_total,
 va.monto_descuento as m_descuento,
-(va.monto_total-va.monto_descuento) as m_pagar,
+va.monto_sena as m_adelanto,
+(va.monto_total-(va.monto_descuento+va.monto_sena)) as m_pagar,
 va.monto_letra as m_letra,
 va.observacion as obs,
 te.nombre as evento,
@@ -35,9 +45,11 @@ order by iva.orden asc]]>
 	</queryString>
 	<field name="idva" class="java.lang.Integer"/>
 	<field name="fec_creado" class="java.lang.String"/>
+	<field name="dia_semana" class="java.lang.String"/>
 	<field name="fec_evento" class="java.lang.String"/>
 	<field name="m_total" class="java.math.BigDecimal"/>
 	<field name="m_descuento" class="java.math.BigDecimal"/>
+	<field name="m_adelanto" class="java.math.BigDecimal"/>
 	<field name="m_pagar" class="java.math.BigDecimal"/>
 	<field name="m_letra" class="java.lang.String"/>
 	<field name="obs" class="java.lang.String"/>
@@ -73,7 +85,7 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{idva}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Column header" x="0" y="76" width="30" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="0" y="76" width="31" height="11" forecolor="#000000"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -82,13 +94,13 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isUnderline="true"/>
+					<font size="8" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Cliente:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="31" y="76" width="142" height="11"/>
-				<box>
+				<reportElement style="Detail" x="31" y="76" width="146" height="11"/>
+				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -96,7 +108,7 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="6" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cliente}]]></textFieldExpression>
 			</textField>
@@ -110,13 +122,13 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isUnderline="true"/>
+					<font size="8" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Direccion:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
 				<reportElement style="Detail" x="40" y="87" width="217" height="11"/>
-				<box>
+				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -129,7 +141,7 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{direccion}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Column header" x="174" y="76" width="23" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="177" y="76" width="20" height="11" forecolor="#000000"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -138,7 +150,7 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isUnderline="true"/>
+					<font size="8" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Tel.:]]></text>
 			</staticText>
@@ -166,13 +178,13 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isUnderline="true"/>
+					<font size="8" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Evento:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="30" y="98" width="143" height="11"/>
-				<box>
+				<reportElement style="Detail" x="30" y="98" width="84" height="11"/>
+				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -185,7 +197,7 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{evento}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Column header" x="174" y="98" width="23" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="114" y="98" width="23" height="11" forecolor="#000000"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -194,7 +206,7 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isUnderline="true"/>
+					<font size="8" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Fec. :]]></text>
 			</staticText>
@@ -207,7 +219,7 @@ order by iva.orden asc]]>
 					<bottomPen lineWidth="0.5"/>
 					<rightPen lineWidth="0.5"/>
 				</box>
-				<textElement verticalAlignment="Middle">
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{fec_evento}]]></textFieldExpression>
@@ -222,13 +234,13 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isUnderline="true"/>
+					<font size="8" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Obs:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
 				<reportElement style="Detail" x="20" y="109" width="237" height="11"/>
-				<box>
+				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -241,21 +253,21 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{obs}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="467" y="35" width="84" height="12"/>
+				<reportElement style="Detail" x="462" y="35" width="84" height="12"/>
 				<textElement textAlignment="Center">
 					<font size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{fec_creado}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="467" y="47" width="84" height="11"/>
+				<reportElement style="Detail" x="462" y="47" width="84" height="11"/>
 				<textElement textAlignment="Center">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{idva}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Column header" x="293" y="76" width="30" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="288" y="76" width="30" height="11" forecolor="#000000"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -264,13 +276,13 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isUnderline="true"/>
+					<font size="8" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Cliente:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="323" y="76" width="150" height="11"/>
-				<box>
+				<reportElement style="Detail" x="318" y="76" width="147" height="11"/>
+				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -278,12 +290,12 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="6" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cliente}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Column header" x="293" y="87" width="40" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="288" y="87" width="40" height="11" forecolor="#000000"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -292,13 +304,13 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isUnderline="true"/>
+					<font size="8" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Direccion:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="333" y="87" width="217" height="11"/>
-				<box>
+				<reportElement style="Detail" x="328" y="87" width="217" height="11"/>
+				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -311,7 +323,7 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{direccion}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Column header" x="474" y="76" width="22" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="465" y="76" width="20" height="11" forecolor="#000000"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -320,13 +332,13 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isUnderline="true"/>
+					<font size="8" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Tel.:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="496" y="76" width="54" height="11"/>
-				<box>
+				<reportElement style="Detail" x="485" y="76" width="60" height="11"/>
+				<box leftPadding="1">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -339,7 +351,7 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{telefono}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Column header" x="293" y="98" width="30" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="288" y="98" width="30" height="11" forecolor="#000000"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -348,13 +360,13 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isUnderline="true"/>
+					<font size="8" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Evento:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="323" y="98" width="150" height="11"/>
-				<box>
+				<reportElement style="Detail" x="318" y="98" width="85" height="11"/>
+				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -367,7 +379,7 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{evento}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Column header" x="474" y="98" width="22" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="403" y="98" width="22" height="11" forecolor="#000000"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -376,12 +388,12 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isUnderline="true"/>
+					<font size="8" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Fec. :]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="496" y="98" width="54" height="11"/>
+				<reportElement style="Detail" x="485" y="98" width="60" height="11"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -389,13 +401,13 @@ order by iva.orden asc]]>
 					<bottomPen lineWidth="0.5"/>
 					<rightPen lineWidth="0.5"/>
 				</box>
-				<textElement verticalAlignment="Middle">
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{fec_evento}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Column header" x="293" y="109" width="19" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="288" y="109" width="19" height="11" forecolor="#000000"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -404,13 +416,13 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isUnderline="true"/>
+					<font size="8" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Obs:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="312" y="109" width="238" height="11"/>
-				<box>
+				<reportElement style="Detail" x="307" y="109" width="238" height="11"/>
+				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -423,21 +435,21 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{obs}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="758" y="35" width="83" height="12"/>
+				<reportElement style="Detail" x="752" y="35" width="83" height="12"/>
 				<textElement textAlignment="Center">
 					<font size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{fec_creado}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="758" y="47" width="83" height="11"/>
+				<reportElement style="Detail" x="752" y="47" width="83" height="11"/>
 				<textElement textAlignment="Center">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{idva}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Column header" x="585" y="76" width="30" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="579" y="76" width="30" height="11" forecolor="#000000"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -446,13 +458,13 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isUnderline="true"/>
+					<font size="8" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Cliente:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="615" y="76" width="151" height="11"/>
-				<box>
+				<reportElement style="Detail" x="609" y="76" width="146" height="11"/>
+				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -460,12 +472,12 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="6" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cliente}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Column header" x="585" y="87" width="40" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="579" y="87" width="40" height="11" forecolor="#000000"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -474,13 +486,13 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isUnderline="true"/>
+					<font size="8" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Direccion:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="625" y="87" width="216" height="11"/>
-				<box>
+				<reportElement style="Detail" x="619" y="87" width="216" height="11"/>
+				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -493,7 +505,7 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{direccion}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Column header" x="766" y="76" width="22" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="755" y="76" width="20" height="11" forecolor="#000000"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -502,13 +514,13 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isUnderline="true"/>
+					<font size="8" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Tel.:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="788" y="76" width="53" height="11"/>
-				<box>
+				<reportElement style="Detail" x="775" y="76" width="60" height="11"/>
+				<box leftPadding="1">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -521,7 +533,7 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{telefono}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Column header" x="585" y="98" width="30" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="579" y="98" width="30" height="11" forecolor="#000000"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -530,13 +542,13 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isUnderline="true"/>
+					<font size="8" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Evento:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="615" y="98" width="151" height="11"/>
-				<box>
+				<reportElement style="Detail" x="609" y="98" width="84" height="11"/>
+				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -549,7 +561,7 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{evento}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Column header" x="766" y="98" width="22" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="693" y="98" width="23" height="11" forecolor="#000000"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -558,12 +570,12 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isUnderline="true"/>
+					<font size="8" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Fec. :]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="788" y="98" width="53" height="11"/>
+				<reportElement style="Detail" x="775" y="98" width="60" height="11"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -571,13 +583,13 @@ order by iva.orden asc]]>
 					<bottomPen lineWidth="0.5"/>
 					<rightPen lineWidth="0.5"/>
 				</box>
-				<textElement verticalAlignment="Middle">
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{fec_evento}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Column header" x="585" y="109" width="19" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="579" y="109" width="19" height="11" forecolor="#000000"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -586,13 +598,13 @@ order by iva.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isUnderline="true"/>
+					<font size="8" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Obs:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="604" y="109" width="237" height="11"/>
-				<box>
+				<reportElement style="Detail" x="598" y="109" width="237" height="11"/>
+				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -603,6 +615,34 @@ order by iva.orden asc]]>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{obs}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="137" y="98" width="60" height="11"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dia_semana}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="425" y="98" width="60" height="11"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dia_semana}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="716" y="98" width="59" height="11"/>
+				<box rightPadding="0">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dia_semana}]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>
@@ -612,8 +652,8 @@ order by iva.orden asc]]>
 	<columnHeader>
 		<band height="11" splitType="Stretch">
 			<staticText>
-				<reportElement style="Column header" x="21" y="0" width="135" height="11" forecolor="#000000"/>
-				<box>
+				<reportElement style="Column header" x="21" y="0" width="151" height="11" forecolor="#000000"/>
+				<box leftPadding="2">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -626,7 +666,7 @@ order by iva.orden asc]]>
 				<text><![CDATA[Descripcion]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Column header" x="156" y="0" width="50" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="172" y="0" width="42" height="11" forecolor="#000000"/>
 				<box rightPadding="2">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -634,13 +674,13 @@ order by iva.orden asc]]>
 					<bottomPen lineWidth="0.75"/>
 					<rightPen lineWidth="0.75"/>
 				</box>
-				<textElement textAlignment="Right">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Precio]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Column header" x="1" y="0" width="20" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="0" y="0" width="21" height="11" forecolor="#000000"/>
 				<box>
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -654,7 +694,7 @@ order by iva.orden asc]]>
 				<text><![CDATA[Cant]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Column header" x="206" y="0" width="50" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="214" y="0" width="42" height="11" forecolor="#000000"/>
 				<box rightPadding="2">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -668,8 +708,8 @@ order by iva.orden asc]]>
 				<text><![CDATA[Subtotal]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Column header" x="312" y="0" width="148" height="11" forecolor="#000000"/>
-				<box>
+				<reportElement style="Column header" x="307" y="0" width="153" height="11" forecolor="#000000"/>
+				<box leftPadding="2">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -682,7 +722,7 @@ order by iva.orden asc]]>
 				<text><![CDATA[Descripcion]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Column header" x="460" y="0" width="45" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="460" y="0" width="43" height="11" forecolor="#000000"/>
 				<box rightPadding="2">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -690,13 +730,13 @@ order by iva.orden asc]]>
 					<bottomPen lineWidth="0.75"/>
 					<rightPen lineWidth="0.75"/>
 				</box>
-				<textElement textAlignment="Right">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Precio]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Column header" x="293" y="0" width="19" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="288" y="0" width="19" height="11" forecolor="#000000"/>
 				<box>
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -710,7 +750,7 @@ order by iva.orden asc]]>
 				<text><![CDATA[Can]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Column header" x="505" y="0" width="45" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="503" y="0" width="42" height="11" forecolor="#000000"/>
 				<box rightPadding="2">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -724,8 +764,8 @@ order by iva.orden asc]]>
 				<text><![CDATA[Subtotal]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Column header" x="604" y="0" width="147" height="11" forecolor="#000000"/>
-				<box>
+				<reportElement style="Column header" x="598" y="0" width="153" height="11" forecolor="#000000"/>
+				<box leftPadding="2">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -738,7 +778,7 @@ order by iva.orden asc]]>
 				<text><![CDATA[Descripcion]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Column header" x="751" y="0" width="45" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="751" y="0" width="42" height="11" forecolor="#000000"/>
 				<box rightPadding="2">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -746,13 +786,13 @@ order by iva.orden asc]]>
 					<bottomPen lineWidth="0.75"/>
 					<rightPen lineWidth="0.75"/>
 				</box>
-				<textElement textAlignment="Right">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Precio]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Column header" x="585" y="0" width="19" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="579" y="0" width="19" height="11" forecolor="#000000"/>
 				<box>
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -766,7 +806,7 @@ order by iva.orden asc]]>
 				<text><![CDATA[Can]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Column header" x="796" y="0" width="45" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="793" y="0" width="42" height="11" forecolor="#000000"/>
 				<box rightPadding="2">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -784,7 +824,7 @@ order by iva.orden asc]]>
 	<detail>
 		<band height="11" splitType="Stretch">
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="21" y="0" width="135" height="11"/>
+				<reportElement style="Detail" x="21" y="0" width="151" height="11"/>
 				<box leftPadding="5">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -798,7 +838,7 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0">
-				<reportElement style="Detail" x="156" y="0" width="50" height="11"/>
+				<reportElement style="Detail" x="172" y="0" width="42" height="11"/>
 				<box rightPadding="2">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -812,7 +852,7 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{preciouni}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="1" y="0" width="20" height="11"/>
+				<reportElement style="Detail" x="0" y="0" width="21" height="11"/>
 				<box>
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -826,7 +866,7 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{cant}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0">
-				<reportElement style="Detail" x="206" y="0" width="50" height="11"/>
+				<reportElement style="Detail" x="214" y="0" width="42" height="11"/>
 				<box rightPadding="2">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -840,7 +880,7 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{subtotal}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0">
-				<reportElement style="Detail" x="460" y="0" width="45" height="11"/>
+				<reportElement style="Detail" x="460" y="0" width="43" height="11"/>
 				<box rightPadding="2">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -854,7 +894,7 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{preciouni}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="293" y="0" width="19" height="11"/>
+				<reportElement style="Detail" x="288" y="0" width="19" height="11"/>
 				<box>
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -868,7 +908,7 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{cant}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="312" y="0" width="148" height="11"/>
+				<reportElement style="Detail" x="307" y="0" width="153" height="11"/>
 				<box leftPadding="5">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -882,7 +922,7 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0">
-				<reportElement style="Detail" x="505" y="0" width="45" height="11"/>
+				<reportElement style="Detail" x="503" y="0" width="42" height="11"/>
 				<box rightPadding="2">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -896,7 +936,7 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{subtotal}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0">
-				<reportElement style="Detail" x="751" y="0" width="45" height="11"/>
+				<reportElement style="Detail" x="751" y="0" width="42" height="11"/>
 				<box rightPadding="2">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -910,7 +950,7 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{preciouni}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="585" y="0" width="19" height="11"/>
+				<reportElement style="Detail" x="579" y="0" width="19" height="11"/>
 				<box>
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -924,7 +964,7 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{cant}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="604" y="0" width="147" height="11"/>
+				<reportElement style="Detail" x="598" y="0" width="153" height="11"/>
 				<box leftPadding="5">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -938,7 +978,7 @@ order by iva.orden asc]]>
 				<textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0">
-				<reportElement style="Detail" x="796" y="0" width="45" height="11"/>
+				<reportElement style="Detail" x="793" y="0" width="42" height="11"/>
 				<box rightPadding="2">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -954,7 +994,7 @@ order by iva.orden asc]]>
 		</band>
 	</detail>
 	<columnFooter>
-		<band height="50" splitType="Stretch">
+		<band height="60" splitType="Stretch">
 			<textField pattern="#,##0">
 				<reportElement x="211" y="3" width="46" height="11"/>
 				<box rightPadding="2">
@@ -1012,7 +1052,7 @@ order by iva.orden asc]]>
 				<text><![CDATA[Descuento:]]></text>
 			</staticText>
 			<textField pattern="#,##0">
-				<reportElement x="211" y="25" width="46" height="11"/>
+				<reportElement x="211" y="36" width="46" height="11"/>
 				<box rightPadding="2">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -1024,6 +1064,286 @@ order by iva.orden asc]]>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{m_pagar}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="156" y="36" width="55" height="11" forecolor="#000000"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Pagar:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" x="0" y="47" width="257" height="11"/>
+				<box leftPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{m_letra}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="0" y="36" width="55" height="11" forecolor="#000000"/>
+				<box leftPadding="3">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Monto Letra:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" x="288" y="47" width="257" height="11"/>
+				<box leftPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{m_letra}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="444" y="36" width="55" height="11" forecolor="#000000"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Pagar:]]></text>
+			</staticText>
+			<textField pattern="#,##0">
+				<reportElement x="499" y="3" width="46" height="11"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{subtotal_1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="288" y="36" width="55" height="11" forecolor="#000000"/>
+				<box leftPadding="3">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Monto Letra:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="444" y="14" width="55" height="11" forecolor="#000000"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Descuento:]]></text>
+			</staticText>
+			<textField pattern="#,##0">
+				<reportElement x="499" y="36" width="46" height="11"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{m_pagar}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="499" y="14" width="46" height="11"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{m_descuento}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="444" y="3" width="55" height="11" forecolor="#000000"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Total:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" x="578" y="47" width="258" height="11"/>
+				<box leftPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{m_letra}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="733" y="36" width="55" height="11" forecolor="#000000"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Pagar:]]></text>
+			</staticText>
+			<textField pattern="#,##0">
+				<reportElement x="788" y="3" width="48" height="11"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{subtotal_1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="578" y="36" width="55" height="11" forecolor="#000000"/>
+				<box leftPadding="3">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Monto Letra:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="733" y="14" width="55" height="11" forecolor="#000000"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Descuento:]]></text>
+			</staticText>
+			<textField pattern="#,##0">
+				<reportElement x="788" y="36" width="48" height="11"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{m_pagar}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="788" y="14" width="48" height="11"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{m_descuento}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="733" y="3" width="55" height="11" forecolor="#000000"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Total:]]></text>
+			</staticText>
+			<textField pattern="#,##0">
+				<reportElement x="211" y="25" width="46" height="11"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{m_adelanto}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement style="Column header" x="156" y="25" width="55" height="11" forecolor="#000000"/>
@@ -1037,52 +1357,10 @@ order by iva.orden asc]]>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[Pagar:]]></text>
+				<text><![CDATA[Adelanto:]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="0" y="36" width="257" height="11"/>
-				<box leftPadding="2">
-					<pen lineWidth="0.75"/>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{m_letra}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement style="Column header" x="0" y="25" width="55" height="11" forecolor="#000000"/>
-				<box leftPadding="3">
-					<pen lineWidth="0.75"/>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Monto Letra:]]></text>
-			</staticText>
-			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="293" y="36" width="257" height="11"/>
-				<box leftPadding="2">
-					<pen lineWidth="0.75"/>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{m_letra}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement style="Column header" x="449" y="25" width="55" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="444" y="25" width="55" height="11" forecolor="#000000"/>
 				<box rightPadding="2">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -1093,38 +1371,24 @@ order by iva.orden asc]]>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[Pagar:]]></text>
+				<text><![CDATA[Adelanto:]]></text>
 			</staticText>
 			<textField pattern="#,##0">
-				<reportElement x="504" y="3" width="46" height="11"/>
+				<reportElement x="499" y="25" width="46" height="11"/>
 				<box rightPadding="2">
-					<pen lineWidth="0.75"/>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
 				</box>
-				<textElement textAlignment="Right">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$V{subtotal_1}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{m_adelanto}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Column header" x="293" y="25" width="55" height="11" forecolor="#000000"/>
-				<box leftPadding="3">
-					<pen lineWidth="0.75"/>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Monto Letra:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement style="Column header" x="449" y="14" width="55" height="11" forecolor="#000000"/>
+				<reportElement style="Column header" x="733" y="25" width="55" height="11" forecolor="#000000"/>
 				<box rightPadding="2">
 					<pen lineWidth="0.75"/>
 					<topPen lineWidth="0.75"/>
@@ -1135,162 +1399,22 @@ order by iva.orden asc]]>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[Descuento:]]></text>
+				<text><![CDATA[Adelanto:]]></text>
 			</staticText>
 			<textField pattern="#,##0">
-				<reportElement x="504" y="25" width="46" height="11"/>
+				<reportElement x="788" y="25" width="48" height="11"/>
 				<box rightPadding="2">
-					<pen lineWidth="0.75"/>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement textAlignment="Right">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{m_pagar}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0">
-				<reportElement x="504" y="14" width="46" height="11"/>
-				<box rightPadding="2">
-					<pen lineWidth="0.75"/>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement textAlignment="Right">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{m_descuento}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement style="Column header" x="449" y="3" width="55" height="11" forecolor="#000000"/>
-				<box rightPadding="2">
-					<pen lineWidth="0.75"/>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[Total:]]></text>
-			</staticText>
-			<textField isStretchWithOverflow="true">
-				<reportElement style="Detail" x="584" y="36" width="258" height="11"/>
-				<box leftPadding="2">
-					<pen lineWidth="0.75"/>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{m_letra}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{m_adelanto}]]></textFieldExpression>
 			</textField>
-			<staticText>
-				<reportElement style="Column header" x="739" y="25" width="55" height="11" forecolor="#000000"/>
-				<box rightPadding="2">
-					<pen lineWidth="0.75"/>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Pagar:]]></text>
-			</staticText>
-			<textField pattern="#,##0">
-				<reportElement x="794" y="3" width="48" height="11"/>
-				<box rightPadding="2">
-					<pen lineWidth="0.75"/>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement textAlignment="Right">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{subtotal_1}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement style="Column header" x="584" y="25" width="55" height="11" forecolor="#000000"/>
-				<box leftPadding="3">
-					<pen lineWidth="0.75"/>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Monto Letra:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement style="Column header" x="739" y="14" width="55" height="11" forecolor="#000000"/>
-				<box rightPadding="2">
-					<pen lineWidth="0.75"/>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Descuento:]]></text>
-			</staticText>
-			<textField pattern="#,##0">
-				<reportElement x="794" y="25" width="48" height="11"/>
-				<box rightPadding="2">
-					<pen lineWidth="0.75"/>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement textAlignment="Right">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{m_pagar}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0">
-				<reportElement x="794" y="14" width="48" height="11"/>
-				<box rightPadding="2">
-					<pen lineWidth="0.75"/>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement textAlignment="Right">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{m_descuento}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement style="Column header" x="739" y="3" width="55" height="11" forecolor="#000000"/>
-				<box rightPadding="2">
-					<pen lineWidth="0.75"/>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Total:]]></text>
-			</staticText>
 		</band>
 	</columnFooter>
 </jasperReport>

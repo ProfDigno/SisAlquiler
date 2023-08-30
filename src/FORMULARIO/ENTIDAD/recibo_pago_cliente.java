@@ -18,11 +18,30 @@ private int C13fk_idventa_alquiler;
 private String C14fecha_recibo;
 private static String nom_tabla;
 private static String nom_idtabla;
+private static int quien_llama;
+private static double monto_sena_venta;
 //---------------TABLA-ID---------------
 	public recibo_pago_cliente() {
 		setTb_recibo_pago_cliente("recibo_pago_cliente");
 		setId_idrecibo_pago_cliente("idrecibo_pago_cliente");
 	}
+
+    public static double getMonto_sena_venta() {
+        return monto_sena_venta;
+    }
+
+    public static void setMonto_sena_venta(double monto_sena_venta) {
+        recibo_pago_cliente.monto_sena_venta = monto_sena_venta;
+    }
+
+    public static int getQuien_llama() {
+        return quien_llama;
+    }
+
+    public static void setQuien_llama(int quien_llama) {
+        recibo_pago_cliente.quien_llama = quien_llama;
+    }
+        
 	public static String getTb_recibo_pago_cliente(){
 		return nom_tabla;
 	}

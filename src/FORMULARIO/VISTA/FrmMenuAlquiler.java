@@ -17,6 +17,7 @@ import BASEDATO.LOCAL.ConnPostgres;
 import BASEDATO.LOCAL.VariablesBD;
 import CONFIGURACION.ClaCorteAdmin;
 import CONFIGURACION.ComputerInfo;
+import Config_JSON.json_appsheet;
 import Config_JSON.json_array_conexion;
 import Config_JSON.json_config;
 import Config_JSON.json_imprimir_pos;
@@ -48,6 +49,8 @@ import java.sql.Connection;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 /**
@@ -59,54 +62,57 @@ public class FrmMenuAlquiler extends javax.swing.JFrame {
     /**
      * Creates new form FrmMenuQchurron
      */
-    Connection conn = null;
-    Connection connSER = null;
-    ConnPostgres conPs = new ConnPostgres();
-    VariablesBD var = new VariablesBD();
-    control_vista covi = new control_vista();
-    EvenJFRAME evetbl = new EvenJFRAME();
-    EvenFecha evefec = new EvenFecha();
-    cotizacion coti = new cotizacion();
-    DAO_cotizacion codao = new DAO_cotizacion();
-    factura fac = new factura();
-    DAO_factura fdao = new DAO_factura();
-    DAO_cliente cdao = new DAO_cliente();
-    DAO_venta vdao = new DAO_venta();
-    DAO_producto pdao = new DAO_producto();
-    DAO_producto_categoria pcDAO = new DAO_producto_categoria();
-    Cla_insert_automatico ins_auto = new Cla_insert_automatico();
+    private Connection conn = null;
+    private Connection connSER = null;
+    private ConnPostgres conPs = new ConnPostgres();
+    private VariablesBD var = new VariablesBD();
+    private control_vista covi = new control_vista();
+    private EvenJFRAME evetbl = new EvenJFRAME();
+    private EvenFecha evefec = new EvenFecha();
+    private cotizacion coti = new cotizacion();
+    private DAO_cotizacion codao = new DAO_cotizacion();
+    private factura fac = new factura();
+    private DAO_factura fdao = new DAO_factura();
+    private DAO_cliente cdao = new DAO_cliente();
+    private DAO_venta vdao = new DAO_venta();
+    private DAO_producto pdao = new DAO_producto();
+    private DAO_producto_categoria pcDAO = new DAO_producto_categoria();
+    private Cla_insert_automatico ins_auto = new Cla_insert_automatico();
     private financista fina = new financista();
-    EvenConexion eveconn = new EvenConexion();
-    caja_cierre cjcie = new caja_cierre();
-    DAO_caja_cierre cjcie_dao = new DAO_caja_cierre();
-    caja_cierre_alquilado cjciea = new caja_cierre_alquilado();
-    DAO_caja_cierre_alquilado cjciea_dao = new DAO_caja_cierre_alquilado();
-    cla_color_pelete clacolor = new cla_color_pelete();
-    json_config jsconfig = new json_config();
-    json_imprimir_pos jsprint = new json_imprimir_pos();
-    EvenSQLDataSet evedata = new EvenSQLDataSet();
-    FunFreeChard chard = new FunFreeChard();
-    ClaCorteAdmin corte = new ClaCorteAdmin();
-    json_array_conexion jscon=new json_array_conexion();
-    private ComputerInfo pcinfo=new ComputerInfo();
+    private EvenConexion eveconn = new EvenConexion();
+    private caja_cierre cjcie = new caja_cierre();
+    private DAO_caja_cierre cjcie_dao = new DAO_caja_cierre();
+    private caja_cierre_alquilado cjciea = new caja_cierre_alquilado();
+    private DAO_caja_cierre_alquilado cjciea_dao = new DAO_caja_cierre_alquilado();
+    private cla_color_pelete clacolor = new cla_color_pelete();
+    private json_config jsconfig = new json_config();
+    private json_imprimir_pos jsprint = new json_imprimir_pos();
+    private EvenSQLDataSet evedata = new EvenSQLDataSet();
+    private FunFreeChard chard = new FunFreeChard();
+    private ClaCorteAdmin corte = new ClaCorteAdmin();
+    private json_array_conexion jscon = new json_array_conexion();
+    private json_appsheet jsapp = new json_appsheet();
+    private ComputerInfo pcinfo = new ComputerInfo();
     private Timer tiempo;
-    boolean vergrafico = true;
-    int seg_ver_grafico = 0;
-    String estado_CERRADO="CERRADO";
-    String version="1.6";
+    private boolean vergrafico = true;
+    private int seg_ver_grafico = 0;
+    private String estado_CERRADO = "CERRADO";
+    private String version = "1.8.8";//reparar SQL FrmRepReciboCliente
+
     void abrir_formulario() {
 //        conPs.ConnectDBpostgres(conn, false, false);
-        conPs.ConnectDBpostgres(conn,false);
+        conPs.ConnectDBpostgres(conn, false);
         conn = conPs.getConnPosgres();
         covi.setComanda_abierto(true);
         jsconfig.cargar_jsom_configuracion();
         jsprint.cargar_jsom_imprimir_pos();
+        jsapp.cargar_json_appsheet();
         this.setExtendedState(MAXIMIZED_BOTH);
         iniciarTiempo();
         habilitar_menu(false);
         codao.cargar_cotizacion(coti, 1);
         txtvercion.setText("V:" + version);
-        corte.setFecha_corte("2023-04-24");
+        corte.setFecha_corte("2023-12-31");
         jFdolar.setValue(coti.getDolar_guarani());
         jFreal.setValue(coti.getReal_guarani());
 //        grafico_mas_vendidos();
@@ -115,11 +121,11 @@ public class FrmMenuAlquiler extends javax.swing.JFrame {
         pcDAO.update_orden_categoria_mas_vendido_mes();
         iniciar_color();
         actualizacion_version_v1();
-        
+
 //        primer_finanza();
     }
 
-    void actualizacion_version_v1() {
+    private void actualizacion_version_v1() {
         /**
          * ALTER TABLE cliente ADD COLUMN delivery boolean; update cliente set
          * delivery=true; update gastos set fk_idusuario=7 where fk_idusuario=1;
@@ -129,22 +135,26 @@ public class FrmMenuAlquiler extends javax.swing.JFrame {
         String sql = "DO $$ \n"
                 + "    BEGIN\n"
                 + "        BEGIN\n"
-//                + " ALTER TABLE venta_alquiler ADD COLUMN monto_descuento NUMERIC(15,0) DEFAULT 0;\n "
-                + " ALTER TABLE venta_alquiler ADD COLUMN monto_pagado NUMERIC(15,0) DEFAULT 0;\n "
-                + " ALTER TABLE recibo_pago_cliente ADD COLUMN fk_idventa_alquiler INTEGER DEFAULT 0;\n "
-//                + " ALTER TABLE item_venta_alquiler ADD COLUMN orden INTEGER DEFAULT 0;\n "
-//                + " ALTER TABLE producto ADD COLUMN stock_fijo NUMERIC(15,0) DEFAULT 0; \n"
-//                + " ALTER TABLE credito_cliente ADD COLUMN fecha_vence TIMESTAMP DEFAULT current_date; \n"
-//                + " update producto set alquilado=false;\n"
-//                + " ALTER TABLE compra ADD COLUMN alquilado boolean; \n"
-//                + " update compra set alquilado=false;\n"
-                + ""        
+                
+//                + " ALTER TABLE app_pedido ADD COLUMN es_eliminado boolean DEFAULT false;\n "
+                + " ALTER TABLE app_item_pedido ADD COLUMN es_eliminado boolean DEFAULT false;\n "
+                + " ALTER TABLE app_item_pedido ADD COLUMN es_vencido boolean DEFAULT true;\n "
+                + ""
                 + "        EXCEPTION\n"
                 + "            WHEN duplicate_column THEN RAISE NOTICE 'duplicate_column.';\n"
                 + "        END;\n"
                 + "    END;\n"
                 + "$$ ";
         eveconn.SQL_execute_libre(conn, sql);
+//        JTextArea ta = new JTextArea(30, 50);
+//        ta.setText(sql);
+//        Object[] opciones = {"ACEPTAR", "CANCELAR"};
+//        int eleccion = JOptionPane.showOptionDialog(null, new JScrollPane(ta), "OBSERVACION",
+//                JOptionPane.YES_NO_OPTION,
+//                JOptionPane.QUESTION_MESSAGE, null, opciones, "ACEPTAR");
+//        if (eleccion == JOptionPane.YES_OPTION) {
+//        eveconn.SQL_execute_libre(conn, sql);
+//        }
     }
 //    void primer_finanza(){
 //        int idfinancista = (eveconn.getInt_ultimoID_mas_uno(conn, fina.getTb_financista(), fina.getId_idfinancista()));
@@ -158,7 +168,6 @@ public class FrmMenuAlquiler extends javax.swing.JFrame {
 ////        panel_stock_minimo.setVisible(!jCocultar_grafico.isSelected());
 //        panel_venta_semanal.setVisible(!jCocultar_grafico.isSelected());
 //    }
-
     void iniciar_color() {
         clacolor.setColor_insertar_primario(new Color(137, 201, 184));
         clacolor.setColor_insertar_secundario(new Color(132, 169, 172));
@@ -172,8 +181,8 @@ public class FrmMenuAlquiler extends javax.swing.JFrame {
 //        String titulo = jsconfig.getNombre_sistema() + " V." + jsconfig.getVersion()
 //                + " BD: " + var.getPsLocalhost() + "/" + var.getPsPort() + "/" + var.getPsNomBD()
 //                + " Fecha: " + jsconfig.getFecha_sis() + servidor;
-String titulo = jscon.getNombre() 
-                + " BD: " + jscon.getLocalhost() + " /" + jscon.getPort() + " /" + jscon.getBasedato()+" IP:"+pcinfo.getStringMiIP();
+        String titulo = jscon.getNombre()
+                + " BD: " + jscon.getLocalhost() + " /" + jscon.getPort() + " /" + jscon.getBasedato() + " IP:" + pcinfo.getStringMiIP();
         this.setTitle(titulo);
     }
 
@@ -253,6 +262,7 @@ String titulo = jscon.getNombre()
             evetbl.abrir_TablaJinternal(new FrmCaja_Cierre());
         }
     }
+
     private void abrir_caja_cierre_alquiler() {
         int idcaja_cierre = (eveconn.getInt_ultimoID_max(conn, cjciea.getTb_caja_cierre_alquilado(), cjciea.getId_idcaja_cierre_alquilado()));
         cjciea.setC1idcaja_cierre_alquilado(idcaja_cierre);
@@ -332,6 +342,8 @@ String titulo = jscon.getNombre()
         jMenuItem15 = new javax.swing.JMenuItem();
         jMenuItem16 = new javax.swing.JMenuItem();
         jMenuItem17 = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
+        jMenuItem14 = new javax.swing.JMenuItem();
         jMenu_gasto = new javax.swing.JMenu();
         jMenuItem12 = new javax.swing.JMenuItem();
         jMenuItem13 = new javax.swing.JMenuItem();
@@ -344,6 +356,7 @@ String titulo = jscon.getNombre()
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem11 = new javax.swing.JMenuItem();
+        jMenuItem18 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -673,6 +686,18 @@ String titulo = jscon.getNombre()
         });
         jMenu_config.add(jMenuItem17);
 
+        jMenu2.setText("PROGRAMADOR");
+
+        jMenuItem14.setText("EJECUTAR NUEVAS TABLAS");
+        jMenuItem14.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem14ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem14);
+
+        jMenu_config.add(jMenu2);
+
         jMenuBar1.add(jMenu_config);
 
         jMenu_gasto.setText("GASTO");
@@ -752,6 +777,14 @@ String titulo = jscon.getNombre()
             }
         });
         jMenu3.add(jMenuItem11);
+
+        jMenuItem18.setText("REP. GASTO");
+        jMenuItem18.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem18ActionPerformed(evt);
+            }
+        });
+        jMenu3.add(jMenuItem18);
 
         jMenuBar1.add(jMenu3);
 
@@ -923,6 +956,16 @@ String titulo = jscon.getNombre()
         evetbl.abrir_TablaJinternal(new FrmRepTransaccionBanco());
     }//GEN-LAST:event_jMenuItem11ActionPerformed
 
+    private void jMenuItem14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem14ActionPerformed
+        // TODO add your handling code here:
+        actualizacion_version_v1();
+    }//GEN-LAST:event_jMenuItem14ActionPerformed
+
+    private void jMenuItem18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem18ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmRepGasto());
+    }//GEN-LAST:event_jMenuItem18ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -987,6 +1030,7 @@ String titulo = jscon.getNombre()
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu8;
@@ -996,9 +1040,11 @@ String titulo = jscon.getNombre()
     private javax.swing.JMenuItem jMenuItem11;
     private javax.swing.JMenuItem jMenuItem12;
     private javax.swing.JMenuItem jMenuItem13;
+    private javax.swing.JMenuItem jMenuItem14;
     private javax.swing.JMenuItem jMenuItem15;
     private javax.swing.JMenuItem jMenuItem16;
     private javax.swing.JMenuItem jMenuItem17;
+    private javax.swing.JMenuItem jMenuItem18;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem26;
     private javax.swing.JMenuItem jMenuItem27;

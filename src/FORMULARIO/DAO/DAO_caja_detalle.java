@@ -29,11 +29,14 @@ public class DAO_caja_detalle {
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec=new EvenFecha();
     private String sql_insert = "INSERT INTO public.caja_detalle(\n"
-            + "idcaja_detalle, fecha_emision, descripcion, monto_venta_efectivo,monto_venta_tarjeta, monto_delivery, \n"
+            + "idcaja_detalle, fecha_emision, descripcion, "
+            + "monto_venta_efectivo,monto_venta_tarjeta, monto_delivery, \n"
             + "monto_gasto, monto_compra, monto_vale,monto_caja,monto_cierre, id_origen, tabla_origen, \n"
             + "cierre,estado,fk_idusuario,monto_recibo_pago,monto_compra_credito)\n"
             + "    VALUES (?, ?, ?, ?, ?, \n"
             + "            ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?);";
+    private String sql_update_gasto="update caja_detalle set monto_gasto=? "
+                + "where tabla_origen=? and id_origen=?;";
     private String sql_select="select date(fecha_emision) as fecha,"
                 + "TRIM(to_char(sum(monto_venta_efectivo),'999G999G999')) as v_efectivo,"
                 + "TRIM(to_char(sum(monto_venta_tarjeta),'999G999G999')) as v_tarjeta,"
@@ -53,9 +56,7 @@ public class DAO_caja_detalle {
     private String sql_forma_pago="update caja_detalle set "
                 + "monto_venta_efectivo=?,monto_venta_tarjeta=?,tabla_origen=? "
                 + "where tabla_origen=? and id_origen=?;";
-    private String sql_update="update caja_detalle set fecha_emision=?,descripcion=?,"
-                + "monto_venta_efectivo=?,monto_delivery=?,monto_gasto=?,monto_compra=?,monto_vale=? "
-                + "where indice=?";
+    
     private String sql_update_cerrartodo="update caja_detalle set cierre='C' "
                 + "where cierre='A' ";
 //    private String sql_cargar = "select idcaja_detalle, fecha_emision, descripcion, monto_venta_efectivo,monto_venta_tarjeta, monto_delivery, \n"
@@ -126,24 +127,19 @@ public class DAO_caja_detalle {
             evemen.mensaje_error(e, sql_cargar + "\n" + caja.toString(), titulo);
         }
     }
-    public void update_caja_detalle(Connection conn, caja_detalle caja) {
-        String titulo = "update_caja_detalle";
+    public void update_caja_detalle_gasto(Connection conn, caja_detalle caja) {
+        String titulo = "update_caja_detalle_gasto";
         PreparedStatement pst = null;
         try {
-            pst = conn.prepareStatement(sql_update);
-            pst.setTimestamp(1, evefec.getTimestamp_fecha_cargado(caja.getC2fecha_emision()));
-            pst.setString(2, caja.getC3descripcion());
-            pst.setDouble(3, caja.getC4monto_venta_efectivo());
-            pst.setDouble(4, caja.getC6monto_delivery());
-            pst.setDouble(5, caja.getC7monto_gasto());
-            pst.setDouble(6, caja.getC8monto_compra());
-            pst.setDouble(7, caja.getC9monto_vale());
-            pst.setString(8, caja.getC15estado());
+            pst = conn.prepareStatement(sql_update_gasto);
+            pst.setDouble(1, caja.getC7monto_gasto());
+            pst.setString(2, caja.getC13tabla_origen());
+            pst.setInt(3, caja.getC12id_origen());
             pst.execute();
             pst.close();
-            evemen.Imprimir_serial_sql(sql_update + "\n" + caja.toString(), titulo);
+            evemen.Imprimir_serial_sql(sql_update_gasto + "\n" + caja.toString(), titulo);
         } catch (SQLException e) {
-            evemen.mensaje_error(e, sql_update + "\n" + caja.toString(), titulo);
+            evemen.mensaje_error(e, sql_update_gasto + "\n" + caja.toString(), titulo);
         }
     }
     public void anular_caja_detalle(Connection conn, caja_detalle caja){

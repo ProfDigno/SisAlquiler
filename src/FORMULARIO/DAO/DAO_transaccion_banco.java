@@ -121,8 +121,9 @@ public class DAO_transaccion_banco {
                 + "b.nombre as banco,db.nro_cuenta as cuenta,\n"
                 + "c.nombre as cliente,te.nombre as evento,\n"
                 + "tb.nro_transaccion as referencia,\n"
-                + "TRIM(to_char(tb.monto,'999G999G999'))  as monto,\n"
-                + "tb.monto as omonto\n"
+                + "case when va.estado='EMITIDO' then TRIM(to_char(tb.monto,'999G999G999')) else '0' end as monto,\n"
+                + "va.estado,\n"
+                + "case when va.estado='EMITIDO' then tb.monto else 0 end as omonto\n"
                 + "from banco b,dato_banco db,transaccion_banco tb,\n"
                 + "recibo_pago_cliente rpc,cliente c,venta_alquiler va,tipo_evento te  \n"
                 + "where b.idbanco=db.fk_idbanco \n"
@@ -137,9 +138,9 @@ public class DAO_transaccion_banco {
     }
 
     public void ancho_tabla_transaccion_banco_filtro(JTable tbltabla) {
-        int Ancho[] = {5, 5, 10, 10, 10, 20, 20, 10, 8, 1};
+        int Ancho[] = {5, 5, 8, 8, 8, 20, 18, 10, 8,8, 1};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
-        evejt.ocultar_columna(tbltabla, 9);
+        evejt.ocultar_columna(tbltabla, 10);
     }
 
     public void imprimir_filtro_transaccion_banco(Connection conn, String filtro) {
@@ -150,7 +151,7 @@ public class DAO_transaccion_banco {
                 + "b.nombre as banco,db.nro_cuenta as cuenta,\n"
                 + "c.nombre as cliente,te.nombre as evento,\n"
                 + "tb.nro_transaccion as referencia,\n"
-                + "tb.monto as monto\n"
+                + "case when va.estado='EMITIDO' then tb.monto else 0 end as monto\n"
                 + "from banco b,dato_banco db,transaccion_banco tb,\n"
                 + "recibo_pago_cliente rpc,cliente c,venta_alquiler va,tipo_evento te  \n"
                 + "where b.idbanco=db.fk_idbanco \n"

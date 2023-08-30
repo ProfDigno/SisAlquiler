@@ -204,7 +204,21 @@ public class EvenMensajeJoptionpane {
             JOptionPane.showMessageDialog(null, mensaje, "MODIFICADO CORRECTO", JOptionPane.INFORMATION_MESSAGE);
         }
     }
-
+    public String Html_ini(){
+        String Html="";
+        Html="<html>";
+        return Html;
+    }
+    public String Html_fin(){
+        String Html="";
+        Html="</html>";
+        return Html;
+    }
+    public String getHtml_p(String color,int size,String texto){
+        String parrafo="";
+        parrafo="<p style=\"color:"+color+"\"><font size=\""+size+"\">"+texto+"</font></p>";
+        return parrafo;
+    }
     /**
      * @return the cant_error
      */

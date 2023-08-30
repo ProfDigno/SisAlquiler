@@ -5,6 +5,7 @@
  */
 package FORMULARIO.VISTA;
 
+import AppSheet.EvenLeerExcel;
 import FORMULARIO.ENTIDAD.cotizacion;
 import BASEDATO.LOCAL.ConnPostgres;
 import BASEDATO.EvenConexion;
@@ -27,20 +28,24 @@ import static FORMULARIO.VISTA.ALQUILER.FrmCliente.txtdelivery;
 import static FORMULARIO.VISTA.ALQUILER.FrmCliente.txtzona;
 import IMPRESORA_POS.PosImprimir_Venta;
 import IMPRESORA_POS.PosImprimir_venta_mesa;
+import com.lowagie.text.Row;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+
 
 /**
  *
@@ -87,6 +92,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     DefaultTableModel model_itemf = new DefaultTableModel();
     cla_color_pelete clacolor = new cla_color_pelete();
     ClaAuxFiltroVenta auxvent = new ClaAuxFiltroVenta();
+    EvenLeerExcel eveexcel=new EvenLeerExcel();
     private int cant_boton_cate;
     private int cant_boton_unid;
     private int cant_boton_marca;
@@ -125,7 +131,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private boolean habilitar_editar_precio_venta;
     private boolean hab_venta_combinado;
 
-    void abrir_formulario() {
+    private void abrir_formulario() {
         String servidor = "";
         this.setTitle("VENTA--> USUARIO:" + usu.getGlobal_nombre() + servidor);
         evetbl.centrar_formulario_internalframa(this);
@@ -144,7 +150,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 
     }
 
-    void color_formulario() {
+    private void color_formulario() {
         panel_tabla_busca_cli.setBackground(clacolor.getColor_tabla());
         panel_insertar_pri_item.setBackground(clacolor.getColor_insertar_primario());
         panel_insertar_pri_producto.setBackground(clacolor.getColor_insertar_primario());
@@ -160,7 +166,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         panel_base_2.setBackground(clacolor.getColor_base());
     }
 
-    void color_jpanel() {
+    private void color_jpanel() {
         if (ven.isVenta_aux()) {
             panel_referencia_categoria.setBackground(Color.orange);
             panel_referencia_unidad.setBackground(Color.orange);
@@ -172,12 +178,12 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    void crear_item_producto() {
+    private void crear_item_producto() {
         String dato[] = {"id", "descripcion", "precio", "C", "total"};
         evejt.crear_tabla_datos(tblitem_producto, model_itemf, dato);
     }
 
-    void ancho_item_producto() {
+    private void ancho_item_producto() {
         int Ancho[] = {5, 53, 15, 6, 14};
         evejt.setAnchoColumnaJtable(tblitem_producto, Ancho);
     }
@@ -198,7 +204,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         return true;
     }
 
-    void sumar_item_venta() {
+    private void sumar_item_venta() {
         double total_guarani = evejt.getDouble_sumar_tabla(tblitem_producto, 4);
         monto_venta = total_guarani;
 //        double redondeo = monto_venta - monto_venta % valor_redondeo;
@@ -210,7 +216,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         jFtotal_real.setValue(total_guarani / coti.getReal_guarani_STATIC());
     }
 
-    void cargar_directo_delivery() {
+    private void cargar_directo_delivery() {
         if (fk_idcliente_servi >= 1 || fk_idcliente_local >= 1) {
             color_boton_entrega(Color.white, Color.orange);
             evejt.getBoolean_Eliminar_Fila_delivery(tblitem_producto, model_itemf);
@@ -229,7 +235,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    void boton_tipo_entrega_Delivery() {
+    private void boton_tipo_entrega_Delivery() {
         evejt.mostrar_JTabbedPane(jTab_producto_ingrediente, 0);
         if (fk_idcliente_servi >= 1 || fk_idcliente_local >= 1) {
             color_boton_entrega(Color.white, Color.orange);
@@ -251,7 +257,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    void copiar_itemventa(int idventa) {
+    private void copiar_itemventa(int idventa) {
         String titulo = "duplicar_itemventa";
         String sql = "select fk_idproducto,descripcion,precio_venta,cantidad,tipo,grupo "
                 + "from item_venta where fk_idventa=" + idventa
@@ -277,7 +283,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 
     }
 
-    void cargar_item_producto() {
+    private void cargar_item_producto() {
         if (validar_cargar_item_producto()) {
             pdao.cargar_producto_por_idproducto(connLocal, prod, Iidproducto);
             String idproducto = String.valueOf(prod.getC1idproducto());
@@ -322,7 +328,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    void calculo_cantidad(java.awt.event.KeyEvent evt) {
+    private void calculo_cantidad(java.awt.event.KeyEvent evt) {
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             cargar_item_producto();
         } else {
@@ -355,13 +361,13 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    void color_campo_item_venta(Color color) {
+    private void color_campo_item_venta(Color color) {
         txtprecio_venta.setBackground(color);
         txtsubtotal.setBackground(color);
         txtcantidad_producto.setBackground(color);
     }
 
-    void reestableser_item_venta() {
+    private void reestableser_item_venta() {
         txtprecio_venta.setText(null);
         txtsubtotal.setText(null);
         txtstock.setText(null);
@@ -404,7 +410,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    void crear_boton_categoria(String textboton, String nameboton) {
+    private void crear_boton_categoria(String textboton, String nameboton) {
         JButton boton = new JButton(textboton);
         boton.setFont(new Font("Arial", Font.BOLD, 12));
         boton.setName(nameboton);
@@ -413,7 +419,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         cant_boton_cate++;
         boton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public  void actionPerformed(ActionEvent e) {
                 evejt.mostrar_JTabbedPane(jTab_producto_ingrediente, 0);
                 for (int p = 0; p < cant_boton_cate; p++) {
                     botones_categoria.get(p).setBackground(new java.awt.Color(255, 255, 255));
@@ -429,7 +435,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         panel_referencia_categoria.updateUI();
     }
 
-    void cargar_boton_unidad(String idproducto_categoria) {
+    private void cargar_boton_unidad(String idproducto_categoria) {
         String titulo = "cargar_boton_unidad";
         panel_referencia_unidad.removeAll();
         botones_unidad.clear();
@@ -452,7 +458,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    void cargar_boton_marca(String idproducto_categoria) {
+    private void cargar_boton_marca(String idproducto_categoria) {
         String titulo = "cargar_boton_marca";
         panel_referencia_marca.removeAll();
         botones_marca.clear();
@@ -475,7 +481,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    void boton_agregar_unidad(String textboton, String nameboton) {
+    private void boton_agregar_unidad(String textboton, String nameboton) {
         JButton boton = new JButton(textboton);
         boton.setFont(new Font("Arial", Font.BOLD, 10));
         boton.setName(nameboton);
@@ -498,7 +504,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         panel_referencia_unidad.updateUI();
     }
 
-    void boton_agregar_marca(String textboton, String nameboton) {
+    private void boton_agregar_marca(String textboton, String nameboton) {
         JButton boton = new JButton(textboton);
         boton.setFont(new Font("Arial", Font.BOLD, 10));
         boton.setName(nameboton);
@@ -521,7 +527,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         panel_referencia_marca.updateUI();
     }
 
-    void actualizar_tabla_producto(int tipo) {
+    private void actualizar_tabla_producto(int tipo) {
         String filtro_categoria = "";
         String filtro_unidad = "";
         String filtro_producto = "";
@@ -572,7 +578,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         ancho_tabla_producto();
     }
 
-    void pre_cargar_item_venta() {
+    private void pre_cargar_item_venta() {
         String Sprecio_venta = "0";
         int Iprecio_mostrar = 0;
         if (jCver_promocion.isSelected()) {
@@ -600,7 +606,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         txtcantidad_producto.grabFocus();
     }
 
-    void buscar_cod_barra_producto() {
+    private void buscar_cod_barra_producto() {
         if (pdao.getBoolean_cargar_producto_por_codbarra(connLocal, prod, txtcod_barra.getText())) {
             actualizar_tabla_producto(5);
             tblproducto.changeSelection(0, 0, false, false);
@@ -612,38 +618,38 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    void seleccionar_producto() {
+    private void seleccionar_producto() {
         color_campo_item_venta(Color.white);
         Iidproducto = evejt.getInt_select_id(tblproducto);
         pdao.cargar_producto_por_idproducto(connLocal, prod, Iidproducto);
         pre_cargar_item_venta();
     }
 
-    void ancho_tabla_producto() {
+    private void ancho_tabla_producto() {
         int Ancho[] = {5, 53, 9, 12, 9, 12};
         evejt.setAnchoColumnaJtable(tblproducto, Ancho);
     }
 
-    void cargar_cantidad_producto(int cant) {
+    private void cargar_cantidad_producto(int cant) {
         txtcantidad_producto.setText(String.valueOf(cant));
         cargar_item_producto();
     }
 
-    void color_boton_entrega(Color paquete, Color delivery) {
+    private void color_boton_entrega(Color paquete, Color delivery) {
         evejt.mostrar_JTabbedPane(jTab_producto_ingrediente, 0);
 //        btnagregar_local.setBackground(local);
         btnagregar_paquete.setBackground(paquete);
         btnagregar_delivery.setBackground(delivery);
     }
 
-    void boton_tipo_entrega_Paquete() {
+    private void boton_tipo_entrega_Paquete() {
         color_boton_entrega(Color.orange, Color.white);
         evejt.getBoolean_Eliminar_Fila_delivery(tblitem_producto, model_itemf);
         sumar_item_venta();
         tipo_entrega = entrega_paqueta;
     }
 
-    void limpiar_cliente() {
+    private void limpiar_cliente() {
         evejt.getBoolean_Eliminar_Fila_delivery(tblitem_producto, model_itemf);
         tipo_entrega = entrega_paqueta;
         lblidcliente.setText("id:0");
@@ -657,7 +663,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 
     }
 
-    void seleccionar_cargar_cliente(int tipo) {
+    private void seleccionar_cargar_cliente(int tipo) {
         if (tipo == 1) {
             fk_idcliente_local = eveconn.getInt_Solo_seleccionar_JLista(connLocal, jList_cliente, "cliente", clie.getCliente_concat(), "idcliente");
         }
@@ -689,7 +695,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         cargar_directo_delivery();
     }
 
-    void boton_eliminar_item() {
+    private void boton_eliminar_item() {
         if (!evejt.getBoolean_validar_select(tblitem_producto)) {
             if (evejt.getBoolean_Eliminar_Fila(tblitem_producto, model_itemf)) {
                 sumar_item_venta();
@@ -711,7 +717,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         return true;
     }
 
-    void validar_redondeo() {
+    private void validar_redondeo() {
         double redondeo = evejtf.getDouble_format_nro_entero(txtredondeo);
         if ((redondeo + valor_redondeo) < monto_venta) {
             txtredondeo.setBackground(Color.red);
@@ -720,7 +726,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    void reestableser_venta() {
+    private void reestableser_venta() {
         idventa_ultimo = (eveconn.getInt_ultimoID_mas_uno(connLocal, ven.getTabla(), ven.getIdtabla()));
         txtidventa.setText(String.valueOf(idventa_ultimo));
         indice_venta = eveut.getString_crear_indice();
@@ -750,7 +756,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         reestableser_item_venta();
     }
 
-    void cargar_datos_venta() {
+    private void cargar_datos_venta() {
         monto_delivery = evejt.getDouble_monto_validado(tblitem_producto, 4, 0, "0");
         boolean delivery = false;
         if (monto_delivery > 0) {
@@ -777,7 +783,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         ven.setMonto_ventaGlobal(monto_venta);
     }
 
-    void cargar_datos_caja() {
+    private void cargar_datos_caja() {
         caja.setC2fecha_emision(evefec.getString_formato_fecha_hora());
         caja.setC3descripcion1("(VENTA) id:" + idventa_ultimo + " Cli:" + txtbucarCliente_nombre.getText());
         caja.setC4monto_venta_efectivo(venta_efectivo);
@@ -796,7 +802,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         caja.setC18monto_compra_credito(0);
     }
 
-    void boton_guardar_venta() {
+    private void boton_guardar_venta() {
         if (validar_guardar_venta()) {
             cargar_datos_venta();
             cargar_datos_caja();
@@ -833,18 +839,18 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    void imprimir_venta(int idventa) {
+    private void imprimir_venta(int idventa) {
         posv.boton_imprimir_pos_VENTA(connLocal, idventa);
     }
 
-    void boton_imprimirPos_venta() {
+    private void boton_imprimirPos_venta() {
         if (!evejt.getBoolean_validar_select(tblventa)) {
             int idventa = (evejt.getInt_select_id(tblventa));
             imprimir_venta(idventa);
         }
     }
 
-    void boton_factura() {
+    private void boton_factura() {
         if (!evejt.getBoolean_validar_select(tblventa)) {
             fac.setFactura_cargada(true);
             int idventa = (evejt.getInt_select_id(tblventa));
@@ -853,7 +859,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    void actualizar_venta(int tipo) {
+    private void actualizar_venta(int tipo) {
         String filtro = "";
         String campo_filtro = "";
         String filtro_estado = auxvent.filtro_estado(jCestado_emitido, jCestado_terminado, jCestado_anulado);
@@ -879,7 +885,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         vdao.actualizar_tabla_venta(connLocal, tblventa, filtro, campo_filtro);
     }
 
-    void boton_estado_venta_anular() {
+    private void boton_estado_venta_anular() {
         if (!evejt.getBoolean_validar_select(tblventa)) {
             if (evemen.MensajeGeneral_warning("ESTAS SEGURO DE ANULAR LA VENTA", "ANULAR", "ANULAR", "CANCELAR")) {
                 int idventa = evejt.getInt_select_id(tblventa);
@@ -906,7 +912,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    void boton_forma_pago_EFECTIVO() {
+    private void boton_forma_pago_EFECTIVO() {
         if (!evejt.getBoolean_validar_select(tblventa)) {
             if (evemen.MensajeGeneral_warning("ESTAS SEGURO DE PASAR FORMA DE PAGO A EFECTIVO", "FORMA PAGO", "EFECTIVO", "CANCELAR")) {
                 int idventa = evejt.getInt_select_id(tblventa);
@@ -932,7 +938,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    void boton_forma_pago_TARJETA() {
+    private void boton_forma_pago_TARJETA() {
         if (!evejt.getBoolean_validar_select(tblventa)) {
             if (evemen.MensajeGeneral_warning("ESTAS SEGURO DE PASAR FORMA DE PAGO A TARJETA", "FORMA PAGO", "TARJETA", "CANCELAR")) {
                 int idventa = evejt.getInt_select_id(tblventa);
@@ -998,7 +1004,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         return tipo;
     }
 
-    void insertar_cliente_servidor() {
+    private void insertar_cliente_servidor() {
     }
 
     private void boton_guardar_cliente() {
@@ -1010,7 +1016,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             clie.setC6ruc(txtcli_ruc.getText());
             clie.setC7fecha_cumple(txtcli_fecha_nacimiento.getText());
             clie.setC8tipo(tipo_cliente());
-            cBO.insertar_cliente(connLocal, clie, tblpro_cliente);
+            cBO.insertar_cliente(connLocal, clie,true, tblpro_cliente);
             insertar_cliente_servidor();
             reestableser_cliente();
             seleccionar_cargar_cliente(2);
@@ -1132,7 +1138,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    void boton_venta_efectivo() {
+    private void boton_venta_efectivo() {
         double redondeo = evejtf.getDouble_format_nro_entero(txtredondeo);
         venta_efectivo = redondeo;
         venta_tarjeta = 0;
@@ -1142,7 +1148,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         boton_guardar_venta();
     }
 
-    void boton_venta_tarjeta() {
+    private void boton_venta_tarjeta() {
         double redondeo = evejtf.getDouble_format_nro_entero(txtredondeo);
         venta_efectivo = 0;
         venta_tarjeta = redondeo;
@@ -1152,7 +1158,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         boton_guardar_venta();
     }
 
-    void boton_venta_combinado() {
+    private void boton_venta_combinado() {
         double redondeo = evejtf.getDouble_format_nro_entero(txtredondeo);
         venta_efectivo = redondeo;
         venta_tarjeta = 0;
@@ -1162,7 +1168,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         boton_guardar_venta();
     }
 
-    void calcular_subtotal_itemventa() {
+    private void calcular_subtotal_itemventa() {
         if (txtprecio_venta.getText().trim().length() > 0) {
             int precio_venta = Integer.parseInt(txtprecio_venta.getText());
             int cantidad = 0;
@@ -1175,8 +1181,10 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             txtsubtotal.setText(String.valueOf(subtotal));
         }
     }
-
-    //######################## MESA ##########################
+//    private void cargar_pedido_appsheet(){
+//        eveexcel.leer_archivo_excel(0);
+//    }
+    
     public FrmVenta() {
         initComponents();
         abrir_formulario();
@@ -1336,6 +1344,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         jCfuncionario = new javax.swing.JCheckBox();
         btnnuevoCliente = new javax.swing.JButton();
         btnseleccionarCerrar = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        jButton2 = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -2805,6 +2815,32 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 
         jTabbedPane_VENTA.addTab("BUSCAR CLIENTE", jPanel11);
 
+        jButton2.setText("CARGAR");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jButton2)
+                .addContainerGap(1200, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jButton2)
+                .addContainerGap(578, Short.MAX_VALUE))
+        );
+
+        jTabbedPane_VENTA.addTab("PEDIDO POR APP", jPanel1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -3307,6 +3343,11 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         actualizar_tabla_producto(1);
     }//GEN-LAST:event_jCver_promocionActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+//        cargar_pedido_appsheet();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnagregar_cantidad;
@@ -3335,6 +3376,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private javax.swing.ButtonGroup gru_campo;
     private javax.swing.ButtonGroup gru_tipocli;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JCheckBox jCestado_anulado;
     private javax.swing.JCheckBox jCestado_emitido;
     private javax.swing.JCheckBox jCestado_terminado;
@@ -3383,6 +3425,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private javax.swing.JLayeredPane jLayeredPane2;
     private javax.swing.JList<String> jList_cliente;
     private javax.swing.JList<String> jLzona;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JRadioButton jRtipo_cliente;
     private javax.swing.JRadioButton jRtipo_funcionario;

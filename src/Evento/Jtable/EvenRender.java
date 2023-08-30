@@ -74,6 +74,7 @@ public class EvenRender {
                 String campo3="ANULADO";
                 String campo4="CONFIRMADO";
                 String campo5="ANULADO_temp";
+                String campo6="NUEVO";
                 if (texto1 != null && campo1.equals(texto1.toString())) {
                     color_fondo = Color.WHITE;
                     color_text = Color.RED;
@@ -242,12 +243,17 @@ public class EvenRender {
                 Object texto1 = table.getValueAt(row, columnaRender);
                 String es_cancelado="SI";
                 String es_abierto="NO";
+                String es_anu="ANU";
                 if (texto1 != null && es_cancelado.equals(texto1.toString())) {
                     color_fondo = Color.GRAY;
                     color_text = Color.white;
                 }
                 if (texto1 != null && es_abierto.equals(texto1.toString())) {
                     color_fondo = Color.yellow;
+                    color_text = Color.BLUE;
+                }
+                if (texto1 != null && es_anu.equals(texto1.toString())) {
+                    color_fondo = Color.RED;
                     color_text = Color.BLUE;
                 }
                 label.setBackground(color_fondo);
@@ -282,6 +288,77 @@ public class EvenRender {
                 label.setBackground(color_fondo);
                 table.setSelectionForeground(color_text);
                 
+                return label;
+            }
+        });
+    }
+    public void rendertabla_estado_pedido(JTable tbltabla,final int columna) {
+        System.out.println("-->rendertabla_estado_pedido");
+        tbltabla.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table,
+                    Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+                //************************************************************
+                int columnaRender=columna;
+                Color color_fondo = Color.WHITE;
+                Color color_text = Color.BLACK;
+                Object texto1 = table.getValueAt(row, columnaRender);
+                String nuevo="NUEVO";
+                String cargado="CARGADO";
+                if (texto1 != null && nuevo.equals(texto1.toString())) {
+                    color_fondo = Color.GREEN;
+                    color_text = Color.BLACK;
+                }
+                if (texto1 != null && cargado.equals(texto1.toString())) {
+                    color_fondo = Color.YELLOW;
+                    color_text = Color.BLUE;
+                }
+                label.setBackground(color_fondo);
+                table.setSelectionForeground(color_text);
+                return label;
+            }
+        });
+    }
+    public void rendertabla_estado_fecha_pedido(JTable tbltabla,final int columna) {
+        System.out.println("-->rendertabla_estado_pedido");
+        tbltabla.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table,
+                    Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+                //************************************************************
+                int columnaRender=columna;
+                Color color_fondo = Color.WHITE;
+                Color color_text = Color.BLACK;
+                Object texto1 = table.getValueAt(row, columnaRender);
+                String VENCIDO="VENCIDO";
+                String ATENCION="ATENCION";
+                String HOY="HOY";
+                String PROXIMO_N="PROXIMO-N";
+                String PROXIMO_C="PROXIMO-C";
+                if (texto1 != null && VENCIDO.equals(texto1.toString())) {
+                    color_fondo = Color.GRAY;
+                    color_text = Color.BLACK;
+                }
+                if (texto1 != null && ATENCION.equals(texto1.toString())) {
+                    color_fondo = new Color(172,177,214);//Color.BLUE;
+                    color_text = Color.WHITE;
+                }
+                if (texto1 != null && HOY.equals(texto1.toString())) {
+                    color_fondo = Color.PINK;
+                    color_text = Color.BLACK;
+                }
+                if (texto1 != null && PROXIMO_N.equals(texto1.toString())) {
+                    color_fondo = new Color(199,233,176);//Color.GREEN;
+                    color_text = Color.BLACK;
+                }
+                if (texto1 != null && PROXIMO_C.equals(texto1.toString())) {
+                    color_fondo = new Color(255,235,180);//Color.GREEN;
+                    color_text = Color.BLACK;
+                }
+                label.setBackground(color_fondo);
+                table.setSelectionForeground(color_text);
                 return label;
             }
         });

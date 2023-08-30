@@ -45,7 +45,8 @@ public class DAO_venta_alquiler {
             + "TRIM(to_char(fecha_devolusion_real,'MI')) as min_devolusion,"
             + "monto_alquilado_reservado,monto_descuento,monto_sena,monto_letra,fk_idtipo_evento,monto_pagado "
             + "FROM venta_alquiler WHERE idventa_alquiler=";
-    private String sql_estado = "update venta_alquiler set estado=? where idventa_alquiler=?;";
+    private String sql_estado_anular = "update venta_alquiler set estado=?,monto_sena=?,monto_pagado=? where idventa_alquiler=?;";
+    private String sql_estado_final = "update venta_alquiler set estado=? where idventa_alquiler=?;";
     private String sql_alquilado = "update venta_alquiler set fecha_retirado_real=?,alquiler_retirado=?,estado=? where idventa_alquiler=?;";
     private String sql_devolusion_alq = "update venta_alquiler set fecha_devolusion_real=?,alquiler_devolusion=?,estado=? where idventa_alquiler=?;";
 
@@ -127,10 +128,10 @@ public class DAO_venta_alquiler {
         }
     }
 
-    public void cargar_venta_alquiler(Connection conn, venta_alquiler vealq, int id) {
+    public void cargar_venta_alquiler(Connection conn, venta_alquiler vealq, int idventa_alquiler) {
         String titulo = "Cargar_venta_alquiler";
         try {
-            ResultSet rs = eveconn.getResulsetSQL(conn, sql_cargar + id, titulo);
+            ResultSet rs = eveconn.getResulsetSQL(conn, sql_cargar + idventa_alquiler, titulo);
             if (rs.next()) {
                 vealq.setC1idventa_alquiler(rs.getInt(1));
                 vealq.setC2fecha_creado(rs.getString(2));
@@ -172,22 +173,38 @@ public class DAO_venta_alquiler {
         }
     }
 
-    public void update_venta_alquiler_estado(Connection conn, venta_alquiler vealq) {
+    public void update_venta_alquiler_estado_anular(Connection conn, venta_alquiler vealq) {
         String titulo = "update_venta_alquiler_anular";
         PreparedStatement pst = null;
         try {
-            pst = conn.prepareStatement(sql_estado);
+            pst = conn.prepareStatement(sql_estado_anular);
+            pst.setString(1, vealq.getC18estado());
+            pst.setDouble(2, vealq.getC30monto_sena());
+            pst.setDouble(3, vealq.getC33monto_pagado());
+            pst.setInt(4, vealq.getC1idventa_alquiler());
+            pst.execute();
+            pst.close();
+            evemen.Imprimir_serial_sql(sql_estado_anular + "\n" + vealq.toString(), titulo);
+            evemen.modificado_correcto(mensaje_update, true);
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql_estado_anular + "\n" + vealq.toString(), titulo);
+        }
+    }
+    public void update_venta_alquiler_estado_finalizar(Connection conn, venta_alquiler vealq) {
+        String titulo = "update_venta_alquiler_estado_finalizar";
+        PreparedStatement pst = null;
+        try {
+            pst = conn.prepareStatement(sql_estado_final);
             pst.setString(1, vealq.getC18estado());
             pst.setInt(2, vealq.getC1idventa_alquiler());
             pst.execute();
             pst.close();
-            evemen.Imprimir_serial_sql(sql_estado + "\n" + vealq.toString(), titulo);
+            evemen.Imprimir_serial_sql(sql_estado_final + "\n" + vealq.toString(), titulo);
             evemen.modificado_correcto(mensaje_update, true);
         } catch (Exception e) {
-            evemen.mensaje_error(e, sql_estado + "\n" + vealq.toString(), titulo);
+            evemen.mensaje_error(e, sql_estado_final + "\n" + vealq.toString(), titulo);
         }
     }
-
     public void update_venta_alquiler_monto_pago(Connection conn, venta_alquiler vealq) {
         String titulo = "update_venta_alquiler_monto_pago";
         PreparedStatement pst = null;
@@ -278,6 +295,11 @@ public class DAO_venta_alquiler {
     public void ancho_tabla_venta_alquiler(JTable tbltabla) {
         int Ancho[] = {4, 9, 9, 15, 15, 11, 6, 6, 6, 6, 6, 9, 1};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+        evejt.alinear_derecha_columna(tbltabla, 6);
+        evejt.alinear_derecha_columna(tbltabla, 7);
+        evejt.alinear_derecha_columna(tbltabla, 8);
+        evejt.alinear_derecha_columna(tbltabla, 9);
+        evejt.alinear_derecha_columna(tbltabla, 10);
         evejt.ocultar_columna(tbltabla, 12);
     }
 
@@ -363,10 +385,20 @@ public class DAO_venta_alquiler {
     public void imprimir_orden_entrega_detalle(Connection conn, int idventa_alquiler, String filtro) {
         String sql = "select va.idventa_alquiler as idva,\n"
                 + "to_char(va.fecha_creado ,'" + for_fec_bar + "') as fec_creado, \n"
+                + "case \n"
+                + "when date_part('isodow', va.fecha_devolusion_previsto)=1 then 'LUNES'\n"
+                + "when date_part('isodow', va.fecha_devolusion_previsto)=2 then 'MARTES'\n"
+                + "when date_part('isodow', va.fecha_devolusion_previsto)=3 then 'MIERCOLES'\n"
+                + "when date_part('isodow', va.fecha_devolusion_previsto)=4 then 'JUEVES'\n"
+                + "when date_part('isodow', va.fecha_devolusion_previsto)=5 then 'VIERNES'\n"
+                + "when date_part('isodow', va.fecha_devolusion_previsto)=6 then 'SABADO'\n"
+                + "when date_part('isodow', va.fecha_devolusion_previsto)=7 then 'DOMiNGO' \n"
+                + "else 'otro' end as dia_semana,"
                 + "to_char(va.fecha_devolusion_previsto,'" + for_fec_bar + "') as fec_evento,\n"
                 + "va.monto_total as m_total,\n"
                 + "va.monto_descuento as m_descuento,"
-                + "(va.monto_total-va.monto_descuento) as m_pagar,\n"
+                + "va.monto_sena as m_adelanto,\n"
+                + "(va.monto_total-(va.monto_descuento+va.monto_sena)) as m_pagar,\n"
                 + "va.monto_letra as m_letra,\n"
                 + "va.observacion as obs,\n"
                 + "te.nombre as evento,\n"
@@ -378,11 +410,11 @@ public class DAO_venta_alquiler {
                 + "and va.fk_idcliente=cl.idcliente \n"
                 + "and va.idventa_alquiler=iva.fk_idventa_alquiler \n"
                 + filtro
-                +" and va.idventa_alquiler=" + idventa_alquiler
+                + " and va.idventa_alquiler=" + idventa_alquiler
                 + " order by iva.orden asc;";
         String titulonota = "ORDEN ENTREGA DETALLE";
         String direccion = "src/REPORTE/ALQUILER/repOrdenEntregaDetalleTriple.jrxml";
-        String rutatemp="ordentriple_"+idventa_alquiler;
+        String rutatemp = "ordentriple_" + idventa_alquiler;
         rep.imprimirjasper(conn, sql, titulonota, direccion);
 //        rep.imprimirPDF(conn, sql, direccion, rutatemp);
     }
@@ -391,7 +423,7 @@ public class DAO_venta_alquiler {
         String sql_select = "select v.idventa_alquiler as idva,\n"
                 + "TRIM(to_char(v.fecha_retirado_real,'" + for_fec_bar + " HH24:MI')) as retirado,\n"
                 + "TRIM(to_char(v.fecha_devolusion_real,'" + for_fec_bar + " HH24:MI')) as devolusion,\n"
-                + "te.nombre as evento,\n"
+                + "v.direccion_alquiler as direccion,\n"
                 + "TRIM(to_char((v.monto_total-v.monto_descuento),'999G999G999')) as mon_pagar,\n"
                 + "TRIM(to_char((v.monto_sena),'999G999G999')) as sena,\n"
                 + "TRIM(to_char((v.monto_pagado),'999G999G999')) as pagado,\n"
@@ -400,7 +432,7 @@ public class DAO_venta_alquiler {
                 + "case "
                 + "when v.estado!='ANULADO' and ((v.monto_total-v.monto_descuento) = v.monto_pagado) then 'SI' "
                 + "when v.estado!='ANULADO' and ((v.monto_total-v.monto_descuento) > v.monto_pagado) then 'NO' "
-                + "when v.estado='ANULADO' then 'SI' "
+                + "when v.estado='ANULADO' then 'ANU' "
                 + " else 'error' end as canc "
                 + "from venta_alquiler v,cliente cl,tipo_evento te \n"
                 + "where v.fk_idcliente=cl.idcliente\n"
@@ -441,7 +473,7 @@ public class DAO_venta_alquiler {
     }
 
     public void ancho_tabla_venta_alquiler_rep_1(JTable tbltabla) {
-        int Ancho[] = {5, 9, 9, 10, 25, 12, 8, 8, 8, 10, 1, 1, 1};
+        int Ancho[] = {5, 9, 9, 15, 25, 12, 7, 7, 7, 8, 1, 1, 1};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_derecha_columna(tbltabla, 6);
         evejt.alinear_derecha_columna(tbltabla, 7);
@@ -452,15 +484,17 @@ public class DAO_venta_alquiler {
     }
 
     public void seleccionar_imprimir_venta_alquiler(Connection conn, int idventa_alquiler) {
-        seleccion_venta_alquiler(conn,idventa_alquiler);
+        seleccion_venta_alquiler(conn, idventa_alquiler);
     }
+
     public void seleccionar_imprimir_venta_alquiler_tabla(Connection conn, JTable tabla) {
         if (!evejt.getBoolean_validar_select(tabla)) {
             int idventa_alquiler = evejt.getInt_select_id(tabla);
             seleccion_venta_alquiler(conn, idventa_alquiler);
         }
     }
-    private void seleccion_venta_alquiler(Connection conn, int idventa_alquiler){
+
+    private void seleccion_venta_alquiler(Connection conn, int idventa_alquiler) {
         Object[] botones = {"ORDEN ENTREGA", "ORDEN ENTREGA CON DETALLE", "ORDEN ENTREGA CLIENTE", "CANCELAR"};
         int eleccion_comando = JOptionPane.showOptionDialog(null, "SELECCIONA UNA PARA IMPRIMIR ",
                 "ORDEN DE ENTREGA",
@@ -476,7 +510,6 @@ public class DAO_venta_alquiler {
             imprimir_orden_entrega_alquiler(conn, idventa_alquiler);
         }
     }
-    
 
     public void imprimir_filtro_venta_alquiler_simple(Connection conn, String filtro) {
         String sql = "select va.idventa_alquiler as idva,\n"

@@ -102,8 +102,12 @@ public class DAO_item_producto_combo {
     }
 
     public void ancho_tabla_item_producto_combo(JTable tbltabla) {
-        int Ancho[] = {5, 40, 10, 5, 15, 15};
+        int Ancho[] = {5, 56, 10, 5, 12, 12};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+        evejt.alinear_derecha_columna(tbltabla, 2);
+        evejt.alinear_derecha_columna(tbltabla, 3);
+        evejt.alinear_derecha_columna(tbltabla, 4);
+        evejt.alinear_derecha_columna(tbltabla, 5);
     }
 
     public void insertar_item_producto_combo(Connection conn, JTable tblitem_producto, producto_combo pcom) {

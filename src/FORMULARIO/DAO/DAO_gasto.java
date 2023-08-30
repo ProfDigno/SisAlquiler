@@ -8,6 +8,7 @@ package FORMULARIO.DAO;
 import BASEDATO.LOCAL.ConnPostgres;
 import BASEDATO.EvenConexion;
 import Evento.Fecha.EvenFecha;
+import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
 import Evento.Jtable.EvenRender;
 import Evento.Mensaje.EvenMensajeJoptionpane;
@@ -27,7 +28,9 @@ public class DAO_gasto {
     EvenJtable evejt = new EvenJtable();
     EvenRender everende = new EvenRender();
     EvenFecha evefec = new EvenFecha();
-    String for_fec_bar=evefec.getFor_fec_barra();
+    EvenJasperReport rep = new EvenJasperReport();
+    String for_fec_bar = evefec.getFor_fec_barra();
+    String for_feczona_bar = evefec.getFor_fecZona_barra();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     private String mensaje_insert = "GASTO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "GASTO MODIFICADO CORECTAMENTE";
@@ -38,18 +41,18 @@ public class DAO_gasto {
     private String sql_update = "UPDATE public.gasto\n"
             + "   SET fecha_emision=?,descripcion=?, monto_gasto=?,  \n"
             + "       fk_idgasto_tipo=?, fk_idusuario=?\n"
-            + " WHERE indice=?;";
+            + " WHERE idgasto=?;";
     private String sql_anular = "UPDATE public.gasto\n"
             + "   SET estado=?\n"
             + " WHERE idgasto=?;";
-    private String sql_select = "select g.idgasto,to_char(g.fecha_emision,'"+for_fec_bar+" HH24:MI') as fecha,\n"
+    private String sql_select = "select g.idgasto,to_char(g.fecha_emision,'" + for_fec_bar + "') as fecha,\n"
             + "g.descripcion,gt.nombre as tipo,\n"
             + "TRIM(to_char(g.monto_gasto,'999G999G999')) as monto,\n"
             + "g.estado\n"
             + " from gasto g,gasto_tipo gt\n"
             + "where g.fk_idgasto_tipo=gt.idgasto_tipo\n";
     private String sql_cargar = "select g.descripcion,g.monto_gasto,"
-            + "to_char(g.fecha_emision,'"+for_fec_bar+" HH24:MI') as fecha,"
+            + "to_char(g.fecha_emision,'" + for_fec_bar + "') as fecha,"
             + "g.estado,"
             + "gt.nombre as tipo,g.fk_idgasto_tipo,g.fk_idusuario "
             + " from gasto g,gasto_tipo gt\n"
@@ -63,6 +66,7 @@ public class DAO_gasto {
             + " from gasto g,gasto_tipo gt\n"
             + "where g.fk_idgasto_tipo=gt.idgasto_tipo\n"
             + "and g.estado='EMITIDO'\n";
+
     public void cargar_gasto(gasto gas, JTable tabla) {
         String titulo = "cargar_gasto";
         int id = evejt.getInt_select_id(tabla);
@@ -116,6 +120,7 @@ public class DAO_gasto {
             pst.setDouble(3, gas.getMonto_gasto());
             pst.setInt(4, gas.getFk_idgasto_tipo());
             pst.setInt(5, gas.getFk_idusuario());
+            pst.setInt(6, gas.getIdgasto());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + gas.toString(), titulo);
@@ -124,6 +129,7 @@ public class DAO_gasto {
             evemen.mensaje_error(e, sql_update + "\n" + gas.toString(), titulo);
         }
     }
+
     public void update_gasto_anular(Connection conn, gasto gas) {
         String titulo = "update_gasto_anular";
         PreparedStatement pst = null;
@@ -139,20 +145,52 @@ public class DAO_gasto {
             evemen.mensaje_error(e, sql_anular + "\n" + gas.toString(), titulo);
         }
     }
-    public void actualizar_tabla_gasto(Connection conn, JTable tbltabla,String filtro,String orden) {
-        eveconn.Select_cargar_jtable(conn, sql_select+filtro+orden, tbltabla);
+
+    public void actualizar_tabla_gasto(Connection conn, JTable tbltabla, String filtro, String orden) {
+        eveconn.Select_cargar_jtable(conn, sql_select + filtro + orden, tbltabla);
         everende.rendertabla_estados(tbltabla, 5);
         ancho_tabla_gasto(tbltabla);
     }
 
     public void ancho_tabla_gasto(JTable tbltabla) {
-        int Ancho[] = {5,15,20,20,8,8};
+        int Ancho[] = {3, 8, 24, 25, 7, 8};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+        evejt.alinear_derecha_columna(tbltabla, 4);
     }
-    public double sumar_monto_gasto(Connection conn,String filtro){
-        return eveconn.getdouble_sql_suma(conn, sql_suma_monto+filtro);
+
+    public double sumar_monto_gasto(Connection conn, String filtro) {
+        return eveconn.getdouble_sql_suma(conn, sql_suma_monto + filtro);
     }
-    public double sumar_cantidad_gasto(Connection conn,String filtro){
-        return eveconn.getdouble_sql_suma(conn, sql_suma_cant+filtro);
+
+    public double sumar_cantidad_gasto(Connection conn, String filtro) {
+        return eveconn.getdouble_sql_suma(conn, sql_suma_cant + filtro);
+    }
+
+    public void imprimir_filtro_gasto(Connection conn, String filtro) {
+        String sql = "select g.idgasto,to_char(g.fecha_emision,'dd/MM/yyyy') as fecha,\n"
+                + "g.descripcion,gt.nombre as tipo,\n"
+                + "g.monto_gasto as monto,\n"
+                + "g.estado\n"
+                + " from gasto g,gasto_tipo gt\n"
+                + "where g.fk_idgasto_tipo=gt.idgasto_tipo\n"
+                + "and g.estado='EMITIDO'\n" + filtro
+                + "\n order by g.fecha_emision desc;";
+        String titulonota = "FILTRO GASTO";
+        String direccion = "src/REPORTE/GASTO/repFiltroGasto.jrxml";
+        rep.imprimirjasper(conn, sql, titulonota, direccion);
+    }
+
+    public void imprimir_filtro_gasto_excel(Connection conn, String filtro) {
+        String sql_select = "select g.idgasto,to_char(g.fecha_emision,'dd/MM/yyyy') as fecha,\n"
+                + "g.descripcion,gt.nombre as tipo,\n"
+                + "g.monto_gasto as monto\n"
+                + "from gasto g,gasto_tipo gt\n"
+                + "where g.fk_idgasto_tipo=gt.idgasto_tipo\n"
+                + "and g.estado='EMITIDO'\n"+filtro
+                + " order by g.fecha_emision desc; ";
+        String titulonota = "FILTRO GASTO";
+        String direccion = "src/REPORTE/GASTO/repFiltroGastoExcel.jrxml";
+        String rutatemp = "Fil_gasto_" + evefec.getS_fec_hs_seg_archivo();
+        rep.imprimirExcel(conn, sql_select, direccion, rutatemp);
     }
 }

@@ -49,8 +49,10 @@ public class FrmProducto_categoria extends javax.swing.JInternalFrame {
     }
     void actualizar_tabla_categoria() {
         if ((txtfecha_desde.getText().trim().length() > 0) && (txtfecha_hasta.getText().trim().length() > 0)) {
-            String fecdesde = evefec.getString_validar_fecha(txtfecha_desde.getText());
-            String fechasta = evefec.getString_validar_fecha(txtfecha_hasta.getText());
+//            String fecdesde = evefec.getString_validar_fecha(txtfecha_desde.getText());
+//            String fechasta = evefec.getString_validar_fecha(txtfecha_hasta.getText());
+            String fecdesde = evefec.getString_cambiar_formato(txtfecha_desde.getText());
+            String fechasta = evefec.getString_cambiar_formato(txtfecha_hasta.getText());
             txtfecha_desde.setText(fecdesde);
             txtfecha_hasta.setText(fechasta);
             pcdao.actualizar_tabla_producto_categoria(conn, tblpro_categoria, fecdesde, fechasta);

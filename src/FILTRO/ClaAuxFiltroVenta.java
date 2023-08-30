@@ -57,7 +57,7 @@ public class ClaAuxFiltroVenta {
         return sumaestado + fin;
     }
     public String filtro_estado_alquiler(JCheckBox jCestado_emitido,JCheckBox jCestado_finalizado,
-            JCheckBox jCestado_usoreserva,JCheckBox jCestado_alquilado,
+            JCheckBox jCestado_alquilado,
             JCheckBox jCestado_devolucion,JCheckBox jCestado_anulado) {
         String estado = "";
         String sumaestado = "";
@@ -84,17 +84,6 @@ public class ClaAuxFiltroVenta {
                 condi = " or";
             }
             estado = condi + " v.estado='FINALIZADO' ";
-            sumaestado = sumaestado + estado;
-        }
-        if (jCestado_usoreserva.isSelected()) {
-            contestado++;
-            if (contestado == 1) {
-                condi = " and(";
-                fin = ") ";
-            } else {
-                condi = " or";
-            }
-            estado = condi + " v.estado='USO_RESERVA' ";
             sumaestado = sumaestado + estado;
         }
         if (jCestado_alquilado.isSelected()) {

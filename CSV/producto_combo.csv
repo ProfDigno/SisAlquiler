@@ -1,0 +1,40 @@
+"idproducto_combo"|"nombre"|"precio_alquiler"|"precio_reposicion"|"descuento"|"activo"
+1|"B-160-BOX´S BLANCO SIN LED P/10P (2 sofás+6 pufs+1 mesa simple)"|160000|0|0|t
+2|"B-150- BOX´S BLANCO Económico P/10P (10 lug pufs+mesa led)"|150000|0|0|t
+3|"N-150-BOX´S NEGRO Económico P/10P (10 lug pufs+mesa led)"|150000|0|0|t
+4|"B-170-BOX´S BLANCO P/10P (10 lug pufs+m/s + champ. led)"|170000|0|0|t
+5|"N-170CH- BOX´S NEGRO P/10P (10 lug pufs + m/s + champ. led)"|170000|0|0|t
+6|"B-210CH -BOX´S BLANCO P/10P (2 sofás+6 pufs+m/s+ champ.led)"|210000|0|0|f
+7|"N-210CH- BOX´S NEGRO P/10P (2 sofás c/respaldo +6 lug pufs + m/s + Champ.led)"|210000|0|0|t
+8|"N-160-BOX´S NEGRO SIN LED P/10P (2 sofás+6 pufs+1 mesa simple)"|160000|0|0|t
+9|"B-240CH- BOX´S BLANCO P/10P (2 sofás c/respaldo +6 lug pufs + Mesa y Champ.led)"|240000|0|0|t
+10|"N-240CH-BOX´S NEGRO P/10P  (2 sofás c/respaldo +6 lug pufs + Mesa y Champ.led)"|240000|0|0|t
+11|"B-250CH- BOX´S BLANCO P/10P (4 sofás c/respaldo +2 lug pufs + m/s + Champ.led)"|250000|0|0|t
+12|"N-250CH- BOX´S NEGRO P/10P (4 sofás c/respaldo +2 lug pufs + m/s + Champ.led)"|250000|0|0|t
+13|"B-300-2 CHAMP BOX´S BLANCO VIP P/10P  (4 sofás+2 puff+m/s+doble led)"|300000|0|0|t
+14|"N-300-2 CHAMP BOX´S NEGRO VIP P/10P  (4 sofás+2 puff+m/s+doble led)"|300000|0|0|t
+15|"ELIMINARJuego de Bistró BLANCO c/4 sillas"|150000|0|30000|f
+16|"ELIMINARJuego de Bistró NEGRO c/4 sillas"|150000|0|30000|f
+17|"ELIMINARB-210M- BOX´S BLANCO P/10P (2 sofás c/respaldo +6 lug pufs + m/s + mesa led)"|210000|0|0|f
+18|"B-210M- BOX´S BLANCO P/10P (2 sofás c/respaldo +6 lug pufs + m/s + mesa led)"|210000|0|0|t
+19|"B-210CH- BOX´S BLANCO P/10P (2 sofás c/respaldo +6 lug pufs + m/s + Champ.led)"|210000|0|0|t
+20|"ELIMINARP400-COMBO PARQUE MEDIANO"|650000|0|250000|f
+21|"120-JUEGO BISTRÓ NEGRO Mesa+4 sillas "|120000|0|0|t
+22|"27.5-MESA REDONDA 8P - SEMI GALA  (Asado)"|230500|475000|10500|t
+23|"15-MESA REDONDA 8P - ECONOMICA (Asado)"|126500|435000|6500|t
+24|"120-JUEGO BISTRÓ BLANCO Mesa+4 sillas "|120000|0|0|t
+25|"33-MESA LARGA- GALA-10P - (Asado)"|350000|995000|20000|t
+26|"75-MESA REDONDA 8P - ECONOMICA (sin vajillas)"|75000|100000|0|t
+27|"15-MESA LARGA 10P - ECONOMICA (Asado)"|157500|495000|7500|t
+28|"33-MESA REDONDA 8P - GALA (Asado)"|280500|835000|16500|t
+29|"33-MESA LARGA- GALA-10P - (Bufett)"|350000|1095000|20000|t
+30|"ELIMINARR N-300-BOX´S NEGRO VIP P/10P  (4 sofás+2 puff+m/s+doble led)"|300000|0|0|f
+31|"B-300-BOX´S BLANCO VIP P/10P  (4 sofás+2 puff+m/s+doble led)"|300000|0|0|t
+32|"N-300-BOX´S NEGRO VIP P/10P  (4 sofás+2 puff+m/s+doble led)"|300000|0|0|t
+33|"130- MESA REDONDA P/8P con sillas tiffany (sin vajillas)"|131000|100000|1000|t
+34|"12.5-TRIO DE BANDEJAS (para entradas o picadas)"|15000|120000|2500|t
+35|"N-210M- BOX´S NEGRO P/10P (2 sofás c/respaldo +6 lug pufs + m/s +mesa.led)"|210000|0|0|t
+36|"27.5-MESA LARGA 10P - SEMI GALA  (Asado)"|287500|545000|12500|t
+37|"33-MESA REDONDA 8P - GALA (Bufett)"|280500|915000|16500|t
+38|"95-MESA LARGA 10P- ECONOMICA (sin vajillas)"|95000|100000|0|t
+39|"165- MESA LARGA 10P con sillas tiffany (sin vajillas)"|165000|100000|0|t
